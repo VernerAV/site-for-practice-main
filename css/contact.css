@@ -1,0 +1,195 @@
+/* style.css */
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.form-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.header_contact {
+    background: linear-gradient(135deg, #1a5f7a, #2c3e50);
+    color: white;
+    padding: 30px;
+    border-radius: 10px 10px 0 0;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.header_contact h1 {
+    margin: 0 0 10px 0;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.header_contact p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 16px;
+}
+
+.form-content {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    padding: 40px;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Стили для сообщений */
+.message {
+    padding: 15px;
+    margin-bottom: 25px;
+    border-radius: 6px;
+    border-left: 4px solid transparent;
+}
+
+.message.error {
+    background-color: #ffe6e6;
+    border-left-color: #d32f2f;
+    color: #c62828;
+}
+
+.message.success {
+    background-color: #e8f5e9;
+    border-left-color: #2e7d32;
+    color: #1b5e20;
+}
+
+.message ul {
+    margin: 10px 0 0 0;
+    padding-left: 20px;
+}
+
+/* Стили формы */
+
+form_flex {
+    display: flex;
+    flex-direction: column;
+}
+.form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.form-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+.form-label span {
+    color: #d32f2f;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    transition: border-color 0.3s;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #1a5f7a;
+    box-shadow: 0 0 0 2px rgba(26, 95, 122, 0.1);
+}
+
+.form-input.error {
+    border-color: #d32f2f;
+}
+
+textarea.form-input {
+    min-height: 150px;
+    resize: vertical;
+}
+
+.form-hint {
+    font-size: 13px;
+    color: #666;
+    margin-top: 6px;
+    display: block;
+}
+
+/* Стили для select */
+select.form-input {
+    background: white;
+    cursor: pointer;
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%23333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    padding-right: 40px;
+}
+
+/* Стили для кнопки */
+.submit-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #1a5f7a, #2c3e50);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 10px;
+}
+
+.submit-btn:hover {
+    background: linear-gradient(135deg, #155269, #243342);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(26, 95, 122, 0.2);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+/* Стили для информационного блока */
+.info-box {
+    background: #e8f4f8;
+    border: 1px solid #b3e0f2;
+    border-radius: 6px;
+    padding: 25px;
+    margin-top: 35px;
+}
+
+.info-box h3 {
+    margin: 0 0 15px 0;
+    color: #1a5f7a;
+    font-size: 18px;
+}
+
+.info-list {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.info-list li {
+    margin-bottom: 10px;
+    line-height: 1.5;
+    color: #333;
+}
+
+.info-list li:last-child {
+    margin-bottom: 0;
+}
+

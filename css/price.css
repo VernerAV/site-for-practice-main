@@ -1,0 +1,321 @@
+body {
+    margin: 0;
+}
+.price-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Roboto', Arial, sans-serif;
+}
+
+/* Шапка страницы */
+.price-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #eaeaea;
+}
+
+.price-header h1 {
+    color: #2c3e50;
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.price-subtitle {
+    color: #666;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.price-header a {
+    display: block;
+    width: 200px;
+    margin: 20px auto;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    text-align: center;
+    border-radius: 4px;
+    font-weight: bold;
+} 
+
+/* Поисковая секция */
+.search-section {
+    margin-bottom: 25px;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #eaeaea;
+}
+
+.search-box {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 40px 12px 15px;
+    font-size: 16px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.search-input:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.clear-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #95a5a6;
+    color: white;
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s;
+}
+
+.clear-btn:hover {
+    background: #7f8c8d;
+}
+
+.search-info {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #666;
+}
+
+.search-info.has-results {
+    color: #27ae60;
+}
+
+.search-info.no-results {
+    color: #e74c3c;
+}
+
+/* Контейнер таблицы */
+.table-container {
+    overflow-x: auto;
+    margin-bottom: 30px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eaeaea;
+}
+
+/* Таблица */
+.price-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+}
+
+.price-table thead {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    color: white;
+}
+
+.price-table th {
+    padding: 18px 15px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+}
+
+.price-table th.col-service {
+    width: 25%;
+    min-width: 200px;
+}
+
+.price-table th.col-description {
+    width: 55%;
+}
+
+.price-table th.col-price {
+    width: 20%;
+    min-width: 150px;
+}
+
+/* Строки таблицы */
+.service-row {
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s;
+}
+
+.service-row:hover {
+    background-color: #f8fafc;
+}
+
+.service-row.even-row {
+    background-color: #fafafa;
+}
+
+.service-row.even-row:hover {
+    background-color: #f1f5f9;
+}
+
+.service-row:last-child {
+    border-bottom: none;
+}
+
+/* Ячейки таблицы */
+.price-table td {
+    padding: 20px 15px;
+    vertical-align: top;
+}
+
+.service-cell {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.service-icon {
+    flex-shrink: 0;
+    font-size: 24px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f7ff;
+    border-radius: 8px;
+    color: #3498db;
+}
+
+.service-name {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1.05rem;
+    line-height: 1.4;
+    flex-grow: 1;
+}
+
+.description-cell {
+    color: #555;
+    line-height: 1.5;
+    font-size: 0.95rem;
+}
+
+.price-cell {
+    text-align: right;
+}
+
+.price-amount {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.price-note {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    font-style: italic;
+}
+
+/* Подсветка при поиске */
+.highlight {
+    background-color: #fff9c4;
+    padding: 1px 3px;
+    border-radius: 3px;
+    font-weight: 600;
+}
+
+/* Сообщения об ошибках и пустых данных */
+.no-data, .error-message {
+    text-align: center;
+    padding: 40px 20px !important;
+    color: #7f8c8d;
+    font-style: italic;
+}
+
+.error-message {
+    color: #e74c3c;
+    background-color: #fdeded;
+}
+
+/* Информационное примечание */
+.info-note {
+    display: flex;
+    gap: 15px;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+    margin-top: 30px;
+}
+
+.note-icon {
+    flex-shrink: 0;
+    font-size: 24px;
+    margin-top: 2px;
+}
+
+.note-content h3 {
+    color: #2c3e50;
+    margin: 0 0 10px 0;
+    font-size: 1.1rem;
+}
+
+.note-content p {
+    color: #666;
+    margin: 0;
+    line-height: 1.5;
+}
+
+
+/* Эффекты для таблицы */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.service-row {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Прокрутка таблицы */
+.table-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+

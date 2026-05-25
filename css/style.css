@@ -1,0 +1,775 @@
+/* Roboto */
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/Roboto-Regular.ttf') format('truetype');      
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/Roboto-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/Roboto-Light.ttf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/Roboto-ExtraLight.ttf') format('truetype');
+    font-weight: 100;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/Roboto-Medium.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+
+
+
+
+* {
+    margin: 0;
+    padding: 0 ;
+    font-family: 'Roboto', Arial, sans-serif;
+}
+
+.container {
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+/* Десктоп */
+.container { padding: 0 60px; }
+
+/* баннер */
+.banner {
+    background: linear-gradient(135deg, #2196f3 0%, #0d47a1 100%);
+    color: white;
+    padding: 60px 0;
+    text-align: center;
+}
+
+.content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    opacity: 0.9;
+}
+
+.phone {
+    margin-bottom: 30px;
+}
+
+.phone a {
+    display: block;
+    font-size: 3rem;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+    margin-bottom: 10px;
+}
+
+.phone span {
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+
+a.btn {
+    display: inline-block;
+    text-decoration: none;
+    background: #ff5722;
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-bottom: 30px;
+}
+
+a.btn:hover {
+    background: linear-gradient(135deg, #ff5722, #f7360a);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3);
+}
+
+.tags {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.tags span {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 8px 20px;
+    border-radius: 20px;
+}
+/* Таблица */
+
+.schedule h1 {
+    color: black;
+    font-weight: 600;
+    margin-left: 20px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+/* таблица */
+table.iksweb {
+    width: 80%;
+    border-collapse: collapse;
+    font-family: 'Roboto', Arial, sans-serif;
+     margin: 0 auto;
+}
+
+table.iksweb th,
+table.iksweb td {
+    padding: 15px 10px;
+    text-align: center;
+    border: 1px black solid;
+}
+
+table.iksweb tr td:first-child {
+    text-align: left;
+    font-weight: 600;
+    background-color: #f8f9fa;
+    padding-left: 20px;
+}
+
+
+/* Чередование цветов строк */
+table.iksweb tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+table.iksweb tr:nth-child(odd) {
+    background-color: white;
+}
+
+/* Заголовок */
+table.iksweb tr:first-child {
+    background-color: #3498db;
+    color: white;
+}
+
+table.iksweb tr:first-child td {
+    font-weight: 700;
+    text-align: center;
+}
+
+/* Слайдер новости*/
+.news-slider-section {
+    padding: 80px 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    overflow: hidden;
+}
+
+.section-title, .schedule h1 {
+    text-align: center;
+    margin-bottom: 50px;
+    color: #333;
+    font-size: 2.5rem;
+    font-weight: 600;
+}
+
+.news-slider-container {
+    position: relative;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 100px;
+}
+
+.news-slider-wrapper {
+    overflow: hidden;
+    position: relative;
+    padding: 20px 0;
+}
+
+/* Эффект "половина скрыта" с обеих сторон */
+.news-slider-wrapper::before,
+.news-slider-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 150px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.news-slider-wrapper::before {
+    left: 0;
+    background: linear-gradient(to right, rgba(248, 249, 250, 0.9) 0%, rgba(248, 249, 250, 0) 100%);
+}
+
+.news-slider-wrapper::after {
+    right: 0;
+    background: linear-gradient(to left, rgba(248, 249, 250, 0.9) 0%, rgba(248, 249, 250, 0) 100%);
+}
+
+.news-slider-track {
+    display: flex;
+    gap: 40px;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+}
+
+.news-slide {
+    flex: 0 0 380px; /* Фиксированная ширина слайда */
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+    position: relative;
+    transition: all 0.4s ease;
+}
+
+/* Слайды по краям - полупрозрачные */
+.news-slider-track .news-slide:first-child,
+.news-slider-track .news-slide:last-child {
+    opacity: 0.5;
+    transform: scale(0.95);
+}
+
+.news-slide:hover {
+    transform: translateY(-15px) scale(1.02);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    opacity: 1 !important;
+}
+
+.news-slide-image {
+    height: 250px;
+    overflow: hidden;
+    position: relative;
+}
+
+.news-slide-image::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
+}
+
+.news-slide-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.7s ease;
+}
+
+.news-slide:hover .news-slide-image img {
+    transform: scale(1.1);
+}
+
+.news-slide-content {
+    padding: 30px;
+    position: relative;
+    z-index: 1;
+}
+
+.news-slide-date {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.news-slide-date::before {
+    content: '📅';
+    font-size: 0.8rem;
+}
+
+.news-slide-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #222;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.news-slide-text {
+    color: #555;
+    line-height: 1.7;
+    margin-bottom: 25px;
+    font-size: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.news-slide-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    padding: 8px 20px;
+    background: rgba(0, 123, 255, 0.1);
+    border-radius: 25px;
+}
+
+.news-slide-link:hover {
+    color: white;
+    background: #007bff;
+    transform: translateX(10px);
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+}
+
+.news-slide-link::after {
+    content: '→';
+    transition: transform 0.3s ease;
+}
+
+.news-slide-link:hover::after {
+    transform: translateX(5px);
+}
+
+.slider-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 70px;
+    height: 70px;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    font-size: 32px;
+    cursor: pointer;
+    z-index: 3;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+}
+
+.slider-nav:hover {
+    background: #007bff;
+    color: white;
+    box-shadow: 0 15px 40px rgba(0, 123, 255, 0.3);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.slider-nav.prev {
+    left: 20px;
+}
+
+.slider-nav.next {
+    right: 20px;
+}
+
+/* Автоматическая прокрутка индикатор */
+.slider-progress {
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 4px;
+    background: rgba(0,0,0,0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.slider-progress-bar {
+    width: 33.33%;
+    height: 100%;
+    background: #007bff;
+    border-radius: 2px;
+    transition: transform 0.3s ease;
+}
+
+/* Анимация загрузки */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.news-slide {
+    animation: slideIn 0.6s ease backwards;
+}
+
+/* Блоки */
+
+
+.paid-services {
+    padding: 80px 0;
+    background: #f8f9fa;
+}
+
+
+.service-block {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    width: 70%;
+    margin-bottom: 80px;
+    margin-left: 10%;
+    padding: 40px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.service-block:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 50px rgba(0,0,0,0.12);
+}
+
+.service-block.reverse {
+    flex-direction: row-reverse;
+}
+
+.service-content {
+    flex: 1;
+    min-width: 300px;
+}
+
+.service-content h3 {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.service-content > p {
+    font-size: 1.1rem;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.service-content ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 30px;
+}
+
+.service-content li {
+    margin-bottom: 15px;
+    padding-left: 30px;
+    position: relative;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #444;
+}
+
+.service-content li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #28a745;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.service-content li strong {
+    color: #2c3e50;
+}
+
+.service-image {
+    flex: 1;
+    min-width: 300px;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.service-image img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.service-block:hover .service-image img {
+    transform: scale(1.05);
+}
+
+a.btn-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    border: none;
+    padding: 15px 35px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 5px 20px rgba(0,123,255,0.3);
+}
+
+a.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,123,255,0.4);
+    background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+}
+
+a.btn-primary::after {
+    content: '→';
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+a.btn-primary:hover::after {
+    transform: translateX(5px);
+}
+
+/* Блок с ссылками */
+.useful-links {
+    padding: 80px 0;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #2c3e50;
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.section-subtitle {
+    text-align: center;
+    color: #666;
+    font-size: 1.1rem;
+    margin-bottom: 50px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.link-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.link-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, #007bff, #00d4ff);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.link-card.mos::before {
+    background: linear-gradient(90deg, #ff6b6b, #ff8e53);
+}
+
+.link-card.government::before {
+    background: linear-gradient(90deg, #4776E6, #8E54E9);
+}
+
+.link-card.public::before {
+    background: linear-gradient(90deg, #00b09b, #96c93d);
+}
+
+.link-card:hover::before {
+    opacity: 1;
+}
+
+.link-card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+.link-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25px;
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    box-shadow: 0 10px 20px rgba(0, 123, 255, 0.2);
+}
+
+.link-card.mos .link-icon {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+    box-shadow: 0 10px 20px rgba(255, 107, 107, 0.2);
+}
+
+.link-card.government .link-icon {
+    background: linear-gradient(135deg, #4776E6 0%, #8E54E9 100%);
+    box-shadow: 0 10px 20px rgba(71, 118, 230, 0.2);
+}
+
+.link-card.public .link-icon {
+    background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+    box-shadow: 0 10px 20px rgba(0, 176, 155, 0.2);
+}
+
+.link-icon img {
+    width: 40px;
+    height: 40px;
+    filter: brightness(0) invert(1);
+}
+
+.link-content h3 {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin-bottom: 25px;
+    font-weight: 600;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.link-content h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(90deg, #007bff, #00d4ff);
+    border-radius: 2px;
+}
+
+.link-card.mos h3::after {
+    background: linear-gradient(90deg, #ff6b6b, #ff8e53);
+}
+
+.link-card.government h3::after {
+    background: linear-gradient(90deg, #4776E6, #8E54E9);
+}
+
+.link-card.public h3::after {
+    background: linear-gradient(90deg, #00b09b, #96c93d);
+}
+
+.link-items {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.link-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.link-item:hover {
+    background: white;
+    border-color: #007bff;
+    transform: translateX(10px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+}
+
+.link-card.mos .link-item:hover {
+    border-color: #ff6b6b;
+}
+
+.link-card.government .link-item:hover {
+    border-color: #4776E6;
+}
+
+.link-card.public .link-item:hover {
+    border-color: #00b09b;
+}
+
+.link-icon-small {
+    font-size: 1.2rem;
+    width: 30px;
+    text-align: center;
+}
+
+.link-item span:last-child {
+    flex: 1;
+    font-weight: 500;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+/* Эффект при наведении на карточку */
+.link-card:hover .link-item {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+.link-card:hover .link-item:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.link-card:hover .link-item:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.link-card:hover .link-item:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
