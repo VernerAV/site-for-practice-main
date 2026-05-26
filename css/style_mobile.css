@@ -1,0 +1,553 @@
+/* ========== ОГРАНИЧЕНИЕ ШИРИНЫ И БЕЗОПАСНОСТЬ ========== */
+body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* Центрирование основных контейнеров, но без разрушения существующих стилей */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding-left: 20px;
+    padding-right: 20px;
+    width: 100%;
+}
+
+/* Шапка и футер не вылезают */
+header, footer {
+    width: 100%;
+    overflow-x: hidden;
+}
+
+/* ========== АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ И ТЕЛЕФОНОВ ========== */
+@media (max-width: 1024px) {
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}
+
+/* Мобильные устройства (до 768px) */
+@media (max-width: 768px) {
+    /* Контейнеры */
+    .container {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    /* Баннер */
+    .banner {
+        padding: 40px 0;
+    }
+    .content h1 {
+        font-size: 1.6rem;
+    }
+    .phone a {
+        font-size: 1.8rem;
+    }
+    .tags span {
+        padding: 5px 12px;
+        font-size: 0.8rem;
+    }
+
+    /* Таблица (горизонтальная прокрутка) */
+    .schedule {
+        overflow-x: auto;
+    }
+    .schedule h1 {
+        font-size: 1.6rem !important;
+        text-align: center !important;
+        margin-bottom: 25px !important;
+        color: #2c3e50 !important;
+    }
+    table.iksweb {
+        min-width: 600px;
+        font-size: 0.85rem;
+    }
+
+    /* ========== НОВОСТИ - МОБИЛЬНЫЙ СЛАЙДЕР ========== */
+@media (max-width: 768px) {
+    .news-slider-section {
+        padding: 40px 0 !important;
+        background: #f8f9fa !important;
+        width: 100% !important;
+        overflow: hidden !important;
+    }
+    
+    .news-slider-section .container {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Заголовок */
+    .news-slider-section .section-title {
+        font-size: 1.6rem !important;
+        text-align: center !important;
+        margin-bottom: 25px !important;
+        padding: 0 15px !important;
+        color: #2c3e50 !important;
+    }
+    
+    /* Контейнер слайдера */
+    .news-slider-container {
+        position: relative !important;
+        max-width: 100% !important;
+        padding: 0 35px !important;
+        margin: 0 auto !important;
+        overflow: hidden !important;
+    }
+    
+    /* Обёртка с overflow hidden */
+    .news-slider-wrapper {
+        overflow: visible !important;
+        position: relative !important;
+    }
+    
+    /* Убираем градиентные затемнения по краям */
+    .news-slider-wrapper::before,
+    .news-slider-wrapper::after {
+        display: none !important;
+    }
+    
+    /* Трек слайдера — сохраняем горизонтальное расположение */
+    .news-slider-track {
+        display: flex !important;
+        gap: 20px !important;
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        will-change: transform !important;
+    }
+    
+    /* Карточка новости — фиксированная ширина для мобильных */
+    .news-slide {
+        flex: 0 0 260px !important;
+        background: white !important;
+        border-radius: 16px !important;
+        overflow: hidden !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+    
+    /* Изображение */
+    .news-slide-image {
+        width: 100% !important;
+        height: 160px !important;
+        overflow: hidden !important;
+        background: #e0e0e0;
+    }
+    
+    .news-slide-image img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        display: block !important;
+    }
+    
+    /* Контент */
+    .news-slide-content {
+        padding: 15px !important;
+    }
+    
+    .news-slide-date {
+        font-size: 0.7rem !important;
+        color: #888 !important;
+        margin-bottom: 6px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+    }
+    
+    .news-slide-date::before {
+        content: "📅" !important;
+        font-size: 0.7rem !important;
+    }
+    
+    .news-slide-title {
+        font-size: 1rem !important;
+        font-weight: 700 !important;
+        margin-bottom: 8px !important;
+        color: #2c3e50 !important;
+        line-height: 1.35 !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+    }
+    
+    .news-slide-text {
+        font-size: 0.8rem !important;
+        line-height: 1.4 !important;
+        color: #555 !important;
+        margin-bottom: 10px !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+    }
+    
+    .news-slide-link {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 5px !important;
+        color: #007bff !important;
+        text-decoration: none !important;
+        font-weight: 600 !important;
+        font-size: 0.75rem !important;
+        padding: 4px 0 !important;
+    }
+    
+    .news-slide-link::after {
+        content: "→" !important;
+        transition: transform 0.2s ease !important;
+    }
+    
+    /* Кнопки навигации — видимые, красивые, работающие */
+    .slider-nav {
+        position: absolute !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 32px !important;
+        height: 32px !important;
+        background: white !important;
+        border: none !important;
+        border-radius: 50% !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+        font-size: 20px !important;
+        font-weight: bold !important;
+        cursor: pointer !important;
+        z-index: 10 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        color: #333 !important;
+    }
+    
+    .slider-nav.prev {
+        left: 5px !important;
+    }
+    
+    .slider-nav.next {
+        right: 5px !important;
+    }
+    
+    .slider-nav:hover {
+        background: #007bff !important;
+        color: white !important;
+    }
+    
+    /* Отключаем hover-эффекты, которые мешают */
+    .news-slide:hover {
+        transform: none !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+    }
+    
+    .news-slide:hover .news-slide-image img {
+        transform: none !important;
+    }
+}
+
+/* Для экранов меньше 480px */
+@media (max-width: 480px) {
+    .news-slider-container {
+        padding: 0 30px !important;
+    }
+    
+    .news-slide {
+        flex: 0 0 240px !important;
+    }
+    
+    .news-slide-image {
+        height: 140px !important;
+    }
+    
+    .news-slide-content {
+        padding: 12px !important;
+    }
+    
+    .news-slide-title {
+        font-size: 0.9rem !important;
+    }
+    
+    .news-slide-text {
+        font-size: 0.75rem !important;
+    }
+    
+    .slider-nav {
+        width: 28px !important;
+        height: 28px !important;
+        font-size: 18px !important;
+    }
+    
+    .slider-nav.prev {
+        left: 2px !important;
+    }
+    
+    .slider-nav.next {
+        right: 2px !important;
+    }
+}
+
+    /* ПЛАТНЫЕ УСЛУГИ */
+@media (max-width: 768px) {
+    /* Сбрасываем все старые стили */
+    .paid-services {
+        padding: 30px 15px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        background: #f8f9fa;
+    }
+    
+    .paid-services .container {
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Заголовок секции */
+    .paid-services .section-title {
+        font-size: 1.6rem !important;
+        text-align: center !important;
+        margin-bottom: 25px !important;
+        color: #2c3e50 !important;
+    }
+    
+    /* Каждый блок услуги */
+    .service-block {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 0 25px 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+        border-radius: 20px !important;
+        overflow: hidden !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Картинка - сверху, не обрезается */
+    .service-image {
+        display: block !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: 220px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+    }
+    
+    .service-image img {
+        width: 100% !important;
+        height: auto !important;
+        max-height: 220px !important;
+        object-fit: contain !important;
+        display: block !important;
+        background: #f0f0f0;
+    }
+    
+    /* Контент - после картинки */
+    .service-content {
+        display: block !important;
+        width: 100% !important;
+        padding: 20px !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+    }
+    
+    .service-content h3 {
+        font-size: 1.3rem !important;
+        margin: 0 0 12px 0 !important;
+        color: #2c3e50 !important;
+        font-weight: 700 !important;
+    }
+    
+    .service-content > p {
+        font-size: 0.95rem !important;
+        line-height: 1.5 !important;
+        margin: 0 0 15px 0 !important;
+        color: #555 !important;
+    }
+    
+    /* Убираем точки (list-style: none) и кастомные маркеры */
+    .service-content ul {
+        margin: 0 0 20px 0 !important;
+        padding: 0 !important;
+        list-style: none !important;
+    }
+    
+    .service-content li {
+        font-size: 0.9rem !important;
+        line-height: 1.5 !important;
+        margin-bottom: 10px !important;
+        padding-left: 0 !important;
+        color: #444 !important;
+        position: relative !important;
+    }
+    
+    /* Убираем все псевдоэлементы с галочками и точками */
+    .service-content li::before,
+    .service-content li::after {
+        display: none !important;
+        content: none !important;
+    }
+    
+    /* Простой стиль для выделения strong */
+    .service-content li strong {
+        color: #2c3e50 !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Кнопка */
+    .service-content .btn-primary {
+        display: block !important;
+        width: 100% !important;
+        padding: 12px 20px !important;
+        background: #007bff !important;
+        color: #fff !important;
+        text-align: center !important;
+        text-decoration: none !important;
+        border-radius: 40px !important;
+        font-size: 0.95rem !important;
+        font-weight: 600 !important;
+        box-sizing: border-box !important;
+        margin-top: 15px !important;
+        border: none !important;
+        cursor: pointer !important;
+        transition: background 0.3s ease !important;
+    }
+    
+    .service-content .btn-primary:hover {
+        background: #0056b3 !important;
+    }
+    
+    /* Отключаем reverse - везде картинка сверху */
+    .service-block.reverse {
+        flex-direction: unset !important;
+    }
+}
+
+/* Для экранов меньше 480px */
+@media (max-width: 480px) {
+    .paid-services {
+        padding: 20px 12px !important;
+    }
+    
+    .service-image {
+        max-height: 180px !important;
+    }
+    
+    .service-image img {
+        max-height: 180px !important;
+    }
+    
+    .service-content {
+        padding: 15px !important;
+    }
+    
+    .service-content h3 {
+        font-size: 1.2rem !important;
+    }
+    
+    .service-content p,
+    .service-content li {
+        font-size: 0.85rem !important;
+    }
+    
+    .service-content .btn-primary {
+        padding: 10px 15px !important;
+        font-size: 0.9rem !important;
+    }
+}
+
+    /* ПОЛЕЗНЫЕ ССЫЛКИ */
+    .useful-links {
+        padding: 40px 0;
+    }
+    .links-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    .link-card {
+        padding: 20px;
+    }
+    .link-content h3 {
+        font-size: 1.2rem;
+    }
+
+    /* ПОДВАЛ */
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+    .right ul {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+/* Очень узкие экраны (≤480px) */
+@media (max-width: 480px) {
+    .content h1 {
+        font-size: 1.3rem;
+    }
+    .phone a {
+        font-size: 1.4rem;
+    }
+    .btn, .btn-primary {
+        padding: 8px 16px;
+        font-size: 0.85rem;
+    }
+    .service-content h3 {
+        font-size: 1.2rem;
+    }
+    .news-slide {
+        flex: 0 0 260px;
+    }
+    .slider-nav {
+        width: 30px;
+        height: 30px;
+        font-size: 20px;
+    }
+    #accessibilityToggle span {
+        display: none;
+    }
+    #accessibilityToggle {
+        padding: 6px 10px;
+        font-size: 1rem;
+    }
+}
+
+/* Для ПК (ширина > 768px) - возвращаем поиску оригинальный вид */
+@media (min-width: 769px) {
+    #search {
+        display: block;
+        width: auto;
+        margin: 0;
+    }
+    #search form {
+        max-width: none;
+        width: auto;
+        margin: 0;
+    }
+    #search input {
+        width: 250px;
+        padding: 8px 12px;
+        border-radius: 6px 0 0 6px;
+    }
+    #search button {
+        padding: 8px 12px;
+        border-radius: 0 6px 6px 0;
+    }
+}

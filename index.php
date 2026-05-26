@@ -1,3 +1,4 @@
+<?php ob_start(); ?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -6,6 +7,7 @@
     <title>ГБУ Жилищник района Строгино</title>
 	 <!-- Подключение CSS -->
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style_mobile.css">
 	
 </head>
 <body>

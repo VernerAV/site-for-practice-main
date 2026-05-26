@@ -23,6 +23,16 @@ if (isset($_GET['timeout'])) {
 <body>
     
     <div class="login-container">
+        <!-- Кнопки навигации -->
+        <div class="nav-buttons">
+            <a href="javascript:history.back()" class="nav-btn back-btn">
+                ← Назад
+            </a>
+            <a href="index.php" class="nav-btn home-btn">
+                🏠 На главную
+            </a>
+        </div>
+
         <div class="logo">
             <h1>ГБУ "Жилищник Района Строгино"</h1>
             <p>Вход в личный кабинет</p>

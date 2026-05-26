@@ -1,0 +1,167 @@
+/* ===== МОБИЛЬНАЯ ВЕРСИЯ (до 768px) ===== */
+@media (max-width: 768px) {
+    /* Шапка */
+    .header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .icon {
+        order: 1;
+        flex: 1;
+    }
+    .enter {
+        display: none; /* скрываем вход в шапке */
+    }
+    .mobile-controls {
+        order: 2;
+        display: flex;
+        margin-left: auto;
+    }
+    .hamburger-btn {
+        background: none;
+        border: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 28px;
+        height: 22px;
+        cursor: pointer;
+        padding: 0;
+    }
+    .hamburger-btn span {
+        display: block;
+        width: 100%;
+        height: 3px;
+        background: #ffffff;
+        border-radius: 2px;
+    }
+    /* Поиск под шапкой */
+    #search {
+        order: 3;
+        width: 100%;
+        margin: 10px auto;
+        padding: 0 16px;
+    }
+    #search form {
+        display: flex;
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    #search input {
+        flex: 1;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+    #search button {
+        padding: 8px 12px;
+    }
+    /* Скрываем горизонтальное меню */
+    .main-menu {
+        display: none;
+    }
+    /* Боковое меню (используем transform) */
+    .side-menu {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 70%;
+        max-width: 280px;
+        height: 100%;
+        background: white;
+        box-shadow: -2px 0 15px rgba(0,0,0,0.2);
+        z-index: 1001;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        padding: 20px;
+        overflow-y: auto;
+    }
+    .side-menu.open {
+        transform: translateX(0);
+    }
+    .side-menu-header {
+        text-align: right;
+    }
+    .close-menu {
+        background: none;
+        border: none;
+        font-size: 28px;
+        cursor: pointer;
+    }
+    .side-menu ul {
+        list-style: none;
+        padding: 0;
+        margin-top: 20px;
+    }
+    .side-menu li {
+        margin-bottom: 15px;
+    }
+    .side-menu a {
+        text-decoration: none;
+        font-size: 1.1rem;
+        color: #222;
+        display: block;
+        padding: 8px 0;
+        border-bottom: 1px solid #eee;
+    }
+    .side-contact {
+        margin-top: 30px;
+        padding-top: 15px;
+        border-top: 1px solid #ddd;
+        font-size: 0.85rem;
+        color: #555;
+    }
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+        display: none;
+    }
+    .overlay.active {
+        display: block;
+    }
+    /* Кнопка для слабовидящих */
+    #accessibilityToggle {
+        position: fixed;
+        bottom: 15px;
+        right: 15px;
+        left: auto;
+        top: auto;
+        width: auto;
+        border: none;
+        border-radius: 40px;
+        padding: 6px 12px;
+        font-size: 0.75rem;
+        z-index: 1002;
+        white-space: nowrap;
+        cursor: pointer;
+    }
+}
+
+@media (max-width: 480px) {
+    .side-menu {
+        width: 80%;
+    }
+    #accessibilityToggle span {
+        display: none;
+    }
+    #accessibilityToggle {
+        padding: 6px 10px;
+        font-size: 1rem;
+    }
+}
+
+/* На десктопе скрываем мобильные элементы */
+@media (min-width: 769px) {
+    .mobile-controls,
+    .side-menu,
+    .overlay {
+        display: none;
+    }
+}

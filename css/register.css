@@ -1,6 +1,7 @@
 * {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 body {
@@ -10,6 +11,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 20px;
 }
 
 .register-container {
@@ -19,6 +21,48 @@ body {
   box-shadow: 0 15px 35px rgba(0,0,0,0.1);
   width: 100%;
   max-width: 500px;
+  position: relative;
+}
+
+/* Кнопки навигации */
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 15px;
+}
+
+.nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.back-btn {
+  background: #95a5a6;
+  color: white;
+}
+
+.back-btn:hover {
+  background: #7f8c8d;
+  transform: translateX(-3px);
+}
+
+.home-btn {
+  background: #3498db;
+  color: white;
+}
+
+.home-btn:hover {
+  background: #2980b9;
+  transform: translateY(-2px);
 }
 
 .logo {
@@ -50,6 +94,7 @@ body {
   border-radius: 8px;
   font-size: 16px;
   transition: border-color 0.3s ease;
+  box-sizing: border-box;
 }
 
 .form-group input:focus {
@@ -117,3 +162,79 @@ body {
 .strength-weak { color: #e74c3c; }
 .strength-medium { color: #f39c12; }
 .strength-strong { color: #27ae60; }
+
+/* ========== АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ ========== */
+@media (max-width: 768px) {
+  body {
+    padding: 15px;
+  }
+  
+  .register-container {
+    padding: 25px;
+  }
+  
+  .nav-buttons {
+    gap: 10px;
+  }
+  
+  .nav-btn {
+    padding: 8px 15px;
+    font-size: 12px;
+  }
+  
+  .logo h1 {
+    font-size: 1.3rem;
+  }
+  
+  .logo p {
+    font-size: 0.9rem;
+  }
+  
+  .form-group input {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  
+  .btn-register {
+    padding: 10px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-container {
+    padding: 20px;
+  }
+  
+  .nav-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .nav-btn {
+    justify-content: center;
+    padding: 8px 12px;
+  }
+  
+  .logo h1 {
+    font-size: 1.2rem;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group input {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+  
+  .btn-register {
+    padding: 8px;
+    font-size: 13px;
+  }
+  
+  .links a {
+    font-size: 12px;
+  }
+}

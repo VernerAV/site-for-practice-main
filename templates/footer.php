@@ -6,6 +6,7 @@
     <title>Document</title>
     <!-- Подключение стилей -->
      <link rel="stylesheet" href="css/footer.css">
+     <link rel="stylesheet" href="css/footer_mobile.css">
 </head>
 
     <footer>

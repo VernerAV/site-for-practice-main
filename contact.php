@@ -97,6 +97,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Подача заявки - ГБУ Жилищник Строгино</title>
+    <link rel="stylesheet" href="css/header_mobile.css">
+    <link rel="stylesheet" href="css/style_mobile.css">
     <link rel="stylesheet" href="css/contact.css">
 </head>
 <body>

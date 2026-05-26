@@ -534,7 +534,6 @@ body {
     }
 }
 
-
 /* Дополнительные стили для тегов */
 .tag {
     cursor: pointer;
@@ -584,4 +583,319 @@ body {
 .active-tag {
     background: #0ea5e9;
     color: white;
+}
+
+/* ========== АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ (до 1024px) ========== */
+@media (max-width: 1024px) {
+    .news-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 25px;
+    }
+    
+    .pinned-text h2 {
+        font-size: 1.6rem;
+    }
+    
+    .pinned-text p {
+        font-size: 1rem;
+    }
+    
+    .pinned-icon {
+        font-size: 4rem;
+    }
+}
+
+/* ========== АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ (до 768px) ========== */
+@media (max-width: 768px) {
+    .news-page {
+        padding: 20px 0 100px;
+    }
+    
+    .container {
+        padding: 0 15px;
+    }
+    
+    /* Закрепленная новость */
+    .pinned-card {
+        padding: 20px;
+    }
+    
+    .pinned-badge {
+        top: 15px;
+        left: 15px;
+        padding: 5px 12px;
+        font-size: 0.8rem;
+    }
+    
+    .pinned-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    .pinned-text h2 {
+        font-size: 1.4rem;
+    }
+    
+    .pinned-text p {
+        font-size: 0.9rem;
+    }
+    
+    .pinned-meta {
+        justify-content: center;
+    }
+    
+    .pinned-icon {
+        font-size: 3rem;
+    }
+    
+    .pinned-arrow {
+        right: 20px;
+        bottom: 20px;
+        font-size: 1.2rem;
+    }
+    
+    /* Заголовок секции */
+    .section-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .section-header h1 {
+        font-size: 2rem;
+    }
+    
+    .news-filters {
+        justify-content: center;
+    }
+    
+    .filter-btn {
+        padding: 8px 18px;
+        font-size: 0.9rem;
+    }
+    
+    /* Сетка новостей */
+    .news-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .card-image {
+        height: 200px;
+    }
+    
+    .card-content {
+        padding: 20px;
+    }
+    
+    .card-title {
+        font-size: 1.2rem;
+    }
+    
+    .card-description {
+        font-size: 0.9rem;
+    }
+    
+    /* Пагинация */
+    .pagination {
+        gap: 15px;
+    }
+    
+    .pagination-btn {
+        width: 40px;
+        height: 40px;
+    }
+    
+    /* Подписка (если есть) */
+    .subscription-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 30px 20px;
+        gap: 20px;
+    }
+    
+    .subscription-content h2 {
+        font-size: 1.5rem;
+    }
+    
+    .subscription-content p {
+        font-size: 0.9rem;
+    }
+    
+    .form-group {
+        flex-direction: column;
+    }
+    
+    .subscribe-btn {
+        justify-content: center;
+    }
+    
+    .subscription-image {
+        display: none;
+    }
+}
+
+/* ========== АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ ТЕЛЕФОНОВ (до 480px) ========== */
+@media (max-width: 480px) {
+    .news-page {
+        padding: 15px 0 100px;
+    }
+    
+    .container {
+        padding: 0 12px;
+    }
+    
+    /* Закрепленная новость */
+    .pinned-card {
+        padding: 15px;
+    }
+    
+    .pinned-badge {
+        position: relative;
+        top: 0;
+        left: 0;
+        display: inline-flex;
+        margin-bottom: 15px;
+        width: fit-content;
+    }
+    
+    .pinned-text h2 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+    
+    .pinned-text p {
+        font-size: 0.85rem;
+    }
+    
+    .meta-item {
+        font-size: 0.75rem;
+    }
+    
+    .pinned-icon {
+        display: none;
+    }
+    
+    .pinned-arrow {
+        position: static;
+        margin-top: 15px;
+        text-align: center;
+    }
+    
+    /* Фильтры */
+    .section-header h1 {
+        font-size: 1.6rem;
+    }
+    
+    .filter-btn {
+        padding: 6px 14px;
+        font-size: 0.8rem;
+    }
+    
+    /* Карточки новостей */
+    .card-image {
+        height: 180px;
+    }
+    
+    .card-date {
+        padding: 6px 8px;
+        min-width: 40px;
+    }
+    
+    .date-day {
+        font-size: 1.2rem;
+    }
+    
+    .date-month {
+        font-size: 0.7rem;
+    }
+    
+    .card-content {
+        padding: 15px;
+    }
+    
+    .card-header {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .card-title {
+        font-size: 1.1rem;
+        margin-right: 0;
+    }
+    
+    .card-time {
+        font-size: 0.75rem;
+    }
+    
+    .card-description {
+        font-size: 0.85rem;
+        margin-bottom: 15px;
+    }
+    
+    .tag {
+        padding: 4px 10px;
+        font-size: 0.7rem;
+    }
+    
+    .card-footer {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .read-more {
+        justify-content: center;
+    }
+    
+    .card-actions {
+        justify-content: center;
+    }
+    
+    .action-btn {
+        width: 32px;
+        height: 32px;
+    }
+    
+    /* Пагинация */
+    .pagination {
+        gap: 10px;
+    }
+    
+    .pagination-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 0.8rem;
+    }
+    
+    .pagination-current {
+        font-size: 1rem;
+    }
+    
+    .pagination-total {
+        font-size: 0.9rem;
+    }
+}
+
+/* ========== ДЛЯ ОЧЕНЬ МАЛЕНЬКИХ ЭКРАНОВ (до 360px) ========== */
+@media (max-width: 360px) {
+    .card-image {
+        height: 160px;
+    }
+    
+    .card-title {
+        font-size: 1rem;
+    }
+    
+    .pinned-text h2 {
+        font-size: 1rem;
+    }
+    
+    .filter-btn {
+        padding: 5px 12px;
+        font-size: 0.75rem;
+    }
+    
+    .news-filters {
+        gap: 6px;
+    }
 }

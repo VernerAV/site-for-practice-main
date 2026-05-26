@@ -1,7 +1,7 @@
 .search-page {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 20px 20px 100px; /* увеличен нижний отступ для кнопки слабовидящих */
     min-height: 70vh;
 }
 
@@ -126,6 +126,7 @@
     border-radius: 8px;
     padding: 20px;
     margin: 20px 0;
+    text-align: left;
 }
 
 .search-tips h3 {
@@ -165,6 +166,8 @@
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .result-type {
@@ -188,6 +191,11 @@
 .result-type-page {
     background: #f3e5f5;
     color: #7b1fa2;
+}
+
+.result-date {
+    font-size: 12px;
+    color: #95a5a6;
 }
 
 .result-title {
@@ -222,12 +230,15 @@
     border-top: 1px solid #eee;
     color: #95a5a6;
     font-size: 14px;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .result-url {
     color: #3498db;
     font-size: 13px;
     text-decoration: none;
+    word-break: break-all;
 }
 
 .result-url:hover {
@@ -243,6 +254,11 @@
 
 .search-suggestions {
     margin-top: 30px;
+}
+
+.search-suggestions h4 {
+    margin-bottom: 10px;
+    color: #2c3e50;
 }
 
 .suggested-queries {
@@ -278,3 +294,218 @@
     border: 1px solid #f5c6cb;
 }
 
+/* ========== АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ (до 768px) ========== */
+@media (max-width: 768px) {
+    .search-page {
+        padding: 15px 15px 100px;
+    }
+    
+    .search-header {
+        padding: 20px;
+    }
+    
+    .search-title {
+        font-size: 24px;
+    }
+    
+    .search-form-large {
+        max-width: 100%;
+        margin: 20px auto;
+    }
+    
+    .search-input-large {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+    
+    .search-button-large {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+    
+    .search-stats {
+        font-size: 14px;
+    }
+    
+    .category-badge {
+        font-size: 12px;
+        padding: 4px 12px;
+    }
+    
+    .results-count {
+        font-size: 16px;
+    }
+    
+    .result-item {
+        padding: 20px;
+    }
+    
+    .result-title {
+        font-size: 18px;
+    }
+    
+    .result-excerpt {
+        font-size: 14px;
+    }
+    
+    .search-tips {
+        padding: 15px;
+    }
+    
+    .search-tips ul {
+        padding-left: 18px;
+    }
+    
+    .search-tips li {
+        font-size: 14px;
+    }
+}
+
+/* ========== АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ ТЕЛЕФОНОВ (до 480px) ========== */
+@media (max-width: 480px) {
+    .search-page {
+        padding: 10px 12px 100px;
+    }
+    
+    .search-header {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .search-title {
+        font-size: 20px;
+    }
+    
+    .search-form-large {
+        flex-direction: column;
+        margin: 15px auto;
+    }
+    
+    .search-input-large {
+        border-radius: 8px 8px 0 0;
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+    
+    .search-button-large {
+        border-radius: 0 0 8px 8px;
+        padding: 10px;
+        font-size: 13px;
+    }
+    
+    .search-stats {
+        font-size: 12px;
+    }
+    
+    .search-categories {
+        gap: 8px;
+    }
+    
+    .category-badge {
+        font-size: 10px;
+        padding: 3px 10px;
+    }
+    
+    .results-count {
+        font-size: 14px;
+    }
+    
+    .result-item {
+        padding: 15px;
+    }
+    
+    .result-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .result-type {
+        font-size: 10px;
+        padding: 3px 10px;
+    }
+    
+    .result-date {
+        font-size: 10px;
+    }
+    
+    .result-title {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+    
+    .result-excerpt {
+        font-size: 13px;
+        line-height: 1.5;
+    }
+    
+    .result-meta {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .result-url {
+        font-size: 11px;
+        word-break: break-all;
+    }
+    
+    .no-results {
+        padding: 30px 15px;
+    }
+    
+    .no-results-icon {
+        font-size: 40px;
+    }
+    
+    .no-results h3 {
+        font-size: 16px;
+    }
+    
+    .no-results p {
+        font-size: 13px;
+    }
+    
+    .search-tips {
+        padding: 12px;
+    }
+    
+    .search-tips h3 {
+        font-size: 14px;
+    }
+    
+    .search-tips ul {
+        padding-left: 15px;
+    }
+    
+    .search-tips li {
+        font-size: 12px;
+    }
+    
+    .search-suggestions h4 {
+        font-size: 14px;
+    }
+    
+    .suggested-query {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}
+
+/* ========== ДЛЯ ОЧЕНЬ МАЛЕНЬКИХ ЭКРАНОВ (до 360px) ========== */
+@media (max-width: 360px) {
+    .search-title {
+        font-size: 18px;
+    }
+    
+    .result-title {
+        font-size: 14px;
+    }
+    
+    .result-excerpt {
+        font-size: 12px;
+    }
+    
+    .suggested-query {
+        padding: 5px 10px;
+        font-size: 11px;
+    }
+}

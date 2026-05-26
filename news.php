@@ -7,6 +7,8 @@ require_once 'includes/config.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Новости - ГБУ "Жилищник Района Строгино"</title>
+    <link rel="stylesheet" href="css/header_mobile.css">
+    <link rel="stylesheet" href="css/style_mobile.css">
     <link rel="stylesheet" href="css/news.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>

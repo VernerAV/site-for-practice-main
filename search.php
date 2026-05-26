@@ -214,6 +214,8 @@ if (!empty($query)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Поиск по сайту: <?php echo htmlspecialchars($query); ?></title>
+       <link rel="stylesheet" href="css/header_mobile.css">
+    <link rel="stylesheet" href="css/style_mobile.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/search.css">
 </head>

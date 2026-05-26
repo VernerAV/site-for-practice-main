@@ -1,4 +1,5 @@
-<?php session_start(); ?>
+<?php 
+session_start(); ?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -7,11 +8,13 @@
     <title>Document</title>
     <!-- Подключение CSS -->
     <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/header_mobile.css">
     <!-- Скрипт анимация -->
      <script src="js/search.js" defer></script>
      <script src="js/isAccessibilityMode.js" defer></script>
 </head>
 <body>
+    <!-- ПК -->
     <div class="header">
         <div class="icon">
             <img src="img/icons/icon.png" alt="icon">
@@ -115,46 +118,80 @@ function selectSuggestion(text) {
                 <a href="login.php" class="login-btn">Вход/регистрация</a>
             <?php endif; ?>
         </div>
+<!-- мобильная версия -->
+        <div class="mobile-controls">
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Меню">
+        <span></span><span></span><span></span>
+    </button>
+</div>
     </div>
+ 
 <button id="accessibilityToggle" aria-label="Версия для слабовидящих">
   👁 Версия для слабовидящих
 </button>
     <nav class="main-menu">
-         <ul>
+
+        <ul>
             <li><a href="index.php">Главная</a></li>
             <li><a href="news.php">Новости</a></li>
             <li><a href="price.php">Платные услуги</a></li>
             <li><a href="about.php">О нас</a></li>
-            
-            <?php if (isset($_SESSION['user_role']) && !empty($_SESSION['user_role'])): ?>
-                <li><a href="user.php?tab-content">Заявки</a></li>
-            <?php endif; ?>
-             <?php if (isset($_SESSION['user_role'])): ?>
-                <?php if ($_SESSION['user_role'] === 'admin'): ?>
-                    <li><a href="admin.php">Панель администратора</a></li>
-                <?php elseif ($_SESSION['user_role'] === 'user'): ?>
-                    <li><a href="admin.php">Личный кабинет</a></li>
-                <?php endif; ?> 
-            <?php else: ?>
-                <li><a href="contact.php">Оставить заявку</a></li>
-            <?php endif; ?>
-            
+
             <?php if (isset($_SESSION['user_role'])): ?>
                 <?php if ($_SESSION['user_role'] === 'admin'): ?>
+                    <!-- Админ: Заявки + Панель администратора -->
+                    <li><a href="user.php?tab-content">Заявки</a></li>
                     <li><a href="admin.php">Панель администратора</a></li>
                 <?php elseif ($_SESSION['user_role'] === 'user'): ?>
+                    <!-- Обычный пользователь: Оставить заявку + Личный кабинет -->
+                    <li><a href="contact.php">Оставить заявку</a></li>
                     <li><a href="admin.php">Личный кабинет</a></li>
-                <?php endif; ?> 
+                <?php endif; ?>
             <?php else: ?>
+                <!-- Неавторизованный: только Оставить заявку -->
                 <li><a href="contact.php">Оставить заявку</a></li>
             <?php endif; ?>
         </ul>
+
 
         <div class="contact-info">
             <p>Телефон: 8(495) 758-38-22</p>
             <p>Эл. почта: gbu-strogino@mail.ru</p>
         </div>
     </nav>
-        
+        <script src="js/mobile-header.js" defer></script>
+        <!-- Боковое меню (мобильное) -->
+<div class="side-menu" id="sideMenu">
+    <div class="side-menu-header">
+        <button class="close-menu" id="closeMenuBtn">&times;</button>
+    </div>
+    <ul>
+         <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
+            <li><a href="user.php?tab-content">Заявки</a></li>
+            <li><a href="admin.php">Панель администратора</a></li>
+        <?php elseif (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'user'): ?>
+            <li><a href="contact.php">Оставить заявку</a></li>
+            <li><a href="admin.php">Личный кабинет</a></li>
+        <?php else: ?>
+            <li><a href="login.php">Вход / Регистрация</a></li>
+            <li><a href="contact.php">Оставить заявку</a></li>
+            <?php endif; ?>
+        <?php if (isset($_SESSION['user_id'])): ?>
+            <li><a href="includes/logout.php">Выйти</a></li>
+        <?php endif; ?>
+        <li><a href="index.php">Главная</a></li>
+        <li><a href="news.php">Новости</a></li>
+        <li><a href="price.php">Платные услуги</a></li>
+        <li><a href="about.php">О нас</a></li>
+       
+    </ul>
+    <div class="side-contact">
+        <p>Телефон: 8(495) 758-38-22</p>
+        <p>Эл. почта: gbu-strogino@mail.ru</p>
+    </div>
+</div>
+<div class="overlay" id="overlay"></div>
+
+<script src="js/mobile-header.js"></script>
 </body>
 </html>

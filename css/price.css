@@ -4,7 +4,7 @@ body {
 .price-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 20px 20px 100px; /* увеличен нижний отступ для кнопки слабовидящих */
     font-family: 'Roboto', Arial, sans-serif;
 }
 
@@ -30,8 +30,9 @@ body {
 }
 
 .price-header a {
-    display: block;
-    width: 200px;
+    display: inline-block;
+    width: auto;
+    min-width: 200px;
     margin: 20px auto;
     padding: 10px 15px;
     background-color: #007bff;
@@ -183,31 +184,11 @@ body {
     vertical-align: top;
 }
 
-.service-cell {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-}
-
-.service-icon {
-    flex-shrink: 0;
-    font-size: 24px;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f0f7ff;
-    border-radius: 8px;
-    color: #3498db;
-}
-
 .service-name {
     font-weight: 600;
     color: #2c3e50;
     font-size: 1.05rem;
     line-height: 1.4;
-    flex-grow: 1;
 }
 
 .description-cell {
@@ -218,6 +199,7 @@ body {
 
 .price-cell {
     text-align: right;
+    white-space: nowrap;
 }
 
 .price-amount {
@@ -283,7 +265,6 @@ body {
     line-height: 1.5;
 }
 
-
 /* Эффекты для таблицы */
 @keyframes fadeIn {
     from {
@@ -319,3 +300,221 @@ body {
     background: #a8a8a8;
 }
 
+/* ========== АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ (до 768px) ========== */
+@media (max-width: 768px) {
+    .price-container {
+        padding: 15px 15px 100px;
+    }
+    
+    .price-header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .price-subtitle {
+        font-size: 1rem;
+    }
+    
+    .price-header a {
+        min-width: 180px;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+    
+    .search-section {
+        padding: 15px;
+    }
+    
+    .search-input {
+        padding: 10px 35px 10px 12px;
+        font-size: 14px;
+    }
+    
+    .clear-btn {
+        width: 22px;
+        height: 22px;
+        font-size: 14px;
+    }
+    
+    /* Таблица */
+    .price-table {
+        min-width: 550px;
+    }
+    
+    .price-table th {
+        padding: 12px 10px;
+        font-size: 0.85rem;
+    }
+    
+    .price-table td {
+        padding: 12px 10px;
+    }
+    
+    .service-name {
+        font-size: 0.9rem;
+    }
+    
+    .description-cell {
+        font-size: 0.85rem;
+    }
+    
+    .price-amount {
+        font-size: 1rem;
+    }
+    
+    .price-note {
+        font-size: 0.75rem;
+    }
+    
+    /* Инфо-блок */
+    .info-note {
+        padding: 15px;
+        gap: 10px;
+    }
+    
+    .note-icon {
+        font-size: 20px;
+    }
+    
+    .note-content h3 {
+        font-size: 1rem;
+    }
+    
+    .note-content p {
+        font-size: 0.85rem;
+    }
+}
+
+/* ========== АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ ТЕЛЕФОНОВ (до 480px) ========== */
+@media (max-width: 480px) {
+    .price-container {
+        padding: 10px 12px 100px;
+    }
+    
+    .price-header {
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+    }
+    
+    .price-header h1 {
+        font-size: 1.4rem;
+    }
+    
+    .price-subtitle {
+        font-size: 0.85rem;
+    }
+    
+    .price-header a {
+        min-width: 160px;
+        padding: 6px 10px;
+        font-size: 0.8rem;
+        margin: 15px auto;
+    }
+    
+    .search-section {
+        padding: 12px;
+        margin-bottom: 20px;
+    }
+    
+    .search-input {
+        padding: 8px 30px 8px 10px;
+        font-size: 13px;
+    }
+    
+    .clear-btn {
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        right: 8px;
+    }
+    
+    .search-info {
+        font-size: 12px;
+    }
+    
+    /* Таблица */
+    .price-table {
+        min-width: 500px;
+    }
+    
+    .price-table th {
+        padding: 10px 8px;
+        font-size: 0.75rem;
+    }
+    
+    .price-table td {
+        padding: 10px 8px;
+    }
+    
+    .service-name {
+        font-size: 0.85rem;
+    }
+    
+    .description-cell {
+        font-size: 0.8rem;
+        line-height: 1.4;
+    }
+    
+    .price-amount {
+        font-size: 0.9rem;
+    }
+    
+    .price-note {
+        font-size: 0.7rem;
+    }
+    
+    /* Инфо-блок */
+    .info-note {
+        padding: 12px;
+        gap: 8px;
+        margin-top: 20px;
+    }
+    
+    .note-icon {
+        font-size: 18px;
+    }
+    
+    .note-content h3 {
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+    }
+    
+    .note-content p {
+        font-size: 0.75rem;
+    }
+}
+
+/* ========== ДЛЯ ОЧЕНЬ МАЛЕНЬКИХ ЭКРАНОВ (до 360px) ========== */
+@media (max-width: 360px) {
+    .price-header h1 {
+        font-size: 1.2rem;
+    }
+    
+    .price-subtitle {
+        font-size: 0.75rem;
+    }
+    
+    .price-table {
+        min-width: 450px;
+    }
+    
+    .price-table th {
+        padding: 8px 6px;
+        font-size: 0.7rem;
+    }
+    
+    .price-table td {
+        padding: 8px 6px;
+    }
+    
+    .service-name {
+        font-size: 0.8rem;
+    }
+    
+    .description-cell {
+        font-size: 0.75rem;
+    }
+    
+    .price-amount {
+        font-size: 0.85rem;
+    }
+}

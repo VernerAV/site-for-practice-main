@@ -1,12 +1,24 @@
 /* Страница детальной новости */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
 body {
     font-family: 'Roboto', Arial, sans-serif;
 }
+
 .news-detail-page {
     padding: 40px 0 80px;
     background: #f8fafc;
     min-height: calc(100vh - 200px);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
 .back-btn {
@@ -67,6 +79,7 @@ body {
     display: flex;
     gap: 30px;
     color: #64748b;
+    flex-wrap: wrap;
 }
 
 .meta-item {
@@ -86,11 +99,6 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
-}
-
-.detail-image:hover img {
-    transform: scale(1.02);
 }
 
 .detail-content {
@@ -124,22 +132,6 @@ body {
     color: #475569;
 }
 
-.detail-content strong {
-    color: #1e293b;
-    font-weight: 600;
-}
-
-.detail-content a {
-    color: #3b82f6;
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: all 0.3s ease;
-}
-
-.detail-content a:hover {
-    border-bottom-color: #3b82f6;
-}
-
 .detail-footer {
     padding: 30px 40px;
     border-top: 1px solid #e2e8f0;
@@ -166,6 +158,7 @@ body {
     font-size: 0.9rem;
     font-weight: 500;
     transition: all 0.3s ease;
+    cursor: pointer;
 }
 
 .detail-tags .tag:hover {
@@ -275,6 +268,7 @@ body {
     margin-top: 40px;
     padding-top: 30px;
     border-top: 1px solid #e2e8f0;
+    gap: 20px;
 }
 
 .nav-btn {
@@ -288,7 +282,7 @@ body {
     color: #475569;
     border: 1px solid #e2e8f0;
     transition: all 0.3s ease;
-    max-width: 300px;
+    flex: 1;
 }
 
 .nav-btn:hover {
@@ -299,11 +293,11 @@ body {
 }
 
 .nav-btn.prev {
-    text-align: left;
+    justify-content: flex-start;
 }
 
 .nav-btn.next {
-    text-align: right;
+    justify-content: flex-end;
     flex-direction: row-reverse;
 }
 
@@ -316,62 +310,196 @@ body {
 
 .nav-btn .nav-title {
     font-weight: 500;
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
 }
 
-/* Комментарии (опционально) */
-.comments-section {
-    margin-top: 60px;
-    padding-top: 40px;
-    border-top: 1px solid #e2e8f0;
+/* ========== АДАПТАЦИЯ ========== */
+
+/* Планшеты (до 768px) */
+@media (max-width: 768px) {
+    .news-detail-page {
+        padding: 20px 0 100px;
+    }
+    
+    .container {
+        padding: 0 15px;
+    }
+    
+    .back-btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+    }
+    
+    .detail-header {
+        padding: 25px 25px 20px;
+    }
+    
+    .news-detail h1 {
+        font-size: 1.8rem;
+    }
+    
+    .detail-meta {
+        gap: 20px;
+    }
+    
+    .detail-image {
+        height: 350px;
+    }
+    
+    .detail-content {
+        padding: 25px;
+        font-size: 1rem;
+    }
+    
+    .detail-footer {
+        padding: 25px;
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .detail-tags {
+        justify-content: center;
+    }
+    
+    .detail-share {
+        justify-content: center;
+    }
+    
+    .related-news h2 {
+        font-size: 1.6rem;
+    }
+    
+    .related-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .news-navigation {
+        flex-direction: column;
+    }
+    
+    .nav-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .nav-btn.next {
+        flex-direction: row;
+    }
 }
 
-.comments-section h2 {
-    font-size: 1.8rem;
-    color: #1e293b;
-    margin-bottom: 30px;
+/* Телефоны (до 480px) */
+@media (max-width: 480px) {
+    .news-detail-page {
+        padding: 15px 0 100px;
+    }
+    
+    .container {
+        padding: 0 12px;
+    }
+    
+    .back-btn {
+        padding: 8px 15px;
+        font-size: 0.85rem;
+    }
+    
+    .detail-header {
+        padding: 20px 15px 15px;
+    }
+    
+    .detail-category {
+        font-size: 0.75rem;
+        padding: 5px 12px;
+        margin-bottom: 12px;
+    }
+    
+    .news-detail h1 {
+        font-size: 1.4rem;
+        margin-bottom: 12px;
+    }
+    
+    .detail-meta {
+        gap: 12px;
+    }
+    
+    .meta-item {
+        font-size: 0.75rem;
+    }
+    
+    .detail-image {
+        height: 220px;
+    }
+    
+    .detail-content {
+        padding: 20px 15px;
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+    
+    .detail-content p {
+        margin-bottom: 15px;
+    }
+    
+    .detail-content ul,
+    .detail-content ol {
+        padding-left: 20px;
+    }
+    
+    .detail-footer {
+        padding: 15px;
+    }
+    
+    .detail-tags .tag {
+        padding: 5px 12px;
+        font-size: 0.75rem;
+    }
+    
+    .detail-share span {
+        font-size: 0.85rem;
+    }
+    
+    .detail-share .share-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 1rem;
+    }
+    
+    .related-news {
+        margin-top: 40px;
+    }
+    
+    .related-news h2 {
+        font-size: 1.3rem;
+        margin-bottom: 20px;
+    }
+    
+    .related-card img {
+        height: 150px;
+    }
+    
+    .related-content {
+        padding: 15px;
+    }
+    
+    .related-content h3 {
+        font-size: 1rem;
+    }
+    
+    .news-navigation {
+        margin-top: 30px;
+        padding-top: 20px;
+        gap: 12px;
+    }
+    
+    .nav-btn {
+        padding: 12px 15px;
+    }
+    
+    .nav-btn .nav-label {
+        font-size: 0.75rem;
+    }
+    
+    .nav-btn .nav-title {
+        font-size: 0.85rem;
+    }
 }
-
-.comment-form {
-    background: white;
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-    margin-bottom: 30px;
-}
-
-.comment-form textarea {
-    width: 100%;
-    padding: 15px;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    font-size: 1rem;
-    resize: vertical;
-    min-height: 120px;
-    margin-bottom: 15px;
-}
-
-.comment-form textarea:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.comment-form button {
-    background: #3b82f6;
-    color: white;
-    border: none;
-    padding: 12px 30px;
-    border-radius: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.comment-form button:hover {
-    background: #1d4ed8;
-}
-

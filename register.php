@@ -19,6 +19,16 @@ if (isset($_SESSION['user_id'])) {
 </head>
 <body>
     <div class="register-container">
+        <!-- Кнопки навигации -->
+        <div class="nav-buttons">
+            <a href="javascript:history.back()" class="nav-btn back-btn">
+                ← Назад
+            </a>
+            <a href="index.php" class="nav-btn home-btn">
+                🏠 На главную
+            </a>
+        </div>
+
         <div class="logo">
             <h1><?php echo SITE_NAME; ?></h1>
             <p>Регистрация нового аккаунта</p>
@@ -47,7 +57,7 @@ if (isset($_SESSION['user_id'])) {
             <script>
                 setTimeout(function() {
                     window.location.href = 'login.php';
-                }, 2000); // Перенаправление через 2 секунды
+                }, 2000);
             </script>
         <?php endif; ?>
 

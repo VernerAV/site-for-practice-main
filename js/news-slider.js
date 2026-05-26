@@ -1,6 +1,6 @@
-// news-slider.js
+// news-slider.js - единая версия для ПК и мобильных
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Бесконечный слайдер запущен');
+    console.log('Слайдер запущен');
     
     let currentIndex = 0;
     let newsData = [];
@@ -29,14 +29,14 @@ document.addEventListener('DOMContentLoaded', function() {
             
             newsData = data;
             
-            // Создаем бесконечный слайдер
-            createInfiniteSlider();
+            // Создаем слайдер (без бесконечности на мобильных)
+            createSlider();
             
-            // Запускаем автопрокрутку
-            startAutoSlide();
-            
-            // Обработчики для автопрокрутки
-            setupAutoSlideControls();
+            // Запускаем автопрокрутку только на ПК
+            if (!isMobile()) {
+                startAutoSlide();
+                setupAutoSlideControls();
+            }
             
         } catch (error) {
             console.error('Ошибка загрузки новостей:', error);
@@ -44,32 +44,68 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Создание бесконечного слайдера
-    function createInfiniteSlider() {
+    // Проверка на мобильное устройство
+    function isMobile() {
+        return window.innerWidth <= 768;
+    }
+    
+    // Получение параметров слайда в зависимости от экрана
+    function getSlideParams() {
+        const width = window.innerWidth;
+        if (width <= 480) {
+            return { slideWidth: 240, gap: 20, visibleSlides: 1 };
+        } else if (width <= 768) {
+            return { slideWidth: 260, gap: 20, visibleSlides: 1 };
+        } else if (width <= 992) {
+            return { slideWidth: 380, gap: 40, visibleSlides: 2.5 };
+        } else {
+            return { slideWidth: 380, gap: 40, visibleSlides: 3.5 };
+        }
+    }
+    
+    // Создание слайдера (с бесконечностью только на ПК)
+    function createSlider() {
         if (newsData.length === 0) return;
         
-        // Клонируем слайды для бесконечности
-        const slidesCount = newsData.length;
-        const visibleSlides = getVisibleSlidesCount();
+        const params = getSlideParams();
+        const isMobileDevice = isMobile();
         
-        // Создаем массив: [копия последних] + [все слайды] + [копия первых]
-        const clonedSlides = [
-            ...newsData.slice(-Math.ceil(visibleSlides / 2)), // Последние слайды
-            ...newsData,                                     // Все слайды
-            ...newsData.slice(0, Math.ceil(visibleSlides / 2)) // Первые слайды
-        ];
-        
-        // Генерируем HTML
         let slidesHTML = '';
-        clonedSlides.forEach((item, index) => {
-            slidesHTML += createSlideHTML(item, index);
-        });
         
-        track.innerHTML = slidesHTML;
-        
-        // Устанавливаем начальную позицию
-        currentIndex = Math.ceil(visibleSlides / 2) * (380 + 40); // ширина слайда + gap
-        track.style.transform = `translateX(-${currentIndex}px)`;
+        if (isMobileDevice) {
+            // На мобильных: без клонирования, простой список
+            newsData.forEach((item, index) => {
+                slidesHTML += createSlideHTML(item, index);
+            });
+            track.innerHTML = slidesHTML;
+            
+            // Устанавливаем ширину слайдам
+            const slides = document.querySelectorAll('.news-slide');
+            slides.forEach(slide => {
+                slide.style.flex = `0 0 ${params.slideWidth}px`;
+            });
+            
+            currentIndex = 0;
+            track.style.transform = 'translateX(0px)';
+        } else {
+            // На ПК: бесконечный слайдер с клонированием
+            const visibleSlides = params.visibleSlides;
+            const clonedSlides = [
+                ...newsData.slice(-Math.ceil(visibleSlides / 2)),
+                ...newsData,
+                ...newsData.slice(0, Math.ceil(visibleSlides / 2))
+            ];
+            
+            clonedSlides.forEach((item, index) => {
+                slidesHTML += createSlideHTML(item, index);
+            });
+            
+            track.innerHTML = slidesHTML;
+            
+            const fullWidth = params.slideWidth + params.gap;
+            currentIndex = Math.ceil(visibleSlides / 2) * fullWidth;
+            track.style.transform = `translateX(-${currentIndex}px)`;
+        }
     }
     
     // Создание HTML для одного слайда
@@ -82,7 +118,6 @@ document.addEventListener('DOMContentLoaded', function() {
             year: 'numeric'
         });
         
-        // Обрезаем описание
         let shortDescription = item.description;
         if (shortDescription.length > 120) {
             shortDescription = shortDescription.substring(0, 120) + '...';
@@ -96,8 +131,8 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             <div class="news-slide-content">
                 <div class="news-slide-date">${date}</div>
-                <h3 class="news-slide-title">${item.title}</h3>
-                <p class="news-slide-text">${shortDescription}</p>
+                <h3 class="news-slide-title">${escapeHtml(item.title)}</h3>
+                <p class="news-slide-text">${escapeHtml(shortDescription)}</p>
                 <a href="news-details.php?id=${item.id}" class="news-slide-link">
                     Читать подробнее
                 </a>
@@ -105,13 +140,15 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>`;
     }
     
-    // Получение количества видимых слайдов
-    function getVisibleSlidesCount() {
-        const width = window.innerWidth;
-        if (width <= 576) return 1;
-        if (width <= 768) return 1.5;
-        if (width <= 992) return 2.5;
-        return 3.5; // Показываем 3.5 слайда как вы хотели
+    // Защита от XSS
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
     }
     
     // Перемещение слайдера
@@ -119,86 +156,121 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isAnimating || newsData.length === 0) return;
         
         isAnimating = true;
+        const params = getSlideParams();
+        const fullWidth = params.slideWidth + params.gap;
         
-        const slideWidth = 380 + 40; // ширина слайда + gap
-        const totalSlides = newsData.length;
-        const visibleSlides = getVisibleSlidesCount();
-        
-        currentIndex += direction * slideWidth;
-        
-        // Плавное перемещение
-        track.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
-        track.style.transform = `translateX(-${currentIndex}px)`;
-        
-        // Проверяем границы для бесконечной прокрутки
-        const maxIndex = (totalSlides + Math.ceil(visibleSlides / 2)) * slideWidth;
-        const minIndex = Math.ceil(visibleSlides / 2) * slideWidth;
-        
-        setTimeout(() => {
-            // Если вышли за пределы в конце - переходим к началу
-            if (currentIndex >= maxIndex) {
-                currentIndex = minIndex;
-                track.style.transition = 'none';
-                track.style.transform = `translateX(-${currentIndex}px)`;
-                
-                // Принудительный рефлоу для сброса анимации
-                void track.offsetWidth;
-                
-                track.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+        if (isMobile()) {
+            // Мобильная версия: простое листание
+            const slides = document.querySelectorAll('.news-slide');
+            const maxIndex = slides.length - 1;
+            let newIndex = currentIndex + direction;
+            
+            if (newIndex < 0) newIndex = 0;
+            if (newIndex > maxIndex) newIndex = maxIndex;
+            
+            if (newIndex === currentIndex) {
+                isAnimating = false;
+                return;
             }
             
-            // Если вышли за пределы в начале - переходим к концу
-            if (currentIndex < minIndex) {
-                currentIndex = maxIndex - slideWidth;
-                track.style.transition = 'none';
-                track.style.transform = `translateX(-${currentIndex}px)`;
-                
-                void track.offsetWidth;
-                
-                track.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
-            }
+            currentIndex = newIndex;
+            const offset = currentIndex * fullWidth;
             
-            isAnimating = false;
-        }, 600);
+            track.style.transition = 'transform 0.4s ease';
+            track.style.transform = `translateX(-${offset}px)`;
+            
+            setTimeout(() => {
+                isAnimating = false;
+            }, 400);
+        } else {
+            // ПК версия: бесконечный слайдер
+            const totalSlides = newsData.length;
+            const visibleSlides = params.visibleSlides;
+            
+            currentIndex += direction * fullWidth;
+            
+            track.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+            track.style.transform = `translateX(-${currentIndex}px)`;
+            
+            const maxIndex = (totalSlides + Math.ceil(visibleSlides / 2)) * fullWidth;
+            const minIndex = Math.ceil(visibleSlides / 2) * fullWidth;
+            
+            setTimeout(() => {
+                if (currentIndex >= maxIndex) {
+                    currentIndex = minIndex;
+                    track.style.transition = 'none';
+                    track.style.transform = `translateX(-${currentIndex}px)`;
+                    void track.offsetWidth;
+                    track.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                }
+                
+                if (currentIndex < minIndex) {
+                    currentIndex = maxIndex - fullWidth;
+                    track.style.transition = 'none';
+                    track.style.transform = `translateX(-${currentIndex}px)`;
+                    void track.offsetWidth;
+                    track.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                }
+                
+                isAnimating = false;
+            }, 600);
+        }
     }
     
-    // Автопрокрутка
+    // Автопрокрутка (только для ПК)
     function startAutoSlide() {
+        if (isMobile()) return;
         clearInterval(autoSlideInterval);
         autoSlideInterval = setInterval(() => {
             slideNews(1);
-        }, 4000); // Каждые 4 секунды
+        }, 4000);
     }
     
-    // Управление автопрокруткой
+    // Управление автопрокруткой (только для ПК)
     function setupAutoSlideControls() {
-        // Пауза при наведении
+        if (isMobile()) return;
+        
         track.addEventListener('mouseenter', () => {
             clearInterval(autoSlideInterval);
         });
         
-        // Возобновление при уходе мыши
         track.addEventListener('mouseleave', () => {
             startAutoSlide();
         });
         
-        // Пауза при фокусе на слайде
         track.addEventListener('focusin', () => {
             clearInterval(autoSlideInterval);
         });
         
-        // Возобновление при потере фокуса
         track.addEventListener('focusout', () => {
             startAutoSlide();
         });
     }
     
     // Обновление при изменении размера окна
+    let resizeTimeout;
     window.addEventListener('resize', () => {
-        // Пересоздаем слайдер для нового количества слайдов
-        createInfiniteSlider();
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            // Останавливаем автопрокрутку
+            clearInterval(autoSlideInterval);
+            
+            // Пересоздаем слайдер
+            createSlider();
+            
+            // Если не мобильное - перезапускаем автопрокрутку
+            if (!isMobile()) {
+                startAutoSlide();
+                setupAutoSlideControls();
+            }
+            
+            // Обновляем переменную currentIndex для мобильных
+            if (isMobile()) {
+                currentIndex = 0;
+            }
+        }, 200);
     });
     
-    // Делаем функции глобальными для кнопок
+    // Делаем функцию глобальной для кнопок
     window.slideNews = slideNews;
 });
