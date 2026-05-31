@@ -140,7 +140,7 @@ function selectSuggestion(text) {
             <?php if (isset($_SESSION['user_role'])): ?>
                 <?php if ($_SESSION['user_role'] === 'admin'): ?>
                     <!-- Админ: Заявки + Панель администратора -->
-                    <li><a href="user.php?tab-content">Заявки</a></li>
+                    <li><a href="employee.php">Заявки</a></li>
                     <li><a href="admin.php">Панель администратора</a></li>
                 <?php elseif ($_SESSION['user_role'] === 'user'): ?>
                     <!-- Обычный пользователь: Оставить заявку + Личный кабинет -->
@@ -167,7 +167,7 @@ function selectSuggestion(text) {
     </div>
     <ul>
          <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
-            <li><a href="user.php?tab-content">Заявки</a></li>
+            <li><a href="employee.php">Заявки</a></li>
             <li><a href="admin.php">Панель администратора</a></li>
         <?php elseif (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'user'): ?>
             <li><a href="contact.php">Оставить заявку</a></li>
