@@ -1,4 +1,5 @@
-<?php ob_start(); ?>
+<?php ob_start(); 
+session_start(); // Нужно для работы сессий, вызываем до любого вывода?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>

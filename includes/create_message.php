@@ -14,8 +14,8 @@ $user_id = $_SESSION['user_id'];
 $errors = [];
 
 // Валидация данных
-if (empty($_POST['service_type'])) {
-    $errors[] = 'Выберите тип услуги';
+if (empty($_POST['category_id'])) {
+    $errors[] = 'Выберите категорию услуги';
 }
 
 if (empty($_POST['description'])) {
@@ -37,7 +37,6 @@ try {
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
     // Получаем данные пользователя
-    // Используем только email из таблицы users, остальное из user_profiles
     $user_sql = "SELECT u.email, 
                         up.first_name, up.last_name, up.middle_name, up.phone, up.address 
                  FROM users u 
@@ -54,30 +53,23 @@ try {
         exit();
     }
 
-    // Формируем данные из профиля
-    // Собираем имя из ФИО из таблицы user_profiles
+    // Формируем полное имя
     $first_name = $user_data['first_name'] ?? '';
     $last_name = $user_data['last_name'] ?? '';
     $middle_name = $user_data['middle_name'] ?? '';
-    
-    // Формируем полное имя
     $user_name = trim("{$last_name} {$first_name} {$middle_name}");
     if (empty($user_name)) {
-        // Если ФИО нет, используем email без домена
-        $user_email = $user_data['email'];
-        $user_name = explode('@', $user_email)[0];
+        $user_name = explode('@', $user_data['email'])[0];
     }
     
     $user_email = $user_data['email'];
     $phone = $user_data['phone'] ?? '';
     $address = $user_data['address'] ?? '';
 
-    // Используем адрес из формы или из профиля
-    $work_address = !empty($_POST['address']) ? trim($_POST['address']) : $address;
-
     // Данные из формы
-    $service_type = trim($_POST['service_type']);
+    $category_id = (int)$_POST['category_id'];
     $description = trim($_POST['description']);
+    $work_address = !empty($_POST['address']) ? trim($_POST['address']) : $address;
     $preferred_date = !empty($_POST['preferred_date']) ? $_POST['preferred_date'] : null;
     $preferred_time = !empty($_POST['preferred_time']) ? $_POST['preferred_time'] : null;
     
@@ -85,13 +77,22 @@ try {
     $ip_address = $_SERVER['REMOTE_ADDR'];
     $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
     
-    // Создаем заголовок
-    $subject = "Заявка на услугу: " . $service_type;
-    if (!empty($_POST['preferred_date'])) {
-        $subject .= " (на " . date('d.m.Y', strtotime($_POST['preferred_date'])) . ")";
+    // Получаем название категории для темы
+    $cat_stmt = $pdo->prepare("SELECT name FROM categories WHERE id = ?");
+    $cat_stmt->execute([$category_id]);
+    $category_name = $cat_stmt->fetchColumn();
+    if (!$category_name) {
+        $_SESSION['request_errors'] = ['Неверная категория'];
+        header('Location: ../user.php');
+        exit();
+    }
+    
+    $subject = "Заявка на услугу: " . $category_name;
+    if ($preferred_date) {
+        $subject .= " (на " . date('d.m.Y', strtotime($preferred_date)) . ")";
     }
 
-    // Вставка заявки в таблицу messages
+    // Вставка заявки в таблицу message
     $sql = "INSERT INTO message (
                 user_name, 
                 user_email, 
@@ -100,8 +101,13 @@ try {
                 middle_name, 
                 phone, 
                 address, 
+                category_id,
                 subject, 
                 message, 
+                work_address,
+                preferred_date,
+                preferred_time,
+                status,
                 is_read, 
                 ip_address, 
                 user_agent
@@ -113,9 +119,14 @@ try {
                 :middle_name, 
                 :phone, 
                 :address, 
+                :category_id,
                 :subject, 
                 :message, 
-                :is_read, 
+                :work_address,
+                :preferred_date,
+                :preferred_time,
+                'новая',
+                0, 
                 :ip_address, 
                 :user_agent
             )";
@@ -129,9 +140,12 @@ try {
         ':middle_name' => $middle_name,
         ':phone' => $phone,
         ':address' => $address,
+        ':category_id' => $category_id,
         ':subject' => $subject,
         ':message' => $description,
-        ':is_read' => 0,
+        ':work_address' => $work_address,
+        ':preferred_date' => $preferred_date,
+        ':preferred_time' => $preferred_time,
         ':ip_address' => $ip_address,
         ':user_agent' => $user_agent
     ]);
@@ -139,41 +153,54 @@ try {
     if ($result) {
         $last_id = $pdo->lastInsertId();
         
-        // Обновляем дополнительные поля если они существуют
-        // Проверяем существование столбцов
-        $column_check = $pdo->query("SHOW COLUMNS FROM message")->fetchAll(PDO::FETCH_COLUMN, 0);
-        $columns = array_flip($column_check);
+        // --- АВТОМАТИЧЕСКОЕ НАЗНАЧЕНИЕ СОТРУДНИКА ---
+        // 1. Найти отдел, связанный с категорией
+        $dept_sql = "SELECT id, department_name FROM department_rules WHERE category_id = ? LIMIT 1";
+        $dept_stmt = $pdo->prepare($dept_sql);
+        $dept_stmt->execute([$category_id]);
+        $department = $dept_stmt->fetch();
         
-        $updates = [];
-        $update_params = [':id' => $last_id];
-        
-        if (isset($columns['service_type']) && $service_type) {
-            $updates[] = 'service_type = :service_type';
-            $update_params[':service_type'] = $service_type;
+        if ($department) {
+            // 2. Найти должности, связанные с этим отделом
+            $pos_sql = "SELECT position_id FROM department_positions WHERE department_rule_id = ?";
+            $pos_stmt = $pdo->prepare($pos_sql);
+            $pos_stmt->execute([$department['id']]);
+            $position_ids = $pos_stmt->fetchAll(PDO::FETCH_COLUMN);
+            
+            if (!empty($position_ids)) {
+                // 3. Найти сотрудника (role = 'executor', активного), у которого должность и отдел совпадают
+                $placeholders = implode(',', array_fill(0, count($position_ids), '?'));
+                $emp_sql = "
+                    SELECT u.id
+                    FROM users u
+                    JOIN user_profiles up ON u.id = up.user_id
+                    WHERE u.role = 'executor'
+                      AND u.is_active = 1
+                      AND up.department = ?
+                      AND up.position IN (SELECT name FROM positions WHERE id IN ($placeholders))
+                    LIMIT 1
+                ";
+                $emp_stmt = $pdo->prepare($emp_sql);
+                $params = array_merge([$department['department_name']], $position_ids);
+                $emp_stmt->execute($params);
+                $employee = $emp_stmt->fetch();
+                
+                if ($employee) {
+                    // Назначаем заявку на этого сотрудника
+                    $assign_sql = "UPDATE message SET assigned_to = :emp_id, assigned_at = NOW(), assign_comment = 'Автоматическое назначение по категории' WHERE id = :id";
+                    $assign_stmt = $pdo->prepare($assign_sql);
+                    $assign_stmt->execute([':emp_id' => $employee['id'], ':id' => $last_id]);
+                    
+                    // Логируем назначение
+                    $log_sql = "INSERT INTO assignment_log (request_id, request_type, assigned_to, assigned_at, type, performed_by, comment) 
+                                VALUES (:rid, 'user', :emp, NOW(), 'auto', 1, 'Автоматическое распределение')";
+                    $log_stmt = $pdo->prepare($log_sql);
+                    $log_stmt->execute([':rid' => $last_id, ':emp' => $employee['id']]);
+                }
+            }
         }
+        // -------------------------------------------------
         
-        if (isset($columns['work_address']) && $work_address && $work_address != $address) {
-            $updates[] = 'work_address = :work_address';
-            $update_params[':work_address'] = $work_address;
-        }
-        
-        if (isset($columns['preferred_date']) && $preferred_date) {
-            $updates[] = 'preferred_date = :preferred_date';
-            $update_params[':preferred_date'] = $preferred_date;
-        }
-        
-        if (isset($columns['preferred_time']) && $preferred_time) {
-            $updates[] = 'preferred_time = :preferred_time';
-            $update_params[':preferred_time'] = $preferred_time;
-        }
-        
-        if (!empty($updates)) {
-            $update_sql = "UPDATE message SET " . implode(', ', $updates) . " WHERE id = :id";
-            $update_stmt = $pdo->prepare($update_sql);
-            $update_stmt->execute($update_params);
-        }
-        
-        // Сохраняем сообщение об успехе
         $_SESSION['request_success'] = '✅ Ваша заявка успешно создана! Номер заявки: #' . $last_id;
         
         // Логирование
@@ -192,7 +219,7 @@ try {
             if ($work_address && $work_address != $address) {
                 $email_message .= "Адрес для работ: {$work_address}\n";
             }
-            $email_message .= "Тип услуги: {$service_type}\n";
+            $email_message .= "Категория: {$category_name}\n";
             if ($preferred_date) {
                 $email_message .= "Предпочтительная дата: " . date('d.m.Y', strtotime($preferred_date)) . "\n";
             }

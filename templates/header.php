@@ -1,5 +1,4 @@
-<?php 
-session_start(); ?>
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -140,8 +139,13 @@ function selectSuggestion(text) {
             <?php if (isset($_SESSION['user_role'])): ?>
                 <?php if ($_SESSION['user_role'] === 'admin'): ?>
                     <!-- Админ: Заявки + Панель администратора -->
-                    <li><a href="employee.php">Заявки</a></li>
                     <li><a href="admin.php">Панель администратора</a></li>
+                <?php elseif ($_SESSION['user_role'] === 'executor'): ?>
+                    <!-- Исполнитель: Личный кабинет сотрудника -->
+                    <li><a href="employee.php">Личный кабинет сотрудника</a></li>
+                <?php elseif ($_SESSION['user_role'] === 'dispatcher'): ?>
+                    <!-- Диспетчер: Личный кабинет диспетчера -->
+                    <li><a href="dispatcher.php">Личный кабинет диспетчера</a></li>
                 <?php elseif ($_SESSION['user_role'] === 'user'): ?>
                     <!-- Обычный пользователь: Оставить заявку + Личный кабинет -->
                     <li><a href="contact.php">Оставить заявку</a></li>
@@ -166,16 +170,21 @@ function selectSuggestion(text) {
         <button class="close-menu" id="closeMenuBtn">&times;</button>
     </div>
     <ul>
-         <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
-            <li><a href="employee.php">Заявки</a></li>
-            <li><a href="admin.php">Панель администратора</a></li>
-        <?php elseif (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'user'): ?>
-            <li><a href="contact.php">Оставить заявку</a></li>
-            <li><a href="admin.php">Личный кабинет</a></li>
+        <?php if (isset($_SESSION['user_role'])): ?>
+            <?php if ($_SESSION['user_role'] === 'admin'): ?>
+                <li><a href="admin.php">Панель администратора</a></li>
+            <?php elseif ($_SESSION['user_role'] === 'executor'): ?>
+                <li><a href="employee.php">Личный кабинет сотрудника</a></li>
+            <?php elseif ($_SESSION['user_role'] === 'dispatcher'): ?>
+                <li><a href="dispatcher.php">Личный кабинет диспетчера</a></li>
+            <?php elseif ($_SESSION['user_role'] === 'user'): ?>
+                <li><a href="contact.php">Оставить заявку</a></li>
+                <li><a href="admin.php">Личный кабинет</a></li>
+            <?php endif; ?>
         <?php else: ?>
             <li><a href="login.php">Вход / Регистрация</a></li>
             <li><a href="contact.php">Оставить заявку</a></li>
-            <?php endif; ?>
+        <?php endif; ?>
         <?php if (isset($_SESSION['user_id'])): ?>
             <li><a href="includes/logout.php">Выйти</a></li>
         <?php endif; ?>

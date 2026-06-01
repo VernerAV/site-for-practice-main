@@ -413,7 +413,7 @@ h1{
 
 #accessibilityToggle {
     position: fixed;
-    top: 0;
+    bottom: 0;
     right: 220px;
     z-index: 9999;
     
@@ -421,8 +421,8 @@ h1{
     background: #000;
     color: #FF0;
     border: none;
-    border-bottom-left-radius: 6px;
-    border-bottom-right-radius: 6px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
     
     font-size: 13px;
     font-weight: bold;

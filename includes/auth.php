@@ -33,12 +33,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['logged_in'] = true;
 
             // Перенаправляем в зависимости от роли
-            if ($user['role'] === 'admin') {
+        switch ($user['role']) {
+            case 'admin':
                 header('Location: ../admin.php');
-            } else {
+                break;
+            case 'executor':
+                header('Location: ../employee.php');
+                break;
+            case 'dispatcher':
+                header('Location: ../dispatcher.php');
+                break;
+            default:
                 header('Location: ../user.php');
             }
-            exit();
+        exit();
             
         } else {
             // Неверные данные

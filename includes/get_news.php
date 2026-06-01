@@ -13,27 +13,27 @@ try {
         echo '<tr><td colspan="4" style="text-align: center;">Новостей пока нет</td></tr>';
     } else {
         foreach ($news as $item) {
-            $section = $_GET['section'] ?? 'news';
-            // Экранируем специальные символы для JavaScript
-            $js_title = htmlspecialchars($item['title'], ENT_QUOTES);
-            $js_description = htmlspecialchars($item['description'], ENT_QUOTES);
+            $id = (int)($item['id'] ?? 0);
+            $title = htmlspecialchars($item['title'] ?? '', ENT_QUOTES);
+            $description = htmlspecialchars($item['description'] ?? '', ENT_QUOTES);
+            $created_at = isset($item['created_at']) ? date('d.m.Y H:i', strtotime($item['created_at'])) : '';
+            
+            $js_title = addslashes($title);
+            $js_description = addslashes($description);
             
             echo '
             <tr>
-                <td>' . htmlspecialchars($item['id']) . '</td>
-                <td>' . htmlspecialchars($item['title']) . '</td>
-                <td>' . date('d.m.Y H:i', strtotime($item['created_at'])) . '</td>
+                <td>' . $id . '</td>
+                <td>' . $title . '</td>
+                <td>' . $created_at . '</td>
                 <td>
-                    <button class="btn btn-primary" onclick="editNews(' . $item['id'] . ', \'' . addslashes($js_title) . '\', \'' . addslashes($js_description) . '\')">Редактировать</button>
-                    <a href="includes/delete_news.php?id=' . $item['id'] . '" class="btn btn-danger" onclick="return confirm(\'Удалить эту новость?\')">Удалить</a>
+                    <button class="btn btn-primary" onclick="editNews(' . $id . ', \'' . $js_title . '\', \'' . $js_description . '\')">Редактировать</button>
+                    <a href="includes/delete_news.php?id=' . $id . '" class="btn btn-danger" onclick="return confirm(\'Удалить эту новость?\')">Удалить</a>
                 </td>
             </tr>';
         }
     }
-    
 } catch (PDOException $e) {
-    // Для отладки можно вывести ошибку
-    error_log("Database error: " . $e->getMessage());
     echo '<tr><td colspan="4" style="text-align: center; color: red;">Ошибка загрузки новостей: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
 }
 ?>
