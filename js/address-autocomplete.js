@@ -57,27 +57,21 @@ function updateFullAddress() {
     const entranceInput = document.getElementById('entrance');
     const floorInput = document.getElementById('floor');
     const apartmentInput = document.getElementById('apartment');
+    const intercomInput = document.getElementById('intercom');
     
     if (!streetInput || !fullAddressInput) return;
     
-    const street = streetInput.value.trim();
-    const entrance = entranceInput ? entranceInput.value.trim() : '';
-    const floor = floorInput ? floorInput.value.trim() : '';
-    const apartment = apartmentInput ? apartmentInput.value.trim() : '';
+    let street = streetInput.value.trim();
+    let entrance = entranceInput ? entranceInput.value.trim() : '';
+    let floor = floorInput ? floorInput.value.trim() : '';
+    let apartment = apartmentInput ? apartmentInput.value.trim() : '';
+    let intercom = intercomInput ? intercomInput.value.trim() : '';
     
     let fullAddress = street;
-    
-    if (entrance) {
-        fullAddress += `, подъезд ${entrance}`;
-    }
-    
-    if (floor) {
-        fullAddress += `, этаж ${floor}`;
-    }
-    
-    if (apartment) {
-        fullAddress += `, кв. ${apartment}`;
-    }
+    if (entrance) fullAddress += `, подъезд ${entrance}`;
+    if (floor) fullAddress += `, этаж ${floor}`;
+    if (apartment) fullAddress += `, кв. ${apartment}`;
+    if (intercom) fullAddress += `, домофон ${intercom}`;
     
     fullAddressInput.value = fullAddress;
 }
