@@ -5,13 +5,13 @@
 function saveRequest($data) {
     global $pdo;
 
-    $user_name = htmlspecialchars($data['user_name'] ?? '', ENT_QUOTES);
-    $user_email = htmlspecialchars($data['user_email'] ?? '', ENT_QUOTES);
-    $phone = htmlspecialchars($data['phone'] ?? '', ENT_QUOTES);
-    $address = htmlspecialchars($data['address'] ?? '', ENT_QUOTES);
+    $user_name = $data['user_name'] ?? '';
+    $user_email = $data['user_email'] ?? '';
+    $phone = $data['phone'] ?? '';
+    $address = $data['address'] ?? '';
     $category_id = (int)$data['category_id'];
-    $subject = htmlspecialchars($data['subject'] ?? '', ENT_QUOTES);
-    $message_text = htmlspecialchars($data['message'] ?? '', ENT_QUOTES);
+    $subject = $data['subject'] ?? '';
+    $message_text = $data['message'] ?? '';
     $work_type = $data['work_type'] ?? 'field';
     $urgency = $data['urgency'] ?? 'normal';
     $volume = $data['volume'] ?? 'medium';

@@ -65,7 +65,7 @@ if (isset($_SESSION['user_id'])) {
             <div class="form-group">
                 <label for="email">Электронная почта *</label>
                 <input type="email" id="email" name="email" required 
-                       value="<?php echo $_GET['email'] ?? ''; ?>">
+                       value="<?php echo htmlspecialchars($_GET['email'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
             </div>
             
             <div class="form-group">
@@ -85,13 +85,13 @@ if (isset($_SESSION['user_id'])) {
             <div class="form-group">
                 <label for="first_name">Имя</label>
                 <input type="text" id="first_name" name="first_name" 
-                       value="<?php echo $_GET['first_name'] ?? ''; ?>">
+                       value="<?php echo htmlspecialchars($_GET['first_name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
             </div>
 
             <div class="form-group">
                 <label for="last_name">Фамилия</label>
                 <input type="text" id="last_name" name="last_name" 
-                       value="<?php echo $_GET['last_name'] ?? ''; ?>">
+                       value="<?php echo htmlspecialchars($_GET['last_name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
             </div>
 
             <!-- ПОЛЕ ТЕЛЕФОНА С МАСКОЙ (исправленная) -->
@@ -99,8 +99,7 @@ if (isset($_SESSION['user_id'])) {
                 <label for="phone">Телефон</label>
                 <input type="tel" id="phone" name="phone" 
                        placeholder="+7 (999) 999-99-99"
-                       value="<?php echo $_GET['phone'] ?? ''; ?>"
-                       maxlength="18">
+                       value="<?php echo htmlspecialchars($_GET['phone'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" maxlength="18">
                 <small class="form-hint">Введите 10 цифр после +7</small>
             </div>
             

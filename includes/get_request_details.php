@@ -13,13 +13,10 @@ $id = $_GET['id'] ?? 0;
 require_once 'config.php';
 
 try {
-     $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4";
-    $pdo = new PDO($dsn, DB_USER, DB_PASS);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    $stmt = $pdo->prepare("SELECT * FROM requests WHERE id = ?");
+    // Исправлено: таблица message, а не requests
+    $stmt = $pdo->prepare("SELECT * FROM message WHERE id = ?");
     $stmt->execute([$id]);
-    $request = $stmt->fetch();
+    $request = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if ($request) {
         echo json_encode([

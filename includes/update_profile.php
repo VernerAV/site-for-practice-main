@@ -18,8 +18,6 @@ $phone = $_POST['phone'] ?? '';
 $address = $_POST['address'] ?? ''; // Полный адрес из hidden поля
 
 try {
-    $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4", DB_USER, DB_PASS);
-    
     // Проверяем существование записи в user_profile
     $check_sql = "SELECT COUNT(*) FROM user_profiles WHERE user_id = :user_id";
     $check_stmt = $pdo->prepare($check_sql);

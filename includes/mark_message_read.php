@@ -17,8 +17,6 @@ if (!isset($_POST['id']) || !is_numeric($_POST['id'])) {
 $message_id = intval($_POST['id']);
 
 try {
-    $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4", DB_USER, DB_PASS);
-    
     $sql = "UPDATE message SET is_read = 1 WHERE id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':id' => $message_id]);

@@ -1,5 +1,6 @@
 <?php
 require_once 'includes/config.php';
+session_start();
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -67,10 +68,6 @@ require_once 'includes/config.php';
                 <div class="news-grid" id="newsGrid">
                     <?php
                     try {
-                        $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4";
-                        $pdo = new PDO($dsn, DB_USER, DB_PASS);
-                        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                        
                         // Получаем новости
                         $sql = "SELECT n.*, 
                                        DATE_FORMAT(n.created_at, '%d.%m.%Y') as formatted_date,
@@ -153,47 +150,58 @@ require_once 'includes/config.php';
                               </div>';
                     }
                     
-                    // Вспомогательные функции
-                    function getNewsCategory($title, $description) {
-                        $text = strtolower($title . ' ' . $description);
-                        
-                        if (strpos($text, 'ремонт') !== false || strpos($text, 'работ') !== false) {
-                            return 'Ремонты';
-                        } elseif (strpos($text, 'вода') !== false || strpos($text, 'отключ') !== false) {
-                            return 'Услуги';
-                        } elseif (strpos($text, 'важн') !== false || strpos($text, 'срочн') !== false) {
-                            return 'Важные';
-                        } else {
-                            return 'Новости';
+                  // ===== Вспомогательные функции для новостей =====
+
+                /**
+                 * Определяет категорию новости на основе заголовка и описания.
+                 */
+                function getNewsCategory($title, $description) {
+                    $text = mb_strtolower($title . ' ' . $description, 'UTF-8');
+                    
+                    if (mb_strpos($text, 'ремонт') !== false || mb_strpos($text, 'работ') !== false) {
+                        return 'Ремонты';
+                    } elseif (mb_strpos($text, 'вода') !== false || mb_strpos($text, 'отключ') !== false) {
+                        return 'Услуги';
+                    } elseif (mb_strpos($text, 'важн') !== false || mb_strpos($text, 'срочн') !== false) {
+                        return 'Важные';
+                    } else {
+                        return 'Новости';
+                    }
+                }
+
+                /**
+                 * Возвращает теги новости (максимум 3) на основе ключевых слов.
+                 */
+                function getNewsTags($title, $description) {
+                    $text = mb_strtolower($title . ' ' . $description, 'UTF-8');
+                    $tags = [];
+                    $allTags = [
+                        'Вода', 'Отопление', 'Лифт', 'Электрика', 
+                        'Двор', 'Благоустройство', 'Тарифы', 'Оплата'
+                    ];
+                    
+                    foreach ($allTags as $tag) {
+                        if (mb_strpos($text, mb_strtolower($tag, 'UTF-8')) !== false) {
+                            $tags[] = $tag;
+                            if (count($tags) >= 3) break;
                         }
                     }
                     
-                    function getNewsTags($title, $description) {
-                        $text = strtolower($title . ' ' . $description);
-                        $tags = [];
-                        $allTags = [
-                            'Вода', 'Отопление', 'Лифт', 'Электрика', 
-                            'Двор', 'Благоустройство', 'Тарифы', 'Оплата'
-                        ];
-                        
-                        foreach ($allTags as $tag) {
-                            if (strpos($text, strtolower($tag)) !== false) {
-                                $tags[] = $tag;
-                                if (count($tags) >= 3) break;
-                            }
-                        }
-                        
-                        return $tags;
-                    }
-                    
-                    function getRussianMonth($month) {
-                        $months = [
-                            '01' => 'янв', '02' => 'фев', '03' => 'мар', '04' => 'апр',
-                            '05' => 'май', '06' => 'июн', '07' => 'июл', '08' => 'авг',
-                            '09' => 'сен', '10' => 'окт', '11' => 'ноя', '12' => 'дек'
-                        ];
-                        return $months[$month] ?? $month;
-                    }
+                    return $tags;
+                }
+
+                /**
+                 * Преобразует номер месяца в короткое русское название.
+                 */
+                function getRussianMonth($month) {
+                    $months = [
+                        '01' => 'янв', '02' => 'фев', '03' => 'мар', '04' => 'апр',
+                        '05' => 'май', '06' => 'июн', '07' => 'июл', '08' => 'авг',
+                        '09' => 'сен', '10' => 'окт', '11' => 'ноя', '12' => 'дек'
+                    ];
+                    return $months[$month] ?? $month;
+                }
+
                     ?>
                 </div>
 

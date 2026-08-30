@@ -17,8 +17,6 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $message_id = intval($_GET['id']);
 
 try {
-    $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4", DB_USER, DB_PASS);
-    
     $sql = "SELECT * FROM message WHERE id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':id' => $message_id]);

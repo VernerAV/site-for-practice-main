@@ -8,3 +8,4 @@ require_once 'config.php';
 $stmt = $pdo->prepare("DELETE FROM message WHERE id = ?");
 $stmt->execute([$id]);
 header('Location: ../admin.php?section=requests');
+exit();

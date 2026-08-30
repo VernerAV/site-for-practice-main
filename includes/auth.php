@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 // Подключаем конфиг
 require_once 'config.php';
 
@@ -15,10 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_password = $_POST['password'];
 
     try {
-        // Подключение к базе данных через конфиг
-        $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4", DB_USER, DB_PASS);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
         // Ищем пользователя по email
         $sql = "SELECT id, email, password, role FROM users WHERE email = :email";
         $stmt = $pdo->prepare($sql);
@@ -41,11 +36,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 header('Location: ../employee.php');
                 break;
             case 'dispatcher':
-                header('Location: ../dispatcher.php');
+                header('Location: ../employee.php');
                 break;
             default:
                 header('Location: ../user.php');
-            }
+        }
         exit();
             
         } else {

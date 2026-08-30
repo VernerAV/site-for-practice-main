@@ -42,8 +42,6 @@ require_once 'includes/config.php';
                 <tbody id="priceTableBody">
                     <?php
                     try {
-                        $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4", DB_USER, DB_PASS);
-                        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                         $services = $pdo->query("SELECT * FROM services ORDER BY service_name")->fetchAll();
                         
                         if (empty($services)) {

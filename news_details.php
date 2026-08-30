@@ -1,5 +1,6 @@
 <?php
 require_once 'includes/config.php';
+session_start();
 
 if (!isset($_GET['id'])) {
     header('Location: news.php');
@@ -9,10 +10,6 @@ if (!isset($_GET['id'])) {
 $news_id = intval($_GET['id']);
 
 try {
-    $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4";
-    $pdo = new PDO($dsn, DB_USER, DB_PASS);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
     // Получаем текущую новость
     $sql = "SELECT *, 
                    DATE_FORMAT(created_at, '%d.%m.%Y') as formatted_date,
@@ -55,7 +52,11 @@ try {
     $related_news = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
 } catch (PDOException $e) {
-    die('Ошибка загрузки новости');
+    // Логируем ошибку в файл для администратора
+    error_log('Ошибка загрузки новости: ' . $e->getMessage());
+    // Перенаправляем на страницу 404 или главную
+    header('Location: /404.php');
+    exit;
 }
 
 // Функция для обрезки текста
@@ -102,10 +103,6 @@ function truncateText($text, $length = 100) {
                             <i class="far fa-clock"></i>
                             <?php echo $news['formatted_time']; ?>
                         </span>
-                        <span class="meta-item">
-                            <i class="far fa-eye"></i>
-                            <?php echo rand(100, 500); ?> просмотров
-                        </span>
                     </div>
                 </div>
                 
@@ -119,16 +116,19 @@ function truncateText($text, $length = 100) {
                 
                 <div class="detail-content">
                     <?php 
-                    // Обрабатываем текст новости
-                    $content = htmlspecialchars($news['description']);
-                    // Заменяем переносы строк на параграфы
-                    $content = nl2br($content);
-                    // Добавляем форматирование
-                    $content = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $content);
-                    $content = preg_replace('/\*(.*?)\*/', '<em>$1</em>', $content);
-                    
-                    echo $content;
-                    ?>
+                        // 1. Экранируем все HTML-спецсимволы, чтобы предотвратить XSS
+                        $content = htmlspecialchars($news['description'], ENT_QUOTES, 'UTF-8');
+                        
+                        // 2. Преобразуем переносы строк в <br> (работает после экранирования)
+                        $content = nl2br($content);
+                        
+                        // 3. Применяем markdown-форматирование (**жирный**, *курсив*)
+                        // Безопасно, т.к. в тексте уже нет неэкранированных HTML-тегов
+                        $content = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $content);
+                        $content = preg_replace('/\*(.*?)\*/', '<em>$1</em>', $content);
+                        
+                        echo $content;
+                        ?>
                 </div>
                 
                 <div class="detail-footer">

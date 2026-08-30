@@ -7,10 +7,6 @@ checkAuth();
 $user_id = $_SESSION['user_id'];
 
 try {
-    $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4", DB_USER, DB_PASS);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-
     // Данные пользователя
     $user_sql = "SELECT u.email, u.role, up.first_name, up.last_name, up.middle_name, 
                         up.birth_date, up.address, up.phone 

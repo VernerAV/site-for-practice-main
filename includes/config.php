@@ -1,5 +1,4 @@
 <?php
-ob_start();
 // Настройки базы данных (из дампа u90998hq_vorav)
 define('DB_HOST',  'mysql-5.7');     // или '127.0.0.1'
 define('DB_NAME', 'u90998hq_vorav'); // имя базы из дампа

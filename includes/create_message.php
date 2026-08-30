@@ -30,12 +30,6 @@ if (!empty($errors)) {
 }
 
 try {
-    // Подключаемся к базе данных
-    $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4";
-    $pdo = new PDO($dsn, DB_USER, DB_PASS);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-
     // Получаем данные пользователя
     $user_sql = "SELECT u.email, 
                         up.first_name, up.last_name, up.middle_name, up.phone, up.address 

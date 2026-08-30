@@ -17,7 +17,7 @@ $stmt->execute([$id]);
 $message = $stmt->fetch();
 
 if (!$message) {
-    header('Location: admin_messages.php');
+    header('Location: ../admin.php?section=requests');
     exit();
 }
 

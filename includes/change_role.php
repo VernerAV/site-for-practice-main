@@ -12,9 +12,6 @@ if (isset($_GET['id']) && isset($_GET['role'])) {
     $new_role = $_GET['role'] === 'admin' ? 'admin' : 'user';
     
     try {
-        $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4");
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        
         $sql = "UPDATE users SET role = :role WHERE id = :id";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([

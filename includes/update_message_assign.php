@@ -23,9 +23,6 @@ if (!$id) {
 }
 
 try {
-    $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4", DB_USER, DB_PASS);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
     if ($action === 'assign') {
         // Назначение сотрудника
         $employee_id = (int)($_POST['employee_id'] ?? 0);

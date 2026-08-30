@@ -13,19 +13,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = trim($_POST['description']);
     
     try {
-$pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4", DB_USER, DB_PASS);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        
         // Обработка загрузки изображения
         $image_name = '';
         if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+            // Проверка MIME-типа
             $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
             $file_type = $_FILES['image']['type'];
             
-            if (in_array($file_type, $allowed_types)) {
-                $image_name = uniqid() . '_' . $_FILES['image']['name'];
+            // Проверка расширения файла
+            $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif'];
+            $file_extension = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
+            
+            if (in_array($file_type, $allowed_types) && in_array($file_extension, $allowed_extensions)) {
+                // Генерация безопасного имени файла
+                $image_name = uniqid('news_', true) . '.' . $file_extension;
                 $upload_path = '../uploads/news/' . $image_name;
-                move_uploaded_file($_FILES['image']['tmp_name'], $upload_path);
+                
+                // Перемещаем файл
+                if (!move_uploaded_file($_FILES['image']['tmp_name'], $upload_path)) {
+                    throw new Exception('Не удалось загрузить файл');
+                }
+            } else {
+                throw new Exception('Недопустимый тип файла');
             }
         }
         
@@ -42,6 +51,7 @@ $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb
         } else {
             // Обновление существующей новости
             if ($image_name) {
+                // Если загружено новое изображение, обновляем и его
                 $sql = "UPDATE news SET title = :title, description = :description, image = :image WHERE id = :id";
                 $params = [
                     ':title' => $title,
@@ -50,6 +60,7 @@ $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb
                     ':id' => $news_id
                 ];
             } else {
+                // Если изображение не загружено, оставляем старое
                 $sql = "UPDATE news SET title = :title, description = :description WHERE id = :id";
                 $params = [
                     ':title' => $title,
@@ -65,8 +76,10 @@ $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb
         header('Location: ../admin.php?message=' . $message);
         exit();
         
-    } catch (PDOException $e) {
-        header('Location: ../admin.php?error=db_error');
+    } catch (Exception $e) {
+        // Логируем ошибку и возвращаем на админку с сообщением
+        error_log('Ошибка сохранения новости: ' . $e->getMessage());
+        header('Location: ../admin.php?error=upload_error');
         exit();
     }
 } else {

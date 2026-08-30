@@ -61,7 +61,7 @@ if (isset($_GET['timeout'])) {
             <div class="form-group">
                 <label for="email">Электронная почта</label>
                 <input type="email" id="email" name="email" required 
-                       value="<?php echo $_GET['email'] ?? ''; ?>">
+                      value="<?php echo htmlspecialchars($_GET['email'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
             </div>
             
             <div class="form-group">

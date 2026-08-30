@@ -2,8 +2,8 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 session_start();
-require_once '../includes/config.php';
-require_once '../includes/check_auth.php';
+require_once 'config.php';
+require_once 'check_auth.php';
 
 header('Content-Type: application/json');
 if (!isAdmin()) {
