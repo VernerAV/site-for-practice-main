@@ -1,6 +1,27 @@
 <?php
 session_start();
 require_once 'includes/config.php';
+
+// === Получение данных авторизованного пользователя ===
+$user_data = null;
+if (isset($_SESSION['user_id'])) {
+    $user_id = (int)$_SESSION['user_id'];
+    try {
+        $stmt = $pdo->prepare("
+            SELECT u.email, 
+                   up.first_name, up.last_name, up.middle_name, 
+                   up.phone, up.address 
+            FROM users u 
+            LEFT JOIN user_profiles up ON u.id = up.user_id 
+            WHERE u.id = ?
+        ");
+        $stmt->execute([$user_id]);
+        $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        // игнорируем
+    }
+}
+// === Конец блока ===
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -10,7 +31,6 @@ require_once 'includes/config.php';
     <title>Подать заявку или обращение</title>
     <link rel="stylesheet" href="css/header_mobile.css">
     <link rel="stylesheet" href="css/contact.css">
-    <link rel="stylesheet" href="css/address-autocomplete.css">
 </head>
 <body>
 <?php include 'templates/header.php'; ?>
@@ -55,7 +75,7 @@ require_once 'includes/config.php';
                 </div>
             </div>
 
-            <!-- Шаг 3: Срочность (только для квартирных) -->
+            <!-- Шаг 3: Срочность -->
             <div class="step" data-step="2" id="stepUrgency">
                 <h2>Насколько срочно?</h2>
                 <div class="card-grid" id="urgencyGrid">
@@ -77,7 +97,7 @@ require_once 'includes/config.php';
                 </div>
             </div>
 
-            <!-- Шаг 4: Объём (только для квартирных) -->
+            <!-- Шаг 4: Объём -->
             <div class="step" data-step="3" id="stepVolume">
                 <h2>Объём работ</h2>
                 <div class="card-grid" id="volumeGrid">
@@ -104,9 +124,11 @@ require_once 'includes/config.php';
                 <h2>Адрес и доступ</h2>
                 <div class="form-group">
                     <label>Улица и дом <span style="color:red">*</span></label>
-                    <input type="text" id="street" required placeholder="ул. Исаковского, д.8 к.1">
+                    <input type="text" id="street" required placeholder="ул. Исаковского, д.8 к.1"
+                           value="<?= htmlspecialchars($user_data['address'] ?? '') ?>">
                     <div class="hint">Начните вводить адрес, появится список подсказок</div>
-                    <input type="hidden" id="full_address" name="address">
+                    <input type="hidden" id="full_address" name="address"
+                           value="<?= htmlspecialchars($user_data['address'] ?? '') ?>">
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -139,7 +161,7 @@ require_once 'includes/config.php';
                 </div>
             </div>
 
-            <!-- Шаг 6: Материалы (только для квартирных) -->
+            <!-- Шаг 6: Материалы -->
             <div class="step" data-step="5" id="stepMaterials">
                 <h2>Готовность к работе</h2>
                 <div class="card-grid" id="materialsGrid">
@@ -167,24 +189,29 @@ require_once 'includes/config.php';
                 <div class="form-row">
                     <div class="form-group">
                         <label>Фамилия <span style="color:red">*</span></label>
-                        <input type="text" id="lastName" required>
+                        <input type="text" id="lastName" required
+                               value="<?= htmlspecialchars($user_data['last_name'] ?? '') ?>">
                     </div>
                     <div class="form-group">
                         <label>Имя <span style="color:red">*</span></label>
-                        <input type="text" id="firstName" required>
+                        <input type="text" id="firstName" required
+                               value="<?= htmlspecialchars($user_data['first_name'] ?? '') ?>">
                     </div>
                     <div class="form-group">
                         <label>Отчество</label>
-                        <input type="text" id="middleName">
+                        <input type="text" id="middleName"
+                               value="<?= htmlspecialchars($user_data['middle_name'] ?? '') ?>">
                     </div>
                 </div>
                 <div class="form-group">
                     <label>Email <span style="color:red">*</span></label>
-                    <input type="email" id="userEmail" required>
+                    <input type="email" id="userEmail" required
+                           value="<?= htmlspecialchars($user_data['email'] ?? '') ?>">
                 </div>
                 <div class="form-group">
                     <label>Телефон</label>
-                    <input type="tel" id="userPhone" placeholder="+7 (999) 999-99-99">
+                    <input type="tel" id="phone" placeholder="+7 (999) 999-99-99"
+                           value="<?= htmlspecialchars($user_data['phone'] ?? '') ?>">
                 </div>
                 <div class="form-group">
                     <label>Подробное описание <span style="color:red">*</span></label>
@@ -212,7 +239,6 @@ require_once 'includes/config.php';
 <?php include 'templates/footer.php'; ?>
 <script src="js/address-autocomplete.js"></script>
 <script>
-// Получаем категории из PHP
 const categories = <?php
     try {
         $stmt = $pdo->query("SELECT id, name, work_type, description, is_common FROM categories ORDER BY name");
@@ -478,17 +504,13 @@ function loadCategories(type) {
 }
 
 function generateSummary() {
-    // Принудительно сохраняем данные из полей в formData перед генерацией
+    // Принудительно сохраняем данные из полей в formData
     formData.last_name = document.getElementById('lastName').value.trim();
     formData.first_name = document.getElementById('firstName').value.trim();
     formData.middle_name = document.getElementById('middleName').value.trim();
     formData.user_email = document.getElementById('userEmail').value.trim();
-    formData.user_phone = document.getElementById('userPhone').value.trim();
+    formData.user_phone = document.getElementById('phone').value.trim();
     formData.message = document.getElementById('messageText').value.trim();
-    formData.address = document.getElementById('full_address').value;
-    formData.intercom = document.getElementById('intercom').value.trim();
-    formData.has_elevator = document.getElementById('hasElevator').value;
-    formData.floor = document.getElementById('floor').value.trim();
 
     const block = document.getElementById('summaryBlock');
     if (!block) return;
@@ -519,27 +541,27 @@ function generateSummary() {
 
 // Инициализация
 document.addEventListener('DOMContentLoaded', function() {
-    // Загрузка категорий при выборе типа
-    // Выбор типа (Заявка / Обращение)
-setupCardSelection('typeGrid', 'type', 300);
-const typeCards = document.querySelectorAll('#typeGrid .card');
-typeCards.forEach(card => {
-    card.addEventListener('click', function() {
-        const val = this.dataset.value;
-        formData.type = val;
-        // Загружаем категории в зависимости от типа
-        loadCategories(val);
-        // Для обращений тоже переходим на шаг выбора категории (индекс 1)
-        setTimeout(() => {
-            const steps = document.querySelectorAll('.step');
-            steps[currentStep].classList.remove('active');
-            currentStep = 1; // всегда на категорию
-            steps[currentStep].classList.add('active');
-            updateProgress();
-            updateButtons();
-        }, 300);
+    // Выбор типа
+    const typeCards = document.querySelectorAll('#typeGrid .card');
+    typeCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const val = this.dataset.value;
+            formData.type = val;
+            typeCards.forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+            loadCategories(val);
+            setTimeout(() => {
+                const steps = document.querySelectorAll('.step');
+                steps[currentStep].classList.remove('active');
+                currentStep = 1; // всегда на категорию
+                steps[currentStep].classList.add('active');
+                updateProgress();
+                updateButtons();
+            }, 300);
+        });
     });
-});
+
+    // Остальные выборы
     setupCardSelection('urgencyGrid', 'urgency', 300);
     setupCardSelection('volumeGrid', 'volume', 300);
     setupCardSelection('materialsGrid', 'materials_needed', 300);
@@ -597,12 +619,12 @@ typeCards.forEach(card => {
         const em = userEmailInput.value.trim();
         const msg = messageTextarea.value.trim();
         step7Next.disabled = !(ln.length >= 2 && fn.length >= 2 && em && msg.length >= 10);
-        // Обновляем formData при вводе
+        // Сохраняем в formData сразу
         formData.last_name = ln;
         formData.first_name = fn;
         formData.middle_name = document.getElementById('middleName').value.trim();
         formData.user_email = em;
-        formData.user_phone = document.getElementById('userPhone').value.trim();
+        formData.user_phone = document.getElementById('phone').value.trim();
         formData.message = msg;
     }
 
@@ -611,10 +633,10 @@ typeCards.forEach(card => {
     userEmailInput.addEventListener('input', checkContacts);
     messageTextarea.addEventListener('input', checkContacts);
     document.getElementById('middleName')?.addEventListener('input', checkContacts);
-    document.getElementById('userPhone')?.addEventListener('input', checkContacts);
+    document.getElementById('phone')?.addEventListener('input', checkContacts);
 
     step7Next.addEventListener('click', function() {
-        checkContacts();
+        checkContacts(); // сохраняем перед переходом
         const steps = document.querySelectorAll('.step');
         steps[currentStep].classList.remove('active');
         currentStep = 7;
@@ -630,7 +652,7 @@ typeCards.forEach(card => {
     });
 
     // Маска телефона
-    const phoneInput = document.getElementById('userPhone');
+    const phoneInput = document.getElementById('phone');
     if (phoneInput) {
         phoneInput.addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, '');
@@ -643,6 +665,11 @@ typeCards.forEach(card => {
                 if (value.length > 6) formatted += '-' + value.substring(6, 8);
                 if (value.length > 8) formatted += '-' + value.substring(8, 10);
                 e.target.value = formatted;
+            }
+        });
+        phoneInput.addEventListener('keydown', function(e) {
+            if (e.key.length === 1 && !/[0-9+\-() ]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') {
+                e.preventDefault();
             }
         });
     }
@@ -672,14 +699,18 @@ typeCards.forEach(card => {
     }
     rebuildProgress();
     updateButtons();
+    // Принудительно проверяем поля (если они уже заполнены из БД)
+    checkAddress();
+    checkContacts();
 });
+
 function submitForm() {
     // Читаем все поля из DOM напрямую
     const lastName = document.getElementById('lastName').value.trim();
     const firstName = document.getElementById('firstName').value.trim();
     const middleName = document.getElementById('middleName').value.trim();
     const userEmail = document.getElementById('userEmail').value.trim();
-    const userPhone = document.getElementById('userPhone').value.trim();
+    let phone = document.getElementById('phone').value.trim();
     const message = document.getElementById('messageText').value.trim();
     const address = document.getElementById('full_address').value;
     const intercom = document.getElementById('intercom').value.trim();
@@ -687,22 +718,23 @@ function submitForm() {
     const floor = document.getElementById('floor').value.trim();
     const apartment = document.getElementById('apartment').value.trim();
 
-    // Формируем user_name
-    const userName = lastName + ' ' + firstName + (middleName ? ' ' + middleName : '');
+    // Удаляем все буквы из телефона
+    phone = phone.replace(/[^0-9+\-() ]/g, '');
 
-    // Записываем в formData
-    formData.user_name = userName;
-    formData.last_name = lastName;
-    formData.first_name = firstName;
-    formData.middle_name = middleName;
-    formData.user_email = userEmail;
-    formData.user_phone = userPhone;
-    formData.message = message;
-    formData.address = address;
-    formData.intercom = intercom;
-    formData.has_elevator = hasElevator;
-    formData.floor = floor;
-    formData.apartment = apartment;
+    // Формируем полное имя из ФИО
+    const fullName = (lastName || '') + ' ' + (firstName || '') + (middleName ? ' ' + middleName : '');
+    formData.user_name = fullName.trim();
+    formData.last_name = lastName || formData.last_name;
+    formData.first_name = firstName || formData.first_name;
+    formData.middle_name = middleName || formData.middle_name;
+    formData.user_email = userEmail || formData.user_email;
+    formData.user_phone = phone || formData.user_phone;
+    formData.message = message || formData.message;
+    formData.address = address || formData.address;
+    formData.intercom = intercom || formData.intercom;
+    formData.has_elevator = hasElevator || formData.has_elevator;
+    formData.floor = floor || formData.floor;
+    formData.apartment = apartment || formData.apartment;
 
     // Для общих категорий
     const isCommon = isCommonCategory();
@@ -714,13 +746,13 @@ function submitForm() {
 
     // Валидация
     let errors = [];
-    if (!firstName || firstName.length < 2) errors.push('Введите имя (минимум 2 символа)');
-    if (!lastName || lastName.length < 2) errors.push('Введите фамилию (минимум 2 символа)');
-    if (!userEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userEmail)) errors.push('Введите корректный email');
+    if (!formData.first_name || formData.first_name.length < 2) errors.push('Введите имя (минимум 2 символа)');
+    if (!formData.last_name || formData.last_name.length < 2) errors.push('Введите фамилию (минимум 2 символа)');
+    if (!formData.user_email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.user_email)) errors.push('Введите корректный email');
     if (!formData.category_id) errors.push('Выберите категорию');
-    if (!message || message.length < 10) errors.push('Опишите проблему (минимум 10 символов)');
+    if (!formData.message || formData.message.length < 10) errors.push('Опишите проблему (минимум 10 символов)');
     if (formData.type === 'request') {
-        if (!address) errors.push('Укажите адрес');
+        if (!formData.address) errors.push('Укажите адрес');
         if (!isCommon) {
             if (!formData.urgency) errors.push('Выберите срочность');
             if (!formData.volume) errors.push('Выберите объём работ');
@@ -748,7 +780,12 @@ function submitForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
     })
-    .then(res => res.json())
+    .then(res => {
+        if (!res.ok) {
+            throw new Error('HTTP ошибка: ' + res.status);
+        }
+        return res.json();
+    })
     .then(data => {
         if (data.success) {
             window.location.href = 'success.php?id=' + data.request_id;

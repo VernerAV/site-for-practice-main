@@ -11,9 +11,9 @@ body {
 }
 
 .admin-container {
-    max-width: 1400px;
+    max-width: 100%;
     margin: 0 auto;
-    padding: 20px;
+    padding: 10px;
 }
 
 /* Шапка */
@@ -23,7 +23,7 @@ body {
     align-items: center;
     background: #2c3e50;
     color: white;
-    padding: 10px 30px;
+    padding: 10px 10px;
     flex-wrap: wrap;
 }
 

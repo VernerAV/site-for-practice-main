@@ -1,5 +1,8 @@
 <?php
 session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
 require_once 'includes/config.php';
 require_once 'includes/check_auth.php';
 checkAuth();
@@ -50,7 +53,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['employee_submit'])) {
             if (empty($email)) throw new Exception('Email обязателен');
             $hashed = password_hash($password, PASSWORD_DEFAULT);
             $pdo->beginTransaction();
-            $stmt = $pdo->prepare("INSERT INTO users (email, password, role, status) VALUES (?, ?, ?, 'active')");
+
+            // Исправлено: вместо `status` используем `is_active`
+            $stmt = $pdo->prepare("INSERT INTO users (email, password, role, is_active) VALUES (?, ?, ?, 1)");
             $stmt->execute([$email, $hashed, $role]);
             $new_id = $pdo->lastInsertId();
             $emp_number = 'EMP' . str_pad($new_id, 5, '0', STR_PAD_LEFT);
@@ -130,7 +135,6 @@ if (isset($_GET['delete_employee'])) {
     <title>Панель администратора</title>
     <link rel="stylesheet" href="css/admin.css">
     <style>
-        /* дополнительные стили для фильтров и уведомлений */
         .filter-bar { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
         .filter-group { display: inline-flex; flex-direction: column; gap: 5px; }
         .filter-group label { font-size: 12px; font-weight: 600; color: #6c757d; }
@@ -273,7 +277,7 @@ if (isset($_GET['delete_employee'])) {
     </div>
 </div>
 
-            <!-- ЗАЯВКИ (с фильтрами, назначением, массовым удалением) -->
+            <!-- ЗАЯВКИ -->
             <div id="requests" class="section <?php echo $active_section=='requests'?'active':''; ?>">
                 <h2>Управление заявками <?php if($new_requests_count) echo "<span class='badge-new'>$new_requests_count новых</span>"; ?></h2>
 
@@ -328,7 +332,16 @@ if (isset($_GET['delete_employee'])) {
                 <div class="table-container">
                     <table class="table">
                         <thead>
-                            <tr><th width="40"><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)"></th><th>ID</th><th>Имя</th><th>Email</th><th>Телефон</th><th>Тема</th><th>Сообщение</th><th>Статус</th><th>Назначен</th><th>Дата</th><th>Действия</th></tr>
+                            <tr><th width="40"><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)"></th>
+                            <th>ID</th>
+                            <th>Имя</th>
+                            <th>Email</th>
+                            <th>Телефон</th>
+                            <th>Тема</th>
+                            <th>Статус</th>
+                            <th>Назначен</th>
+                            <th>Дата</th>
+                            <th>Действия</th></tr>
                         </thead>
                         <tbody>
                             <?php
@@ -366,6 +379,21 @@ if (isset($_GET['delete_employee'])) {
                             $stmt->execute($params);
                             $requests = $stmt->fetchAll();
 
+                            // ===== ИСПРАВЛЕННЫЙ ЗАПРОС ДЛЯ СОТРУДНИКОВ С ЗАГРУЗКОЙ =====
+                            $employeesWithLoad = $pdo->query("
+                                SELECT 
+                                    u.id, 
+                                    CONCAT(up.last_name, ' ', up.first_name) as name,
+                                    COALESCE(SUM(m.estimated_hours), 0) as current_load
+                                FROM users u
+                                LEFT JOIN user_profiles up ON u.id = up.user_id
+                                LEFT JOIN message m ON u.id = m.assigned_to AND m.status IN ('новая', 'в работе')
+                                WHERE u.role IN ('executor','dispatcher','moderator')
+                                GROUP BY u.id, up.last_name, up.first_name
+                                ORDER BY current_load ASC, up.last_name
+                            ")->fetchAll();
+                            // ====================================================
+
                             if(empty($requests)) {
                                 echo '<tr><td colspan="11" class="text-center">Заявок не найдено</td></tr>';
                             } else {
@@ -385,19 +413,19 @@ if (isset($_GET['delete_employee'])) {
                                         <td><?= htmlspecialchars($req['user_email']) ?></td>
                                         <td><?= htmlspecialchars($req['phone']??'—') ?></td>
                                         <td><?= htmlspecialchars($req['subject']) ?></td>
-                                        <td><div class="message-preview"><?= htmlspecialchars(mb_substr($req['message'],0,100)) ?>...</div></td>
                                         <td><span class="status-badge <?= $status_class ?>"><?= htmlspecialchars($req['status']) ?></span></td>
                                         <td>
                                             <form class="assign-form" data-id="<?= $req['id'] ?>">
                                                 <select name="employee_id" class="assign-select">
                                                     <option value="">Не назначен</option>
-                                                    <?php
-                                                    $empStmt = $pdo->query("SELECT u.id, CONCAT(up.last_name, ' ', up.first_name) as name FROM users u LEFT JOIN user_profiles up ON u.id=up.user_id WHERE u.role IN ('executor','dispatcher','moderator') ORDER BY up.last_name");
-                                                    foreach($empStmt->fetchAll() as $emp) {
+                                                    <?php foreach ($employeesWithLoad as $emp): 
                                                         $selected = ($req['assigned_to'] == $emp['id']) ? 'selected' : '';
-                                                        echo "<option value='{$emp['id']}' $selected>" . htmlspecialchars($emp['name']) . "</option>";
-                                                    }
+                                                        $loadText = $emp['current_load'] > 0 ? ' (загрузка: ' . number_format($emp['current_load'], 1) . ' ч)' : ' (свободен)';
                                                     ?>
+                                                        <option value="<?= $emp['id'] ?>" <?= $selected ?>>
+                                                            <?= htmlspecialchars($emp['name']) . $loadText ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
                                                 </select>
                                                 <button type="button" class="btn btn-sm btn-success assign-btn" data-id="<?= $req['id'] ?>">Назначить</button>
                                             </form>
@@ -418,14 +446,16 @@ if (isset($_GET['delete_employee'])) {
                 </div>
             </div>
 
-            <!-- СОТРУДНИКИ (новая вкладка) -->
+            <!-- СОТРУДНИКИ -->
             <div id="employees" class="section <?php echo $active_section == 'employees' ? 'active' : ''; ?>">
                 <h2>Управление сотрудниками</h2>
                 <button class="btn btn-primary" onclick="showEmployeeForm()">➕ Добавить сотрудника</button>
 
                 <div id="employeeForm" class="form-card" style="display: none; margin-top: 20px; background: #f8f9fa; padding: 20px; border-radius: 8px;">
                     <h3 id="employeeFormTitle">Добавление сотрудника</h3>
-                    <form id="employeeFormElement" method="POST" action="includes/save_employee.php">
+                    <!-- ИЗМЕНЕНО: action теперь указывает на admin.php, добавлено hidden поле employee_submit -->
+                    <form id="employeeFormElement" method="POST" action="admin.php?section=employees">
+                        <input type="hidden" name="employee_submit" value="1">
                         <input type="hidden" name="emp_id" id="emp_id" value="0">
                         <div class="form-row">
                             <div class="form-group"><label>Email *</label><input type="email" name="email" id="emp_email" required></div>
@@ -507,7 +537,7 @@ if (isset($_GET['delete_employee'])) {
                                     <td><span class="status-badge"><?= htmlspecialchars($emp['role']) ?></span></td>
                                     <td class="request-actions">
                                         <button class="btn-edit" onclick="editEmployee(<?= $emp['id'] ?>)" title="Редактировать">✏️</button>
-                                        <a href="includes/delete_employee.php?id=<?= $emp['id'] ?>" class="btn-delete" onclick="return confirm('Удалить сотрудника?')" title="Удалить">🗑️</a>
+                                        <a href="admin.php?section=employees&delete_employee=<?= $emp['id'] ?>" class="btn-delete" onclick="return confirm('Удалить сотрудника?')" title="Удалить">🗑️</a>
                                     </td>
                                 </tr>
                             <?php } ?>
@@ -523,14 +553,6 @@ if (isset($_GET['delete_employee'])) {
 <div class="modal-overlay" id="requestModal"><div class="modal"><div class="modal-header"><h3 id="modalTitle">Заявка #</h3><button class="modal-close" onclick="closeModal()">×</button></div><div class="modal-body" id="modalContent"></div></div></div>
 
 <script>
-// Функции для новостей и цен
-function showNewsForm() { document.getElementById('news-form').style.display='block'; document.getElementById('news_id').value=''; document.getElementById('news_title').value=''; document.getElementById('news_description').value=''; }
-function hideNewsForm() { document.getElementById('news-form').style.display='none'; }
-window.editNews = function(id,title,desc){ document.getElementById('news-form').style.display='block'; document.getElementById('news_id').value=id; document.getElementById('news_title').value=title; document.getElementById('news_description').value=desc; };
-function showPriceForm() { document.getElementById('price-form').style.display='block'; document.getElementById('price_id').value=''; document.getElementById('service_name').value=''; document.getElementById('price_description').value=''; document.getElementById('service_price').value=''; document.getElementById('service_unit').value=''; }
-function hidePriceForm() { document.getElementById('price-form').style.display='none'; }
-window.editPrice = function(id,name,desc,price,unit){ document.getElementById('price-form').style.display='block'; document.getElementById('price_id').value=id; document.getElementById('service_name').value=name; document.getElementById('price_description').value=desc; document.getElementById('service_price').value=price; document.getElementById('service_unit').value=unit; };
-
 // Функции для сотрудников
 function showEmployeeForm() {
     document.getElementById('employeeForm').style.display = 'block';
@@ -548,10 +570,17 @@ function showEmployeeForm() {
     posSelect.innerHTML = '<option value="">Сначала выберите отдел</option>';
     document.getElementById('emp_role').value = 'executor';
 }
-function hideEmployeeForm() { document.getElementById('employeeForm').style.display = 'none'; }
+
+function hideEmployeeForm() {
+    document.getElementById('employeeForm').style.display = 'none';
+}
+
 function editEmployee(id) {
     fetch('includes/get_employee.php?id=' + id)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) throw new Error('Ошибка сети: ' + response.status);
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 let emp = data.employee;
@@ -579,21 +608,33 @@ function editEmployee(id) {
                                 if (pos.id == emp.position_id) option.selected = true;
                                 posSelect.appendChild(option);
                             });
-                        });
+                        })
+                        .catch(err => console.error('Ошибка загрузки должностей:', err));
                 } else {
                     document.getElementById('emp_position_id').innerHTML = '<option value="">Сначала выберите отдел</option>';
                 }
                 document.getElementById('emp_role').value = emp.role;
-            } else alert('Ошибка: ' + data.error);
-        }).catch(err => alert('Ошибка: ' + err.message));
+            } else {
+                alert('Ошибка: ' + (data.error || 'Неизвестная ошибка'));
+            }
+        })
+        .catch(err => {
+            console.error('Ошибка:', err);
+            alert('Ошибка при загрузке данных сотрудника: ' + err.message);
+        });
 }
+
+// При загрузке страницы навешиваем обработчик на выбор отдела
 document.addEventListener('DOMContentLoaded', function() {
     const deptSelect = document.getElementById('emp_department_id');
     if (deptSelect) {
         deptSelect.addEventListener('change', function() {
             let deptId = this.value;
             let posSelect = document.getElementById('emp_position_id');
-            if (!deptId) { posSelect.innerHTML = '<option value="">Сначала выберите отдел</option>'; return; }
+            if (!deptId) {
+                posSelect.innerHTML = '<option value="">Сначала выберите отдел</option>';
+                return;
+            }
             posSelect.innerHTML = '<option value="">Загрузка...</option>';
             fetch('includes/get_positions_by_department.php?department_id=' + deptId)
                 .then(response => response.json())
@@ -605,89 +646,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         option.textContent = pos.name;
                         posSelect.appendChild(option);
                     });
-                }).catch(err => { posSelect.innerHTML = '<option value="">Ошибка загрузки</option>'; console.error(err); });
+                })
+                .catch(err => {
+                    posSelect.innerHTML = '<option value="">Ошибка загрузки</option>';
+                    console.error(err);
+                });
         });
     }
-});
 
-// Функции для заявок
-function initAssignButtons() {
-    document.querySelectorAll('.assign-btn').forEach(btn => {
-        btn.removeEventListener('click', handleAssign);
-        btn.addEventListener('click', handleAssign);
-    });
-}
-function handleAssign(e) {
-    const btn = e.currentTarget;
-    const form = btn.closest('.assign-form');
-    const requestId = form.dataset.id;
-    const employeeId = form.querySelector('.assign-select').value;
-    if (!employeeId) {
-        if (confirm('Снять назначение?')) {
-            fetch('includes/update_message_assign.php', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:`action=assign&id=${requestId}&employee_id=0` })
-                .then(r=>r.json()).then(data=>{ if(data.success) location.reload(); else alert(data.error); });
-        }
-        return;
+    // Инициализация кнопок назначения (если есть)
+    if (typeof initAssignButtons === 'function') {
+        initAssignButtons();
     }
-    fetch('includes/update_message_assign.php', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:`action=assign&id=${requestId}&employee_id=${employeeId}` })
-        .then(r=>r.json()).then(data=>{ if(data.success) location.reload(); else alert(data.error); });
-}
-function showRequestDetails(id) {
-    fetch('includes/get_message.php?id='+id).then(r=>r.json()).then(data=>{
-        if(data.success){
-            let msg = data.message;
-            document.getElementById('modalTitle').innerHTML = 'Заявка #'+id;
-            let html = `<div><strong>Имя:</strong> ${escapeHtml(msg.user_name)}</div>
-                        <div><strong>Email:</strong> ${escapeHtml(msg.user_email)}</div>
-                        <div><strong>Телефон:</strong> ${escapeHtml(msg.phone||'—')}</div>
-                        <div><strong>Тема:</strong> ${escapeHtml(msg.subject)}</div>
-                        <div><strong>Статус:</strong> <span class="status-badge">${escapeHtml(msg.status)}</span></div>
-                        <div><strong>Назначен:</strong> ${msg.assigned_name || 'Не назначен'}</div>
-                        <div><strong>Дата:</strong> ${formatDateTime(msg.created_at)}</div>
-                        <hr><div><strong>Сообщение:</strong><br><pre>${escapeHtml(msg.message)}</pre></div>
-                        ${msg.admin_response ? `<hr><div><strong>Ответ администратора:</strong><br><pre>${escapeHtml(msg.admin_response)}</pre></div>` : ''}
-                        <div style="margin-top:20px;">
-                            <select id="statusSelect">
-                                <option value="новая" ${msg.status==='новая'?'selected':''}>Новая</option>
-                                <option value="в работе" ${msg.status==='в работе'?'selected':''}>В работе</option>
-                                <option value="выполнена" ${msg.status==='выполнена'?'selected':''}>Выполнена</option>
-                            </select>
-                            <button class="btn btn-success" onclick="updateRequestStatus(${msg.id})">Сохранить статус</button>
-                            <button class="btn btn-secondary" onclick="closeModal()">Закрыть</button>
-                        </div>`;
-            document.getElementById('modalContent').innerHTML = html;
-            document.getElementById('requestModal').style.display = 'flex';
-        } else alert('Ошибка');
-    });
-}
-function updateRequestStatus(id) {
-    let newStatus = document.getElementById('statusSelect').value;
-    fetch('includes/update_message_assign.php', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:`action=update_status&id=${id}&status=${encodeURIComponent(newStatus)}` })
-        .then(r=>r.json()).then(data=>{ if(data.success) location.reload(); else alert('Ошибка: '+data.error); });
-}
-function deleteSingleRequest(id) { if(confirm('Удалить заявку #'+id+'?')) window.location.href='includes/delete_request.php?id='+id; }
-function editRequest(id) { window.location.href = 'edit_request.php?id='+id; }
-let selectedRequests = [];
-function updateBulkDeleteCount() {
-    let cbs = document.querySelectorAll('.request-checkbox:checked');
-    let count = cbs.length;
-    let btn = document.getElementById('bulkDeleteBtn');
-    selectedRequests = Array.from(cbs).map(cb=>cb.value);
-    if(count>0) { btn.style.display='inline-block'; btn.textContent = `🗑️ Удалить выбранные (${count})`; }
-    else btn.style.display='none';
-}
-function toggleSelectAll(cb) { document.querySelectorAll('.request-checkbox').forEach(c=>c.checked=cb.checked); updateBulkDeleteCount(); }
-function showBulkDeleteModal() {
-    if(selectedRequests.length===0) return;
-    if(confirm(`Удалить ${selectedRequests.length} заявок?`)) {
-        fetch('includes/bulk_delete_requests.php', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ids:selectedRequests, section:'requests'}) })
-            .then(r=>r.json()).then(data=>{ if(data.success) location.reload(); else alert('Ошибка: '+data.error); });
-    }
-}
-function closeModal() { document.getElementById('requestModal').style.display='none'; }
-function escapeHtml(str){ if(!str) return ''; return str.replace(/[&<>]/g,function(m){if(m==='&')return '&amp;';if(m==='<')return '&lt;';if(m==='>')return '&gt;';return m;}); }
-function formatDateTime(dt){ return new Date(dt).toLocaleString('ru-RU'); }
-initAssignButtons();
+});
 </script>
 </body>
 </html>

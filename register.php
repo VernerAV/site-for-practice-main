@@ -94,10 +94,14 @@ if (isset($_SESSION['user_id'])) {
                        value="<?php echo $_GET['last_name'] ?? ''; ?>">
             </div>
 
+            <!-- ПОЛЕ ТЕЛЕФОНА С МАСКОЙ (исправленная) -->
             <div class="form-group">
                 <label for="phone">Телефон</label>
                 <input type="tel" id="phone" name="phone" 
-                       value="<?php echo $_GET['phone'] ?? ''; ?>">
+                       placeholder="+7 (999) 999-99-99"
+                       value="<?php echo $_GET['phone'] ?? ''; ?>"
+                       maxlength="18">
+                <small class="form-hint">Введите 10 цифр после +7</small>
             </div>
             
             <button type="submit" class="btn-register">Зарегистрироваться</button>
@@ -108,62 +112,187 @@ if (isset($_SESSION['user_id'])) {
         </div>
     </div>
 
-    <script>
-        function checkPasswordStrength(password) {
-            const strengthElement = document.getElementById('passwordStrength');
-            let strength = 'weak';
-            let message = 'Слабый пароль';
+<script>
+    // ===== МАСКА ТЕЛЕФОНА (НАДЁЖНАЯ) =====
+    (function() {
+        const phoneInput = document.getElementById('phone');
 
-            if (password.length >= 8) {
-                strength = 'medium';
-                message = 'Средний пароль';
-            }
+        function formatPhoneNumber(value) {
+            // Удаляем все нецифровые символы
+            let digits = value.replace(/\D/g, '');
             
-            if (password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password)) {
-                strength = 'strong';
-                message = 'Сильный пароль';
+            // Если есть 7 или 8 в начале, удаляем их (потому что добавим +7 сами)
+            if (digits.startsWith('7') || digits.startsWith('8')) {
+                digits = digits.substring(1);
+            }
+            // Ограничиваем 10 цифрами
+            if (digits.length > 10) {
+                digits = digits.slice(0, 10);
             }
 
-            strengthElement.textContent = message;
-            strengthElement.className = 'password-strength strength-' + strength;
+            let result = '';
+            if (digits.length > 0) {
+                result = '+7';
+                // Форматируем: +7 (XXX) XXX-XX-XX
+                result += ' (';
+                result += digits.substring(0, 3);
+                if (digits.length > 3) {
+                    result += ') ';
+                    result += digits.substring(3, 6);
+                    if (digits.length > 6) {
+                        result += '-';
+                        result += digits.substring(6, 8);
+                        if (digits.length > 8) {
+                            result += '-';
+                            result += digits.substring(8, 10);
+                        }
+                    }
+                }
+            }
+            return result;
         }
 
-        function checkPasswordMatch() {
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirm_password').value;
-            const matchElement = document.getElementById('passwordMatch');
-
-            if (confirmPassword === '') {
-                matchElement.textContent = '';
-                return;
+        // Обработчик ввода
+        phoneInput.addEventListener('input', function(e) {
+            // Получаем текущее значение
+            let raw = this.value;
+            // Удаляем все нецифровые
+            let digits = raw.replace(/\D/g, '');
+            
+            // Если есть 7 или 8 в начале, удаляем (чтобы не дублировать +7)
+            if (digits.startsWith('7') || digits.startsWith('8')) {
+                digits = digits.substring(1);
+            }
+            // Ограничиваем 10 цифр
+            if (digits.length > 10) {
+                digits = digits.slice(0, 10);
             }
 
-            if (password === confirmPassword) {
-                matchElement.textContent = 'Пароли совпадают';
-                matchElement.className = 'password-strength strength-strong';
-            } else {
-                matchElement.textContent = 'Пароли не совпадают';
-                matchElement.className = 'password-strength strength-weak';
-            }
-        }
-
-        // Валидация формы перед отправкой
-        document.getElementById('registerForm').addEventListener('submit', function(e) {
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirm_password').value;
-
-            if (password !== confirmPassword) {
-                e.preventDefault();
-                alert('Пароли не совпадают!');
-                return false;
+            // Форматируем
+            const formatted = formatPhoneNumber(digits);
+            
+            // Устанавливаем значение, только если оно изменилось
+            if (this.value !== formatted) {
+                this.value = formatted;
             }
 
-            if (password.length < 6) {
-                e.preventDefault();
-                alert('Пароль должен содержать минимум 6 символов!');
-                return false;
+            // Устанавливаем курсор в конец
+            const pos = this.value.length;
+            this.setSelectionRange(pos, pos);
+        });
+
+        // При фокусе: если поле пустое, вставляем +7 (
+        phoneInput.addEventListener('focus', function() {
+            if (this.value === '') {
+                this.value = '+7 (';
+                this.setSelectionRange(4, 4);
             }
         });
-    </script>
+
+        // При потере фокуса: если введено менее 10 цифр, оставляем как есть
+        // (ничего не делаем)
+
+        // Обработка вставки из буфера
+        phoneInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pasted = (e.clipboardData || window.clipboardData).getData('text');
+            // Извлекаем цифры из вставленного текста
+            let digits = pasted.replace(/\D/g, '');
+            if (digits.startsWith('7') || digits.startsWith('8')) {
+                digits = digits.substring(1);
+            }
+            if (digits.length > 10) {
+                digits = digits.slice(0, 10);
+            }
+            this.value = formatPhoneNumber(digits);
+            this.setSelectionRange(this.value.length, this.value.length);
+        });
+
+        // Инициализация: если значение уже есть, форматируем
+        if (phoneInput.value) {
+            let digits = phoneInput.value.replace(/\D/g, '');
+            if (digits.startsWith('7') || digits.startsWith('8')) {
+                digits = digits.substring(1);
+            }
+            if (digits.length > 10) {
+                digits = digits.slice(0, 10);
+            }
+            phoneInput.value = formatPhoneNumber(digits);
+        }
+    })();
+
+    // Остальные функции (проверка пароля и т.д.) остаются без изменений
+    function checkPasswordStrength(password) {
+        const strengthElement = document.getElementById('passwordStrength');
+        let strength = 'weak';
+        let message = 'Слабый пароль';
+
+        if (password.length >= 8) {
+            strength = 'medium';
+            message = 'Средний пароль';
+        }
+        
+        if (password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password)) {
+            strength = 'strong';
+            message = 'Сильный пароль';
+        }
+
+        strengthElement.textContent = message;
+        strengthElement.className = 'password-strength strength-' + strength;
+    }
+
+    function checkPasswordMatch() {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+        const matchElement = document.getElementById('passwordMatch');
+
+        if (confirmPassword === '') {
+            matchElement.textContent = '';
+            return;
+        }
+
+        if (password === confirmPassword) {
+            matchElement.textContent = 'Пароли совпадают';
+            matchElement.className = 'password-strength strength-strong';
+        } else {
+            matchElement.textContent = 'Пароли не совпадают';
+            matchElement.className = 'password-strength strength-weak';
+        }
+    }
+
+    // Валидация формы
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+
+        if (password !== confirmPassword) {
+            e.preventDefault();
+            alert('Пароли не совпадают!');
+            return false;
+        }
+
+        if (password.length < 6) {
+            e.preventDefault();
+            alert('Пароль должен содержать минимум 6 символов!');
+            return false;
+        }
+
+        // Проверка телефона (если заполнен)
+        const phone = document.getElementById('phone').value;
+        if (phone) {
+            const digits = phone.replace(/\D/g, '');
+            // Убираем 7/8 в начале
+            let clean = digits;
+            if (clean.startsWith('7') || clean.startsWith('8')) {
+                clean = clean.substring(1);
+            }
+            if (clean.length !== 10) {
+                e.preventDefault();
+                alert('Введите корректный номер телефона (10 цифр после +7)');
+                return false;
+            }
+        }
+    });
+</script>
 </body>
 </html>
