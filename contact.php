@@ -1,74 +1,6 @@
 <?php
 session_start();
 require_once 'includes/config.php';
-require_once 'includes/check_auth.php';
-
-$user_data = null;
-if (isset($_SESSION['user_id'])) {
-    $stmt = $pdo->prepare("
-        SELECT u.email, up.first_name, up.last_name, up.phone, up.address
-        FROM users u
-        LEFT JOIN user_profiles up ON u.id = up.user_id
-        WHERE u.id = ?
-    ");
-    $stmt->execute([$_SESSION['user_id']]);
-    $user_data = $stmt->fetch();
-}
-
-// Функции разбора адреса
-function extractStreetFromAddress($address) {
-    if (empty($address)) return '';
-    $patterns = ['/,\s*подъезд\s+\S+.*$/iu', '/,\s*этаж\s+\S+.*$/iu', '/,\s*кв\.\s+\S+.*$/iu', '/,\s*квартира\s+\S+.*$/iu', '/,\s*домофон\s+\S+.*$/iu'];
-    $street = trim($address);
-    foreach ($patterns as $pattern) {
-        $test = preg_replace($pattern, '', $street);
-        if ($test !== $street) { $street = trim($test, ', '); break; }
-    }
-    return $street;
-}
-function extractEntranceFromAddress($address) {
-    if (empty($address)) return '';
-    if (preg_match('/подъезд\s+(\S+)/iu', $address, $matches)) return trim($matches[1], ', ');
-    return '';
-}
-function extractFloorFromAddress($address) {
-    if (empty($address)) return '';
-    if (preg_match('/этаж\s+(\S+)/iu', $address, $matches)) return trim($matches[1], ', ');
-    return '';
-}
-function extractApartmentFromAddress($address) {
-    if (empty($address)) return '';
-    if (preg_match('/(?:кв\.|квартира)\s+(\S+)/iu', $address, $matches)) return trim($matches[1], ', ');
-    return '';
-}
-function extractIntercomFromAddress($address) {
-    if (empty($address)) return '';
-    if (preg_match('/домофон\s+(\S+)/iu', $address, $matches)) return trim($matches[1], ', ');
-    return '';
-}
-
-$categories = [];
-try {
-    $stmt = $pdo->query("SELECT id, name, work_type, base_hours, description, is_common FROM categories ORDER BY name");
-    $raw = $stmt->fetchAll();
-    foreach ($raw as $cat) {
-        $icon = '📌';
-        $name = $cat['name'];
-        if (strpos($name, 'Ремонт') !== false) $icon = '🔧';
-        elseif (strpos($name, 'Сантехника') !== false) $icon = '🚰';
-        elseif (strpos($name, 'Электрика') !== false) $icon = '⚡';
-        elseif (strpos($name, 'Благоустройство') !== false) $icon = '🌳';
-        elseif (strpos($name, 'Бухгалтерия') !== false) $icon = '📄';
-        elseif (strpos($name, 'Юридические') !== false) $icon = '⚖️';
-        elseif (strpos($name, 'IT') !== false) $icon = '💻';
-        elseif (strpos($name, 'Диспетчерская') !== false) $icon = '📞';
-        elseif (strpos($name, 'Кадровые') !== false) $icon = '👤';
-        $cat['icon'] = $icon;
-        $categories[] = $cat;
-    }
-} catch (PDOException $e) {
-    error_log("Ошибка загрузки категорий: " . $e->getMessage());
-}
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -81,7 +13,6 @@ try {
     <link rel="stylesheet" href="css/address-autocomplete.css">
 </head>
 <body>
-
 <?php include 'templates/header.php'; ?>
 
 <div class="form-container">
@@ -89,24 +20,23 @@ try {
         <h1>Сервис подачи заявок и обращений</h1>
         <p>Заполните несколько шагов, и мы решим вашу проблему</p>
     </div>
-    
     <div class="form-content">
         <div id="messageBlock"></div>
         <div class="progress-bar" id="progressBar"></div>
-        
+
         <form id="contactForm" novalidate>
-           <!-- Шаг 1: тип -->
+            <!-- Шаг 1: Тип -->
             <div class="step active" data-step="0">
                 <h2>Что вы хотите сделать?</h2>
                 <div class="info-notice">
-                    ⚠️ <strong>Обратите внимание:</strong> Услуги, связанные с ремонтом в квартире (сантехника, электрика и др.), могут быть платными.
-                    Ознакомьтесь с <a href="price.php" target="_blank">прайс-листом</a>.
+                    ⚠️ <strong>Обратите внимание:</strong> Услуги в квартире могут быть платными.
+                    <a href="price.php" target="_blank">Прайс-лист</a>
                 </div>
                 <div class="card-grid" id="typeGrid">
                     <div class="card" data-value="request">
                         <span class="icon">🛠️</span>
                         <div class="title">Заявка</div>
-                        <div class="desc">Нужен выезд специалиста на место</div>
+                        <div class="desc">Нужен выезд специалиста</div>
                     </div>
                     <div class="card" data-value="appeal">
                         <span class="icon">✉️</span>
@@ -115,8 +45,8 @@ try {
                     </div>
                 </div>
             </div>
-            
-            <!-- Шаг 2: категория -->
+
+            <!-- Шаг 2: Категория -->
             <div class="step" data-step="1">
                 <h2>Выберите категорию</h2>
                 <div class="card-grid card-grid-small" id="categoryGrid"></div>
@@ -124,78 +54,77 @@ try {
                     <button type="button" class="btn btn-secondary" onclick="goStep(-1)">← Назад</button>
                 </div>
             </div>
-            
-            <!-- Шаг 3: срочность (только для квартирных заявок) -->
+
+            <!-- Шаг 3: Срочность (только для квартирных) -->
             <div class="step" data-step="2" id="stepUrgency">
                 <h2>Насколько срочно?</h2>
                 <div class="card-grid" id="urgencyGrid">
                     <div class="card" data-value="normal">
                         <div class="title">🟢 Планово</div>
-                        <div class="desc">3–5 дней, проблема не мешает</div>
+                        <div class="desc">3–5 дней</div>
                     </div>
                     <div class="card" data-value="high">
                         <div class="title">🟡 Оперативно</div>
-                        <div class="desc">1–2 дня, дискомфорт без риска</div>
+                        <div class="desc">1–2 дня</div>
                     </div>
                     <div class="card" data-value="emergency">
                         <div class="title">🔴 Срочно</div>
-                        <div class="desc">Сегодня, риск для имущества/жизни</div>
+                        <div class="desc">Сегодня</div>
                     </div>
                 </div>
                 <div class="btn-group">
                     <button type="button" class="btn btn-secondary" onclick="goStep(-1)">← Назад</button>
                 </div>
             </div>
-            
-            <!-- Шаг 4: объём (только для квартирных заявок) -->
+
+            <!-- Шаг 4: Объём (только для квартирных) -->
             <div class="step" data-step="3" id="stepVolume">
                 <h2>Объём работ</h2>
                 <div class="card-grid" id="volumeGrid">
                     <div class="card" data-value="small">
                         <div class="title">📏 Мелкий</div>
-                        <div class="desc">Заменить лампу, отрегулировать дверь</div>
+                        <div class="desc">До 1 часа</div>
                     </div>
                     <div class="card" data-value="medium">
                         <div class="title">📐 Средний</div>
-                        <div class="desc">Заменить кран, прочистить засор</div>
+                        <div class="desc">1–3 часа</div>
                     </div>
                     <div class="card" data-value="large">
                         <div class="title">📦 Крупный</div>
-                        <div class="desc">Заменить стояк, ремонт кровли</div>
+                        <div class="desc">От 3 часов</div>
                     </div>
                 </div>
                 <div class="btn-group">
                     <button type="button" class="btn btn-secondary" onclick="goStep(-1)">← Назад</button>
                 </div>
             </div>
-            
-            <!-- Шаг 5: Адрес и доступ (всегда для заявок) -->
+
+            <!-- Шаг 5: Адрес -->
             <div class="step" data-step="4" id="stepAddress">
                 <h2>Адрес и доступ</h2>
                 <div class="form-group">
                     <label>Улица и дом <span style="color:red">*</span></label>
-                    <input type="text" id="street" name="street" value="<?= htmlspecialchars(extractStreetFromAddress($user_data['address'] ?? '')) ?>" placeholder="ул. Исаковского, д.8 к.1" required>
+                    <input type="text" id="street" required placeholder="ул. Исаковского, д.8 к.1">
                     <div class="hint">Начните вводить адрес, появится список подсказок</div>
-                    <input type="hidden" id="full_address" name="address" value="<?= htmlspecialchars($user_data['address'] ?? '') ?>">
+                    <input type="hidden" id="full_address" name="address">
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label>Подъезд</label>
-                        <input type="text" id="entrance" name="entrance" value="<?= htmlspecialchars(extractEntranceFromAddress($user_data['address'] ?? '')) ?>" placeholder="№ подъезда">
+                        <input type="text" id="entrance" placeholder="№ подъезда">
                     </div>
-                    <div class="form-group field-floor" id="floorGroup">
+                    <div class="form-group field-floor">
                         <label>Этаж</label>
-                        <input type="text" id="floor" name="floor" value="<?= htmlspecialchars(extractFloorFromAddress($user_data['address'] ?? '')) ?>" placeholder="№ этажа">
+                        <input type="text" id="floor" placeholder="№ этажа">
                     </div>
-                    <div class="form-group field-apartment" id="apartmentGroup">
+                    <div class="form-group field-apartment">
                         <label>Квартира <span id="apartmentRequired" style="color:red">*</span></label>
-                        <input type="text" id="apartment" name="apartment" value="<?= htmlspecialchars(extractApartmentFromAddress($user_data['address'] ?? '')) ?>" placeholder="№ квартиры" required>
+                        <input type="text" id="apartment" placeholder="№ квартиры" required>
                     </div>
                 </div>
-                <div class="form-group field-intercom" id="intercomGroup">
+                <div class="form-group field-intercom">
                     <label>Код домофона</label>
-                    <input type="text" id="intercom" name="intercom" value="<?= htmlspecialchars(extractIntercomFromAddress($user_data['address'] ?? '')) ?>" placeholder="например, 1234 или #5678">
-                    <div class="hint">Укажите код домофона, чтобы мастер мог войти в подъезд</div>
+                    <input type="text" id="intercom" placeholder="1234 или #5678">
                 </div>
                 <div class="form-group">
                     <label>Есть ли лифт?</label>
@@ -209,48 +138,68 @@ try {
                     <button type="button" class="btn btn-primary" id="step5Next" disabled>Далее →</button>
                 </div>
             </div>
-            
-            <!-- Шаг 6: материалы (только для квартирных заявок) -->
+
+            <!-- Шаг 6: Материалы (только для квартирных) -->
             <div class="step" data-step="5" id="stepMaterials">
                 <h2>Готовность к работе</h2>
                 <div class="card-grid" id="materialsGrid">
                     <div class="card" data-value="0">
                         <div class="title">✅ Всё есть</div>
-                        <div class="desc">Купили заранее, лежит дома</div>
+                        <div class="desc">Купили заранее</div>
                     </div>
                     <div class="card" data-value="2">
                         <div class="title">❓ Не знаю</div>
-                        <div class="desc">Мастер посмотрит и скажет</div>
+                        <div class="desc">Мастер скажет</div>
                     </div>
                     <div class="card" data-value="1">
                         <div class="title">🛒 Ничего нет</div>
-                        <div class="desc">Нужно закупать перед началом</div>
+                        <div class="desc">Нужно закупать</div>
                     </div>
                 </div>
                 <div class="btn-group">
                     <button type="button" class="btn btn-secondary" onclick="goStep(-1)">← Назад</button>
                 </div>
             </div>
-            
-            <!-- Шаг 7: контакты -->
+
+            <!-- Шаг 7: Контакты -->
             <div class="step" data-step="6">
-                <h2>Ваши контакты и описание</h2>
-                <div class="form-group">
-                    <label>Ваше имя <span style="color:red">*</span></label>
-                    <input type="text" id="userName" value="<?= htmlspecialchars($user_data ? (($user_data['first_name'] ?? '').' '.($user_data['last_name'] ?? '')) : '') ?>" required>
+                <h2>Ваши контакты</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Фамилия <span style="color:red">*</span></label>
+                        <input type="text" id="lastName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Имя <span style="color:red">*</span></label>
+                        <input type="text" id="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Отчество</label>
+                        <input type="text" id="middleName">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Email <span style="color:red">*</span></label>
-                    <input type="email" id="userEmail" value="<?= htmlspecialchars($user_data['email'] ?? '') ?>" required>
+                    <input type="email" id="userEmail" required>
                 </div>
                 <div class="form-group">
                     <label>Телефон</label>
-                    <input type="tel" id="userPhone" value="<?= htmlspecialchars($user_data['phone'] ?? '') ?>" placeholder="+7 (999) 999-99-99">
+                    <input type="tel" id="userPhone" placeholder="+7 (999) 999-99-99">
                 </div>
                 <div class="form-group">
                     <label>Подробное описание <span style="color:red">*</span></label>
-                    <textarea id="messageText" rows="4" placeholder="Опишите суть проблемы или вопроса"></textarea>
+                    <textarea id="messageText" rows="4" required></textarea>
                 </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="goStep(-1)">← Назад</button>
+                    <button type="button" class="btn btn-primary" id="step7Next" disabled>Далее →</button>
+                </div>
+            </div>
+
+            <!-- Шаг 8: Итог -->
+            <div class="step" data-step="7">
+                <h2>Проверка данных</h2>
+                <div id="summaryBlock"></div>
                 <div class="btn-group">
                     <button type="button" class="btn btn-secondary" onclick="goStep(-1)">← Назад</button>
                     <button type="button" class="btn btn-success" id="submitBtn">✅ Отправить</button>
@@ -263,23 +212,34 @@ try {
 <?php include 'templates/footer.php'; ?>
 <script src="js/address-autocomplete.js"></script>
 <script>
-const categories = <?= json_encode($categories) ?>;
+// Получаем категории из PHP
+const categories = <?php
+    try {
+        $stmt = $pdo->query("SELECT id, name, work_type, description, is_common FROM categories ORDER BY name");
+        echo json_encode($stmt->fetchAll());
+    } catch (PDOException $e) {
+        echo '[]';
+    }
+?>;
 
 let currentStep = 0;
-let formData = {
+const formData = {
     type: null,
     category_id: null,
-    urgency: null,
-    volume: null,
+    urgency: 'normal',
+    volume: 'medium',
     address: '',
     floor: '',
     has_elevator: 1,
-    materials_needed: null,
-    user_name: '',
+    materials_needed: 0,
     user_email: '',
     user_phone: '',
     message: '',
-    intercom: ''
+    intercom: '',
+    first_name: '',
+    last_name: '',
+    middle_name: '',
+    is_common: false
 };
 
 function isCommonCategory() {
@@ -289,29 +249,23 @@ function isCommonCategory() {
 }
 
 function getTotalSteps() {
-    if (formData.type === 'appeal') return 3;
-    if (isCommonCategory()) return 4; // тип, категория, адрес, контакты
-    return 7; // тип, категория, срочность, объём, адрес, материалы, контакты
+    if (formData.type === 'appeal') return 4;
+    if (isCommonCategory()) return 5;
+    return 8;
 }
 
 function rebuildProgress() {
     const bar = document.getElementById('progressBar');
     const total = getTotalSteps();
     let html = '';
-    for (let i = 0; i < total; i++) {
-        let stepIndex;
-        if (total === 3) {
-            if (i === 0) stepIndex = 0;
-            else if (i === 1) stepIndex = 1;
-            else stepIndex = 6;
-        } else if (total === 4) {
-            if (i === 0) stepIndex = 0;
-            else if (i === 1) stepIndex = 1;
-            else if (i === 2) stepIndex = 4;
-            else stepIndex = 6;
-        } else {
-            stepIndex = i; // 0,1,2,3,4,5,6
-        }
+    const mapping = {
+        4: [0, 1, 6, 7],
+        5: [0, 1, 4, 6, 7],
+        8: [0, 1, 2, 3, 4, 5, 6, 7]
+    };
+    const steps = mapping[total] || [0, 1, 2, 3, 4, 5, 6, 7];
+    for (let i = 0; i < steps.length; i++) {
+        const stepIndex = steps[i];
         const isActive = (currentStep === stepIndex);
         const isDone = (currentStep > stepIndex);
         let cls = 'progress-dot';
@@ -323,14 +277,14 @@ function rebuildProgress() {
     bar.querySelectorAll('.progress-dot').forEach(dot => {
         dot.addEventListener('click', function() {
             const targetStep = parseInt(this.dataset.step);
-            const steps = document.querySelectorAll('.step');
-            if (steps[targetStep] && steps[targetStep].style.display !== 'none') {
-                steps[currentStep].classList.remove('active');
+            const stepsAll = document.querySelectorAll('.step');
+            if (stepsAll[targetStep] && stepsAll[targetStep].style.display !== 'none') {
+                stepsAll[currentStep].classList.remove('active');
                 currentStep = targetStep;
-                steps[currentStep].classList.add('active');
+                stepsAll[currentStep].classList.add('active');
                 updateProgress();
                 updateButtons();
-                saveState();
+                if (currentStep === 7) generateSummary();
             }
         });
     });
@@ -346,30 +300,6 @@ function updateProgress() {
     });
 }
 
-function loadState() {
-    try {
-        const saved = localStorage.getItem('contactFormState');
-        if (saved) {
-            const state = JSON.parse(saved);
-            if (state.currentStep !== undefined) currentStep = state.currentStep;
-            if (state.formData) {
-                Object.keys(state.formData).forEach(key => {
-                    if (formData.hasOwnProperty(key)) formData[key] = state.formData[key];
-                });
-            }
-        }
-    } catch(e) {}
-}
-
-function saveState() {
-    try {
-        localStorage.setItem('contactFormState', JSON.stringify({
-            currentStep: currentStep,
-            formData: formData
-        }));
-    } catch(e) {}
-}
-
 function goStep(delta) {
     const steps = document.querySelectorAll('.step');
     let newStep = currentStep + delta;
@@ -381,89 +311,80 @@ function goStep(delta) {
     if (newStep < 0) newStep = 0;
     if (newStep >= steps.length) newStep = steps.length - 1;
     if (steps[newStep].style.display === 'none') return;
-    
     steps[currentStep].classList.remove('active');
     currentStep = newStep;
     steps[currentStep].classList.add('active');
     updateProgress();
     updateButtons();
-    saveState();
+    if (currentStep === 7) generateSummary();
 }
 
 function updateButtons() {
-    const type = formData.type;
     const isCommon = isCommonCategory();
     const stepUrgency = document.getElementById('stepUrgency');
     const stepVolume = document.getElementById('stepVolume');
-    const stepAddress = document.getElementById('stepAddress');
     const stepMaterials = document.getElementById('stepMaterials');
-    if (type === 'request' && !isCommon) {
+    const stepAddress = document.getElementById('stepAddress');
+    if (formData.type === 'request' && !isCommon) {
         stepUrgency.style.display = 'block';
         stepVolume.style.display = 'block';
-        stepAddress.style.display = 'block';
         stepMaterials.style.display = 'block';
-    } else if (type === 'request' && isCommon) {
-        // Показываем только адрес
+        stepAddress.style.display = 'block';
+    } else if (formData.type === 'request' && isCommon) {
         stepUrgency.style.display = 'none';
         stepVolume.style.display = 'none';
-        stepAddress.style.display = 'block';
         stepMaterials.style.display = 'none';
-        // Если мы на скрытом шаге (2,3,5) – переходим на 4 или 6
-        const steps = document.querySelectorAll('.step');
-        if (currentStep === 2 || currentStep === 3 || currentStep === 5) {
+        stepAddress.style.display = 'block';
+        if (currentStep >= 2 && currentStep <= 3 || currentStep === 5) {
+            const steps = document.querySelectorAll('.step');
             steps[currentStep].classList.remove('active');
             currentStep = (currentStep === 5) ? 6 : 4;
             steps[currentStep].classList.add('active');
             updateProgress();
-            saveState();
         }
-    } else { // appeal
+    } else {
         stepUrgency.style.display = 'none';
         stepVolume.style.display = 'none';
-        stepAddress.style.display = 'none';
         stepMaterials.style.display = 'none';
-        const steps = document.querySelectorAll('.step');
+        stepAddress.style.display = 'none';
         if (currentStep >= 2 && currentStep <= 5) {
+            const steps = document.querySelectorAll('.step');
             steps[currentStep].classList.remove('active');
             currentStep = 6;
             steps[currentStep].classList.add('active');
             updateProgress();
-            saveState();
         }
     }
-    updateAddressFieldsVisibility();
-    updateApartmentRequired();
+    updateAddressFields();
     rebuildProgress();
+    // Активируем кнопку "Далее" на контактах
+    const step7Next = document.getElementById('step7Next');
+    if (step7Next) {
+        const ln = document.getElementById('lastName').value.trim();
+        const fn = document.getElementById('firstName').value.trim();
+        const em = document.getElementById('userEmail').value.trim();
+        const msg = document.getElementById('messageText').value.trim();
+        step7Next.disabled = !(ln.length >= 2 && fn.length >= 2 && em && msg.length >= 10);
+    }
 }
 
-function updateAddressFieldsVisibility() {
+function updateAddressFields() {
     const isCommon = isCommonCategory();
-    // Этаж
-    const floorGroup = document.getElementById('floorGroup');
-    // Квартира
-    const apartmentGroup = document.getElementById('apartmentGroup');
-    // Домофон
-    const intercomGroup = document.getElementById('intercomGroup');
+    const floorGroup = document.querySelector('.field-floor');
+    const apartmentGroup = document.querySelector('.field-apartment');
+    const intercomGroup = document.querySelector('.field-intercom');
+    const apartmentInput = document.getElementById('apartment');
+    const apartmentLabel = document.getElementById('apartmentRequired');
     if (isCommon) {
         if (floorGroup) floorGroup.style.display = 'none';
         if (apartmentGroup) apartmentGroup.style.display = 'none';
         if (intercomGroup) intercomGroup.style.display = 'none';
+        if (apartmentInput) apartmentInput.removeAttribute('required');
+        if (apartmentLabel) apartmentLabel.style.display = 'none';
     } else {
         if (floorGroup) floorGroup.style.display = 'block';
         if (apartmentGroup) apartmentGroup.style.display = 'block';
         if (intercomGroup) intercomGroup.style.display = 'block';
-    }
-    // Обновляем full_address (вызовем позже в checkAddressFields)
-}
-
-function updateApartmentRequired() {
-    const isCommon = isCommonCategory();
-    const apartmentInput = document.getElementById('apartment');
-    const apartmentLabel = document.getElementById('apartmentRequired');
-    if (isCommon) {
-        if (apartmentInput) apartmentInput.removeAttribute('required');
-        if (apartmentLabel) apartmentLabel.style.display = 'none';
-    } else {
         if (apartmentInput) apartmentInput.setAttribute('required', 'required');
         if (apartmentLabel) apartmentLabel.style.display = 'inline';
     }
@@ -478,202 +399,36 @@ function setupCardSelection(containerId, inputName, nextStepDelay = 300) {
             this.classList.add('selected');
             const val = this.dataset.value;
             formData[inputName] = val;
-            saveState();
             if (inputName === 'type') {
-                rebuildProgress();
+                const cat = this.dataset.value;
+                loadCategories(cat);
             }
             setTimeout(() => {
-                goStep(1);
+                if (inputName === 'type' && formData.type === 'appeal') {
+                    const steps = document.querySelectorAll('.step');
+                    steps[currentStep].classList.remove('active');
+                    currentStep = 6;
+                    steps[currentStep].classList.add('active');
+                    updateProgress();
+                    updateButtons();
+                } else if (inputName === 'category_id') {
+                    const isCommon = isCommonCategory();
+                    if (isCommon) {
+                        const steps = document.querySelectorAll('.step');
+                        steps[currentStep].classList.remove('active');
+                        currentStep = 4;
+                        steps[currentStep].classList.add('active');
+                        updateProgress();
+                        updateButtons();
+                    } else {
+                        goStep(1);
+                    }
+                } else {
+                    goStep(1);
+                }
             }, nextStepDelay);
         });
     });
-}
-
-// Переопределяем updateFullAddress для учёта общих категорий
-function updateFullAddressCustom() {
-    const streetInput = document.getElementById('street');
-    const fullAddressInput = document.getElementById('full_address');
-    const entranceInput = document.getElementById('entrance');
-    const floorInput = document.getElementById('floor');
-    const apartmentInput = document.getElementById('apartment');
-    const intercomInput = document.getElementById('intercom');
-    
-    if (!streetInput || !fullAddressInput) return;
-    
-    let street = streetInput.value.trim();
-    let entrance = entranceInput ? entranceInput.value.trim() : '';
-    let floor = floorInput ? floorInput.value.trim() : '';
-    let apartment = apartmentInput ? apartmentInput.value.trim() : '';
-    let intercom = intercomInput ? intercomInput.value.trim() : '';
-    
-    let fullAddress = street;
-    if (entrance) fullAddress += `, подъезд ${entrance}`;
-    const isCommon = isCommonCategory();
-    if (!isCommon) {
-        if (floor) fullAddress += `, этаж ${floor}`;
-        if (apartment) fullAddress += `, кв. ${apartment}`;
-        if (intercom) fullAddress += `, домофон ${intercom}`;
-    }
-    fullAddressInput.value = fullAddress;
-}
-
-// Заменяем глобальную функцию updateFullAddress
-window.updateFullAddress = updateFullAddressCustom;
-
-document.addEventListener('DOMContentLoaded', function() {
-    loadState();
-    rebuildProgress();
-    
-    setupCardSelection('typeGrid', 'type', 300);
-    const typeCards = document.querySelectorAll('#typeGrid .card');
-    typeCards.forEach(card => {
-        card.addEventListener('click', function() {
-            const val = this.dataset.value;
-            loadCategories(val);
-            saveState();
-        });
-        // Маска для телефона +7 (999) 999-99-99
-        const phoneInput = document.getElementById('userPhone');
-        if (phoneInput) {
-            phoneInput.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
-                if (value.length > 0) {
-                    if (value[0] === '7' || value[0] === '8') value = value.substring(1);
-                    if (value.length > 10) value = value.substring(0, 10);
-                    let formatted = '+7 (';
-                    if (value.length > 0) formatted += value.substring(0, 3);
-                    if (value.length > 3) formatted += ') ' + value.substring(3, 6);
-                    if (value.length > 6) formatted += '-' + value.substring(6, 8);
-                    if (value.length > 8) formatted += '-' + value.substring(8, 10);
-                    e.target.value = formatted;
-                }
-            });
-}
-    });
-    
-    setupCardSelection('urgencyGrid', 'urgency', 300);
-    setupCardSelection('volumeGrid', 'volume', 300);
-    setupCardSelection('materialsGrid', 'materials_needed', 300);
-    
-    // Шаг 5: адрес
-    const streetInput = document.getElementById('street');
-    const apartmentInput = document.getElementById('apartment');
-    const intercomInput = document.getElementById('intercom');
-    const step5Next = document.getElementById('step5Next');
-    const fullAddressInput = document.getElementById('full_address');
-    
-    function checkAddressFields() {
-        const street = streetInput.value.trim();
-        const apartment = apartmentInput.value.trim();
-        const isCommon = isCommonCategory();
-        if (street.length > 0 && (isCommon || apartment.length > 0)) {
-            step5Next.disabled = false;
-        } else {
-            step5Next.disabled = true;
-        }
-        // Обновляем полный адрес
-        if (typeof updateFullAddressCustom === 'function') {
-            updateFullAddressCustom();
-        }
-    }
-    
-    streetInput.addEventListener('input', checkAddressFields);
-    apartmentInput.addEventListener('input', checkAddressFields);
-    intercomInput.addEventListener('input', function() {
-        if (typeof updateFullAddressCustom === 'function') updateFullAddressCustom();
-    });
-    document.getElementById('entrance').addEventListener('input', function() {
-        if (typeof updateFullAddressCustom === 'function') updateFullAddressCustom();
-    });
-    document.getElementById('floor').addEventListener('input', function() {
-        if (typeof updateFullAddressCustom === 'function') updateFullAddressCustom();
-    });
-    
-    updateAddressFieldsVisibility();
-    updateApartmentRequired();
-    checkAddressFields();
-    
-    step5Next.addEventListener('click', function() {
-        formData.address = fullAddressInput.value;
-        formData.has_elevator = document.getElementById('hasElevator').value;
-        formData.intercom = intercomInput.value.trim();
-        saveState();
-        // Если общая категория – сразу на контакты, иначе на следующий шаг
-        if (isCommonCategory()) {
-            const steps = document.querySelectorAll('.step');
-            steps[currentStep].classList.remove('active');
-            currentStep = 6;
-            steps[currentStep].classList.add('active');
-            updateProgress();
-            updateButtons();
-            saveState();
-        } else {
-            goStep(1);
-        }
-    });
-    
-    document.getElementById('submitBtn').addEventListener('click', function() {
-        submitForm();
-    });
-    
-    restoreSelection();
-    
-    document.querySelectorAll('#contactForm input, #contactForm select, #contactForm textarea').forEach(el => {
-        el.addEventListener('change', saveState);
-        el.addEventListener('input', saveState);
-    });
-});
-
-function restoreSelection() {
-    if (formData.type) {
-        const typeCards = document.querySelectorAll('#typeGrid .card');
-        typeCards.forEach(card => {
-            if (card.dataset.value === formData.type) {
-                card.classList.add('selected');
-                loadCategories(formData.type);
-            }
-        });
-        rebuildProgress();
-    }
-    if (formData.urgency) {
-        const urgencyCards = document.querySelectorAll('#urgencyGrid .card');
-        urgencyCards.forEach(card => {
-            if (card.dataset.value === formData.urgency) card.classList.add('selected');
-        });
-    }
-    if (formData.volume) {
-        const volumeCards = document.querySelectorAll('#volumeGrid .card');
-        volumeCards.forEach(card => {
-            if (card.dataset.value === formData.volume) card.classList.add('selected');
-        });
-    }
-    if (formData.materials_needed !== null) {
-        const materialsCards = document.querySelectorAll('#materialsGrid .card');
-        materialsCards.forEach(card => {
-            if (card.dataset.value == formData.materials_needed) card.classList.add('selected');
-        });
-    }
-    if (formData.address) {
-        document.getElementById('full_address').value = formData.address;
-    }
-    if (formData.intercom) document.getElementById('intercom').value = formData.intercom;
-    if (formData.has_elevator) document.getElementById('hasElevator').value = formData.has_elevator;
-    if (formData.user_name) document.getElementById('userName').value = formData.user_name;
-    if (formData.user_email) document.getElementById('userEmail').value = formData.user_email;
-    if (formData.user_phone) document.getElementById('userPhone').value = formData.user_phone;
-    if (formData.message) document.getElementById('messageText').value = formData.message;
-    
-    updateAddressFieldsVisibility();
-    updateApartmentRequired();
-    
-    const steps = document.querySelectorAll('.step');
-    if (currentStep >= 0 && steps[currentStep] && steps[currentStep].style.display !== 'none') {
-        steps.forEach((s, i) => s.classList.remove('active'));
-        steps[currentStep].classList.add('active');
-        updateProgress();
-        updateButtons();
-    }
-    rebuildProgress();
 }
 
 function loadCategories(type) {
@@ -685,51 +440,35 @@ function loadCategories(type) {
     }
     let html = '';
     filtered.forEach(cat => {
+        const icon = cat.name.includes('Ремонт') ? '🔧' :
+                     cat.name.includes('Сантехника') ? '🚰' :
+                     cat.name.includes('Электрика') ? '⚡' :
+                     cat.name.includes('Благоустройство') ? '🌳' :
+                     cat.name.includes('Бухгалтерия') ? '📄' :
+                     cat.name.includes('Юридические') ? '⚖️' :
+                     cat.name.includes('IT') ? '💻' : '📌';
         html += `<div class="card" data-value="${cat.id}" data-common="${cat.is_common}">
-            <span class="icon">${cat.icon}</span>
+            <span class="icon">${icon}</span>
             <div class="title">${cat.name}</div>
             <div class="desc">${cat.description || ''}</div>
         </div>`;
     });
     grid.innerHTML = html;
     grid.querySelectorAll('.card').forEach(card => {
-        if (card.dataset.value == formData.category_id) {
-            card.classList.add('selected');
-        }
         card.addEventListener('click', function() {
             grid.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
             this.classList.add('selected');
-            const catId = this.dataset.value;
-            const isCommon = this.dataset.common == '1';
-            formData.category_id = catId;
-            saveState();
-            updateButtons(); // обновляем видимость
-            // Обновляем проверку адреса
-            const streetInput = document.getElementById('street');
-            const apartmentInput = document.getElementById('apartment');
-            if (streetInput) {
-                const event = new Event('input');
-                streetInput.dispatchEvent(event);
-                apartmentInput.dispatchEvent(event);
-            }
+            formData.category_id = parseInt(this.dataset.value);
+            formData.is_common = this.dataset.common == '1';
+            updateButtons();
             setTimeout(() => {
-                if (formData.type === 'appeal') {
-                    const steps = document.querySelectorAll('.step');
-                    steps[currentStep].classList.remove('active');
-                    currentStep = 6;
-                    steps[currentStep].classList.add('active');
-                    updateProgress();
-                    updateButtons();
-                    saveState();
-                } else if (isCommon) {
-                    // Переход на шаг адреса (4)
+                if (formData.is_common) {
                     const steps = document.querySelectorAll('.step');
                     steps[currentStep].classList.remove('active');
                     currentStep = 4;
                     steps[currentStep].classList.add('active');
                     updateProgress();
                     updateButtons();
-                    saveState();
                 } else {
                     goStep(1);
                 }
@@ -738,44 +477,272 @@ function loadCategories(type) {
     });
 }
 
-function submitForm() {
-    // Обновляем полный адрес перед отправкой
-    if (typeof updateFullAddressCustom === 'function') {
-        updateFullAddressCustom();
-    }
-    const fullAddress = document.getElementById('full_address').value;
-    formData.address = fullAddress;
-    formData.intercom = document.getElementById('intercom').value.trim();
-    formData.user_name = document.getElementById('userName').value.trim();
+function generateSummary() {
+    // Принудительно сохраняем данные из полей в formData перед генерацией
+    formData.last_name = document.getElementById('lastName').value.trim();
+    formData.first_name = document.getElementById('firstName').value.trim();
+    formData.middle_name = document.getElementById('middleName').value.trim();
     formData.user_email = document.getElementById('userEmail').value.trim();
     formData.user_phone = document.getElementById('userPhone').value.trim();
     formData.message = document.getElementById('messageText').value.trim();
-    saveState();
+    formData.address = document.getElementById('full_address').value;
+    formData.intercom = document.getElementById('intercom').value.trim();
+    formData.has_elevator = document.getElementById('hasElevator').value;
+    formData.floor = document.getElementById('floor').value.trim();
+
+    const block = document.getElementById('summaryBlock');
+    if (!block) return;
+    const cat = categories.find(c => c.id == formData.category_id);
+    const catName = cat ? cat.name : 'Не выбрана';
+    const urgencyMap = { normal: 'Планово (3–5 дней)', high: 'Оперативно (1–2 дня)', emergency: 'Срочно (сегодня)' };
+    const volumeMap = { small: 'Мелкий', medium: 'Средний', large: 'Крупный' };
+    const materialsMap = { 0: '✅ Всё есть', 1: '🛒 Ничего нет', 2: '❓ Не знаю' };
+    const fullName = formData.last_name + ' ' + formData.first_name + (formData.middle_name ? ' ' + formData.middle_name : '');
     
-    let errors = [];
-    if (!formData.user_name || formData.user_name.length < 2) errors.push('Введите имя');
-    if (!formData.user_email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.user_email)) errors.push('Введите корректный email');
-    if (!formData.category_id) errors.push('Выберите категорию');
-    if (!formData.message || formData.message.length < 10) errors.push('Опишите проблему (минимум 10 символов)');
+    let html = `<div class="summary-item"><strong>Тип:</strong> ${formData.type === 'request' ? 'Заявка' : 'Обращение'}</div>`;
+    html += `<div class="summary-item"><strong>Категория:</strong> ${catName}</div>`;
+    if (formData.type === 'request' && !isCommonCategory()) {
+        html += `<div class="summary-item"><strong>Срочность:</strong> ${urgencyMap[formData.urgency] || formData.urgency}</div>`;
+        html += `<div class="summary-item"><strong>Объём:</strong> ${volumeMap[formData.volume] || formData.volume}</div>`;
+        html += `<div class="summary-item"><strong>Материалы:</strong> ${materialsMap[formData.materials_needed] || 'Не выбрано'}</div>`;
+    }
     if (formData.type === 'request') {
-        if (!formData.address) errors.push('Укажите адрес');
-        if (!isCommonCategory()) {
+        html += `<div class="summary-item"><strong>Адрес:</strong> ${formData.address}</div>`;
+        html += `<div class="summary-item"><strong>Лифт:</strong> ${formData.has_elevator == 1 ? 'Да' : 'Нет'}</div>`;
+    }
+    html += `<div class="summary-item"><strong>ФИО:</strong> ${fullName}</div>`;
+    html += `<div class="summary-item"><strong>Email:</strong> ${formData.user_email}</div>`;
+    if (formData.user_phone) html += `<div class="summary-item"><strong>Телефон:</strong> ${formData.user_phone}</div>`;
+    html += `<div class="summary-item"><strong>Описание:</strong><br>${formData.message.replace(/\n/g, '<br>')}</div>`;
+    block.innerHTML = html;
+}
+
+// Инициализация
+document.addEventListener('DOMContentLoaded', function() {
+    // Загрузка категорий при выборе типа
+    // Выбор типа (Заявка / Обращение)
+setupCardSelection('typeGrid', 'type', 300);
+const typeCards = document.querySelectorAll('#typeGrid .card');
+typeCards.forEach(card => {
+    card.addEventListener('click', function() {
+        const val = this.dataset.value;
+        formData.type = val;
+        // Загружаем категории в зависимости от типа
+        loadCategories(val);
+        // Для обращений тоже переходим на шаг выбора категории (индекс 1)
+        setTimeout(() => {
+            const steps = document.querySelectorAll('.step');
+            steps[currentStep].classList.remove('active');
+            currentStep = 1; // всегда на категорию
+            steps[currentStep].classList.add('active');
+            updateProgress();
+            updateButtons();
+        }, 300);
+    });
+});
+    setupCardSelection('urgencyGrid', 'urgency', 300);
+    setupCardSelection('volumeGrid', 'volume', 300);
+    setupCardSelection('materialsGrid', 'materials_needed', 300);
+
+    // Адрес
+    const streetInput = document.getElementById('street');
+    const apartmentInput = document.getElementById('apartment');
+    const step5Next = document.getElementById('step5Next');
+    const fullAddressInput = document.getElementById('full_address');
+
+    function checkAddress() {
+        const street = streetInput.value.trim();
+        const apartment = apartmentInput.value.trim();
+        const isCommon = isCommonCategory();
+        if (street.length > 0 && (isCommon || apartment.length > 0)) {
+            step5Next.disabled = false;
+        } else {
+            step5Next.disabled = true;
+        }
+        if (typeof updateFullAddress === 'function') updateFullAddress();
+    }
+
+    streetInput.addEventListener('input', checkAddress);
+    apartmentInput.addEventListener('input', checkAddress);
+    document.getElementById('entrance')?.addEventListener('input', checkAddress);
+    document.getElementById('floor')?.addEventListener('input', checkAddress);
+    document.getElementById('intercom')?.addEventListener('input', checkAddress);
+
+    step5Next.addEventListener('click', function() {
+        formData.address = fullAddressInput.value;
+        formData.has_elevator = document.getElementById('hasElevator').value;
+        formData.intercom = document.getElementById('intercom').value.trim();
+        if (isCommonCategory()) {
+            const steps = document.querySelectorAll('.step');
+            steps[currentStep].classList.remove('active');
+            currentStep = 6;
+            steps[currentStep].classList.add('active');
+            updateProgress();
+            updateButtons();
+        } else {
+            goStep(1);
+        }
+    });
+
+    // Контакты
+    const lastNameInput = document.getElementById('lastName');
+    const firstNameInput = document.getElementById('firstName');
+    const userEmailInput = document.getElementById('userEmail');
+    const messageTextarea = document.getElementById('messageText');
+    const step7Next = document.getElementById('step7Next');
+
+    function checkContacts() {
+        const ln = lastNameInput.value.trim();
+        const fn = firstNameInput.value.trim();
+        const em = userEmailInput.value.trim();
+        const msg = messageTextarea.value.trim();
+        step7Next.disabled = !(ln.length >= 2 && fn.length >= 2 && em && msg.length >= 10);
+        // Обновляем formData при вводе
+        formData.last_name = ln;
+        formData.first_name = fn;
+        formData.middle_name = document.getElementById('middleName').value.trim();
+        formData.user_email = em;
+        formData.user_phone = document.getElementById('userPhone').value.trim();
+        formData.message = msg;
+    }
+
+    lastNameInput.addEventListener('input', checkContacts);
+    firstNameInput.addEventListener('input', checkContacts);
+    userEmailInput.addEventListener('input', checkContacts);
+    messageTextarea.addEventListener('input', checkContacts);
+    document.getElementById('middleName')?.addEventListener('input', checkContacts);
+    document.getElementById('userPhone')?.addEventListener('input', checkContacts);
+
+    step7Next.addEventListener('click', function() {
+        checkContacts();
+        const steps = document.querySelectorAll('.step');
+        steps[currentStep].classList.remove('active');
+        currentStep = 7;
+        steps[currentStep].classList.add('active');
+        updateProgress();
+        updateButtons();
+        generateSummary();
+    });
+
+    // Отправка
+    document.getElementById('submitBtn').addEventListener('click', function() {
+        submitForm();
+    });
+
+    // Маска телефона
+    const phoneInput = document.getElementById('userPhone');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 0) {
+                if (value[0] === '7' || value[0] === '8') value = value.substring(1);
+                if (value.length > 10) value = value.substring(0, 10);
+                let formatted = '+7 (';
+                if (value.length > 0) formatted += value.substring(0, 3);
+                if (value.length > 3) formatted += ') ' + value.substring(3, 6);
+                if (value.length > 6) formatted += '-' + value.substring(6, 8);
+                if (value.length > 8) formatted += '-' + value.substring(8, 10);
+                e.target.value = formatted;
+            }
+        });
+    }
+
+    // Восстановление из localStorage
+    try {
+        const saved = localStorage.getItem('contactFormState');
+        if (saved) {
+            const state = JSON.parse(saved);
+            if (state.currentStep !== undefined) currentStep = state.currentStep;
+            if (state.formData) {
+                Object.keys(state.formData).forEach(key => {
+                    if (formData.hasOwnProperty(key)) formData[key] = state.formData[key];
+                });
+            }
+        }
+    } catch(e) {}
+
+    // Переход на сохранённый шаг
+    const steps = document.querySelectorAll('.step');
+    if (currentStep >= 0 && steps[currentStep] && steps[currentStep].style.display !== 'none') {
+        steps.forEach((s, i) => s.classList.remove('active'));
+        steps[currentStep].classList.add('active');
+        updateProgress();
+        updateButtons();
+        if (currentStep === 7) generateSummary();
+    }
+    rebuildProgress();
+    updateButtons();
+});
+function submitForm() {
+    // Читаем все поля из DOM напрямую
+    const lastName = document.getElementById('lastName').value.trim();
+    const firstName = document.getElementById('firstName').value.trim();
+    const middleName = document.getElementById('middleName').value.trim();
+    const userEmail = document.getElementById('userEmail').value.trim();
+    const userPhone = document.getElementById('userPhone').value.trim();
+    const message = document.getElementById('messageText').value.trim();
+    const address = document.getElementById('full_address').value;
+    const intercom = document.getElementById('intercom').value.trim();
+    const hasElevator = document.getElementById('hasElevator').value;
+    const floor = document.getElementById('floor').value.trim();
+    const apartment = document.getElementById('apartment').value.trim();
+
+    // Формируем user_name
+    const userName = lastName + ' ' + firstName + (middleName ? ' ' + middleName : '');
+
+    // Записываем в formData
+    formData.user_name = userName;
+    formData.last_name = lastName;
+    formData.first_name = firstName;
+    formData.middle_name = middleName;
+    formData.user_email = userEmail;
+    formData.user_phone = userPhone;
+    formData.message = message;
+    formData.address = address;
+    formData.intercom = intercom;
+    formData.has_elevator = hasElevator;
+    formData.floor = floor;
+    formData.apartment = apartment;
+
+    // Для общих категорий
+    const isCommon = isCommonCategory();
+    if (isCommon) {
+        formData.urgency = 'normal';
+        formData.volume = 'medium';
+        formData.materials_needed = 0;
+    }
+
+    // Валидация
+    let errors = [];
+    if (!firstName || firstName.length < 2) errors.push('Введите имя (минимум 2 символа)');
+    if (!lastName || lastName.length < 2) errors.push('Введите фамилию (минимум 2 символа)');
+    if (!userEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userEmail)) errors.push('Введите корректный email');
+    if (!formData.category_id) errors.push('Выберите категорию');
+    if (!message || message.length < 10) errors.push('Опишите проблему (минимум 10 символов)');
+    if (formData.type === 'request') {
+        if (!address) errors.push('Укажите адрес');
+        if (!isCommon) {
             if (!formData.urgency) errors.push('Выберите срочность');
             if (!formData.volume) errors.push('Выберите объём работ');
             if (formData.materials_needed === null) errors.push('Укажите готовность к работе');
-            const apartment = document.getElementById('apartment').value.trim();
             if (!apartment) errors.push('Укажите номер квартиры');
         }
     }
+
     if (errors.length > 0) {
-        showMessage('error', errors.join('<br>'));
+        const block = document.getElementById('messageBlock');
+        block.innerHTML = `<div class="error-msg">${errors.join('<br>')}</div>`;
+        setTimeout(() => block.innerHTML = '', 8000);
         return;
     }
-    
+
+    // Отправка
     const btn = document.getElementById('submitBtn');
     btn.disabled = true;
     btn.textContent = 'Отправка...';
-    
+
+    console.log('Отправляемые данные:', formData);
+
     fetch('includes/process_contact.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -784,33 +751,22 @@ function submitForm() {
     .then(res => res.json())
     .then(data => {
         if (data.success) {
-            let msg = `✅ Ваша заявка №${data.request_id} успешно создана!`;
-            if (data.type === 'request' && data.estimated_hours && !isCommonCategory()) {
-                msg += `<br>⏱️ Примерное время выполнения: ${data.estimated_hours} ч.`;
-            }
-            if (data.type === 'appeal' || isCommonCategory()) {
-                msg += `<br><br>📌 Обработка заявлений в течение 5 рабочих дней.`;
-            }
-            msg += `<br><br>📌 Чтобы отслеживать статус, войдите в личный кабинет или зарегистрируйтесь.`;
-            showMessage('success', msg);
-            localStorage.removeItem('contactFormState');
+            window.location.href = 'success.php?id=' + data.request_id;
         } else {
-            showMessage('error', data.errors ? data.errors.join('<br>') : 'Ошибка при отправке');
+            const block = document.getElementById('messageBlock');
+            block.innerHTML = `<div class="error-msg">${data.errors ? data.errors.join('<br>') : 'Ошибка отправки'}</div>`;
+            setTimeout(() => block.innerHTML = '', 8000);
+            btn.disabled = false;
+            btn.textContent = '✅ Отправить';
         }
     })
     .catch(err => {
-        showMessage('error', 'Ошибка соединения: ' + err.message);
-    })
-    .finally(() => {
+        const block = document.getElementById('messageBlock');
+        block.innerHTML = `<div class="error-msg">Ошибка соединения: ${err.message}</div>`;
+        setTimeout(() => block.innerHTML = '', 8000);
         btn.disabled = false;
         btn.textContent = '✅ Отправить';
     });
-}
-
-function showMessage(type, text) {
-    const block = document.getElementById('messageBlock');
-    block.innerHTML = `<div class="${type === 'error' ? 'error-msg' : 'success-msg'}">${text}</div>`;
-    setTimeout(() => { block.innerHTML = ''; }, 10000);
 }
 </script>
 </body>

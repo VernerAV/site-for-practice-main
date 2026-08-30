@@ -154,7 +154,9 @@ function selectSuggestion(text) {
             <?php else: ?>
                 <!-- Неавторизованный: только Оставить заявку -->
                 <li><a href="contact.php">Оставить заявку</a></li>
+                <li><a href="check_status.php">Статус заявки</a></li>
             <?php endif; ?>
+            
         </ul>
 
 
