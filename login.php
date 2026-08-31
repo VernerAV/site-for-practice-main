@@ -58,6 +58,12 @@ if (isset($_GET['timeout'])) {
             </div>
         <?php endif; ?>
 
+        <?php if (isset($_GET['password_reset']) && $_GET['password_reset'] == 1): ?>
+    <div class="success" style="background:#d4edda;color:#155724;padding:12px;border-radius:4px;margin-bottom:15px;">
+        ✅ Пароль успешно изменён. Войдите с новым паролем.
+    </div>
+<?php endif; ?>
+
         <form action="includes/auth.php" method="POST">
             <div class="form-group">
                 <label for="email">Электронная почта</label>

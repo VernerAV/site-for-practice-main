@@ -44,29 +44,41 @@ try {
     if (!$cat) throw new Exception('Категория не найдена');
     $work_type = $cat['work_type'];
     $cat_name = $cat['name'];
+// Обращение
+if ($type === 'appeal') {
+    $request_data = [
+        'user_name' => $data['user_name'],
+        'user_email' => $data['user_email'],
+        'phone' => $data['phone'] ?? '',
+        'address' => $data['address'] ?? '',
+        'category_id' => $data['category_id'],
+        'subject' => 'Обращение: ' . $cat_name,
+        'message' => $data['message'],
+        'work_type' => $work_type,
+        'urgency' => 'normal',
+        'volume' => 'medium',
+        'floor' => null,
+        'has_elevator' => 1,
+        'materials_needed' => 0,
+        'estimated_hours' => null
+    ];
+    $request_id = saveRequest($request_data);
 
-    // Обращение
-    if ($type === 'appeal') {
-        $request_data = [
-            'user_name' => $data['user_name'],
-            'user_email' => $data['user_email'],
-            'phone' => $data['phone'] ?? '',
-            'address' => $data['address'] ?? '',
-            'category_id' => $data['category_id'],
-            'subject' => 'Обращение: ' . $cat_name,
-            'message' => $data['message'],
-            'work_type' => $work_type,
-            'urgency' => 'normal',
-            'volume' => 'medium',
-            'floor' => null,
-            'has_elevator' => 1,
-            'materials_needed' => 0,
-            'estimated_hours' => null
-        ];
-        $request_id = saveRequest($request_data);
-        echo json_encode(['success' => true, 'request_id' => $request_id, 'type' => 'appeal']);
-        exit;
+    // ---- ДОБАВЛЯЕМ АВТОМАТИЧЕСКОЕ НАЗНАЧЕНИЕ ДЛЯ ОБРАЩЕНИЙ ----
+    $executor_id = findBestExecutor($data['category_id'], $work_type, 'normal', null);
+    if ($executor_id) {
+        $assign_stmt = $pdo->prepare("UPDATE message SET assigned_to = ?, assigned_at = NOW(), assign_comment = 'Автоматическое назначение по нагрузке' WHERE id = ?");
+        $assign_stmt->execute([$executor_id, $request_id]);
+        logAssignment($request_id, $executor_id, 'auto', 'Автоматическое назначение по нагрузке');
+        error_log("process_contact: обращение #$request_id назначено на исполнителя $executor_id");
+    } else {
+        error_log("process_contact: для обращения #$request_id не найден исполнитель");
     }
+    // -----------------------------------------------------------
+
+    echo json_encode(['success' => true, 'request_id' => $request_id, 'type' => 'appeal']);
+    exit;
+}
 
     // Заявка
     $estimated_hours = calculateEstimatedHours(

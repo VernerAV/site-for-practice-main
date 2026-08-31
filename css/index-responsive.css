@@ -565,3 +565,16 @@ body {
         flex-shrink: 0;
     }
 }
+
+/* Скрываем кнопки навигации на мобильных и планшетах */
+@media (max-width: 768px) {
+    .slider-nav {
+        display: none !important;
+    }
+}
+
+/* Для свайпа делаем трек чуть шире и добавляем отступы */
+.news-slider-wrapper {
+    overflow: hidden;
+    touch-action: pan-y; /* разрешаем вертикальный скролл, горизонтальный управляется JS */
+}

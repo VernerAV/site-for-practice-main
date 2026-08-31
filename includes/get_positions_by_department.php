@@ -1,32 +1,27 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-session_start();
 require_once 'config.php';
-require_once 'check_auth.php';
-
 header('Content-Type: application/json');
-if (!isAdmin()) {
+
+if (!isset($_GET['department_id']) || empty($_GET['department_id'])) {
     echo json_encode([]);
     exit;
 }
-$department_id = (int)($_GET['department_id'] ?? 0);
-if (!$department_id) {
-    echo json_encode([]);
-    exit;
-}
+
+$department_id = (int)$_GET['department_id'];
+
 try {
     $stmt = $pdo->prepare("
-        SELECT p.id, p.name
-        FROM positions p
-        JOIN department_positions dp ON p.id = dp.position_id
+        SELECT MIN(p.id) AS id, p.name
+        FROM department_positions dp
+        JOIN positions p ON dp.position_id = p.id
         WHERE dp.department_rule_id = ?
+        GROUP BY p.name
         ORDER BY p.name
     ");
     $stmt->execute([$department_id]);
     $positions = $stmt->fetchAll(PDO::FETCH_ASSOC);
     echo json_encode($positions);
 } catch (PDOException $e) {
+    error_log("get_positions_by_department: " . $e->getMessage());
     echo json_encode([]);
 }
-?>

@@ -118,6 +118,7 @@ session_start(); ?>
         <h1 class="section-title">Последние новости</h1>
         
         <div class="news-slider-container">
+            <!-- Кнопки (скрываются на мобильных через CSS) -->
             <button class="slider-nav prev" onclick="slideNews(-1)">‹</button>
             
             <div class="news-slider-wrapper">
