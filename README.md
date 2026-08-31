@@ -104,7 +104,7 @@
 site-for-practice-main/
 ├── index.php                 # Главная страница
 ├── news.php                  # Страница новостей
-├── news-details.php          # Детальный просмотр новости
+├── news_details.php          # Детальный просмотр новости
 ├── price.php                 # Прайс-лист услуг
 ├── contact.php               # Форма подачи заявки
 ├── login.php                 # Вход

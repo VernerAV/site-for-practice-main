@@ -97,6 +97,7 @@ unset($_SESSION['employee_success'], $_SESSION['employee_error']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="img/icons/icon.ico">
     <title>Личный кабинет сотрудника</title>
     <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="css/mobile_all.css">

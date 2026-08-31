@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="news-slide-date">${date}</div>
                 <h3 class="news-slide-title">${escapeHtml(item.title)}</h3>
                 <p class="news-slide-text">${escapeHtml(shortDescription)}</p>
-                <a href="news-details.php?id=${item.id}" class="news-slide-link">
+                <a href="news_details.php?id=${item.id}" class="news-slide-link">
                     Читать подробнее
                 </a>
             </div>

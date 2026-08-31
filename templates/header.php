@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="img/icons/icon.ico">
     <title>ГБУ "Жилищник Района Строгино"</title>
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/header_mobile.css">
@@ -152,7 +153,8 @@
             'user.php'         => 'Личный кабинет',
             'login.php'        => 'Вход',
             'check_status.php' => 'Статус заявки',
-            'search.php'       => 'Результаты поиска'
+            'search.php'       => 'Результаты поиска',
+            'news_details.php'       => 'Новость'
         ];
         $current_title = $page_titles[$current_file] ?? ucfirst(str_replace('.php', '', $current_file));
         $is_home = ($current_file === 'index.php');

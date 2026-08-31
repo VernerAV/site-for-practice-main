@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function(e) {
             e.stopPropagation();
             const newsId = this.dataset.id;
-            const url = window.location.origin + '/news-details.php?id=' + newsId;
+            const url = window.location.origin + '/news_details.php?id=' + newsId;
             const title = this.closest('.news-card').querySelector('.card-title').textContent;
             
             // Простая копия ссылки в буфер

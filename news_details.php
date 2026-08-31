@@ -169,7 +169,7 @@ function truncateText($text, $length = 100) {
             <?php if ($prev_news || $next_news): ?>
             <div class="news-navigation">
                 <?php if ($prev_news): ?>
-                <a href="news-details.php?id=<?php echo $prev_news['id']; ?>" class="nav-btn prev">
+                <a href="news_detail.php?id=<?php echo $prev_news['id']; ?>" class="nav-btn prev">
                     <i class="fas fa-chevron-left"></i>
                     <div>
                         <span class="nav-label">Предыдущая новость</span>
@@ -181,7 +181,7 @@ function truncateText($text, $length = 100) {
                 <?php endif; ?>
                 
                 <?php if ($next_news): ?>
-                <a href="news-details.php?id=<?php echo $next_news['id']; ?>" class="nav-btn next">
+                <a href="news_detail.php?id=<?php echo $next_news['id']; ?>" class="nav-btn next">
                     <div>
                         <span class="nav-label">Следующая новость</span>
                         <span class="nav-title"><?php echo htmlspecialchars(truncateText($next_news['title'], 50)); ?></span>
@@ -198,7 +198,7 @@ function truncateText($text, $length = 100) {
                 <h2>Другие новости</h2>
                 <div class="related-grid">
                     <?php foreach ($related_news as $related): ?>
-                    <a href="news-details.php?id=<?php echo $related['id']; ?>" class="related-card">
+                    <a href="news_detail.php?id=<?php echo $related['id']; ?>" class="related-card">
                         <?php if ($related['image']): ?>
                         <img src="uploads/news/<?php echo htmlspecialchars($related['image']); ?>" 
                              alt="<?php echo htmlspecialchars($related['title']); ?>"
