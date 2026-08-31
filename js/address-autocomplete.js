@@ -1,4 +1,3 @@
-// Массив адресов для автодополнения
 const addresses = [
     "Исаковского, 2 к.1", "Исаковского, 2 к. 2", "Исаковского, 4 к. 2",
     "Исаковского, 6 к. 1", "Исаковского, 6 к. 3", "Исаковского, 8 к. 1",
@@ -40,17 +39,12 @@ const addresses = [
     "ул. 2-я лыковская, 55", "ул. 2-я лыковская, 55 стр.1", "Туркменский проезд, 20"
 ];
 
-// Функция для поиска адресов
 function searchAddresses(query) {
     if (query.length < 2) return [];
-    
     const lowerQuery = query.toLowerCase();
-    return addresses.filter(address => 
-        address.toLowerCase().includes(lowerQuery)
-    );
+    return addresses.filter(address => address.toLowerCase().includes(lowerQuery));
 }
 
-// Функция для обновления полного адреса
 function updateFullAddress() {
     const streetInput = document.getElementById('street');
     const fullAddressInput = document.getElementById('full_address');
@@ -76,7 +70,6 @@ function updateFullAddress() {
     fullAddressInput.value = fullAddress;
 }
 
-// Функция для автоматического заполнения полей при выборе адреса
 function autoFillAddressDetails(selectedAddress) {
     const streetInput = document.getElementById('street');
     const entranceInput = document.getElementById('entrance');
@@ -84,40 +77,28 @@ function autoFillAddressDetails(selectedAddress) {
     const apartmentInput = document.getElementById('apartment');
     
     if (!streetInput) return;
-    
-    // Заполняем поле улицы
     streetInput.value = selectedAddress;
-    
-    // Очищаем детали при выборе нового адреса
     if (entranceInput) entranceInput.value = '';
     if (floorInput) floorInput.value = '';
     if (apartmentInput) apartmentInput.value = '';
     
-    // Обновляем полный адрес
     updateFullAddress();
+    // Сразу выполняем проверку после выбора
+    if (typeof checkAddress === 'function') {
+        checkAddress();
+    }
 }
 
-// Функция для подготовки адреса перед отправкой формы
 function prepareAddress() {
     updateFullAddress();
-    console.log('Отправляется полный адрес:', document.getElementById('full_address').value);
     return true;
 }
 
-// Инициализация автодополнения
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Скрипт автодополнения загружен');
-    
     const streetInput = document.getElementById('street');
-    
-    if (!streetInput) {
-        console.error('Поле street не найдено!');
-        return;
-    }
-    
-    console.log('Поле street найдено:', streetInput);
-    
-    // Создаем dropdown для подсказок
+    if (!streetInput) return;
+
+    // Создаём dropdown один раз
     const dropdown = document.createElement('div');
     dropdown.className = 'address-dropdown';
     dropdown.style.cssText = `
@@ -135,41 +116,78 @@ document.addEventListener('DOMContentLoaded', function() {
         left: 0;
         margin-top: 5px;
     `;
-    
     const parentContainer = streetInput.parentNode;
     parentContainer.style.position = 'relative';
     parentContainer.appendChild(dropdown);
-    
-    // Назначаем обработчики на все поля адреса для обновления полного адреса
-    const addressInputs = ['street', 'entrance', 'floor', 'apartment'];
-    addressInputs.forEach(id => {
+
+    // Переменная для таймера blur
+    let blurTimer = null;
+
+    // Обновление полного адреса при вводе в полях
+    ['street', 'entrance', 'floor', 'apartment'].forEach(id => {
         const input = document.getElementById(id);
         if (input) {
             input.addEventListener('input', updateFullAddress);
         }
     });
-    
-    // Очищаем детали адреса при ручном изменении улицы
+
+    // При вводе в поле улицы – убираем подсветку и скрываем ошибку, обновляем кнопку (без проверки)
+    streetInput.addEventListener('input', function() {
+        this.classList.remove('invalid');
+        const addressError = document.getElementById('addressError');
+        if (addressError) addressError.style.display = 'none';
+        if (typeof updateAddressButton === 'function') {
+            updateAddressButton();
+        }
+        updateFullAddress();
+    });
+
+    // Обработчик потери фокуса – отложенная проверка
+    streetInput.addEventListener('blur', function() {
+        // Отменяем предыдущий таймер, если был
+        if (blurTimer) clearTimeout(blurTimer);
+        // Устанавливаем новый таймер на 200 мс
+        blurTimer = setTimeout(() => {
+            if (typeof checkAddress === 'function') {
+                checkAddress();
+            }
+            blurTimer = null;
+        }, 200);
+    });
+
+    // Обработчик ввода в другие поля адреса (обновление кнопки без проверки)
+    ['entrance', 'floor', 'apartment'].forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('input', function() {
+                if (typeof updateAddressButton === 'function') {
+                    updateAddressButton();
+                }
+                updateFullAddress();
+            });
+        }
+    });
+
+    // Обработчик изменения лифта
+    const elevatorSelect = document.getElementById('hasElevator');
+    if (elevatorSelect) {
+        elevatorSelect.addEventListener('change', updateFullAddress);
+    }
+
+    // Поиск и отображение подсказок
     streetInput.addEventListener('input', function() {
         const query = this.value;
-        
-        // Если пользователь начал вводить новый адрес, очищаем детали
+        // Очищаем детали при вводе нового адреса
         if (query.length < 2) {
-            const entranceInput = document.getElementById('entrance');
-            const floorInput = document.getElementById('floor');
-            const apartmentInput = document.getElementById('apartment');
-            
-            if (entranceInput) entranceInput.value = '';
-            if (floorInput) floorInput.value = '';
-            if (apartmentInput) apartmentInput.value = '';
+            ['entrance', 'floor', 'apartment'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
         }
-        
         dropdown.innerHTML = '';
         dropdown.style.display = 'none';
-        
         if (query.length >= 2) {
             const results = searchAddresses(query);
-            
             if (results.length > 0) {
                 results.forEach(address => {
                     const item = document.createElement('div');
@@ -181,51 +199,44 @@ document.addEventListener('DOMContentLoaded', function() {
                         border-bottom: 1px solid #f0f0f0;
                         transition: background 0.2s;
                     `;
-                    
                     item.addEventListener('mouseenter', function() {
                         this.style.background = '#f8f9fa';
                     });
-                    
                     item.addEventListener('mouseleave', function() {
                         this.style.background = 'white';
                     });
-                    
                     item.addEventListener('click', function() {
-                        console.log('Выбран адрес:', address);
+                        // При клике на элемент списка – отменяем таймер blur
+                        if (blurTimer) {
+                            clearTimeout(blurTimer);
+                            blurTimer = null;
+                        }
                         autoFillAddressDetails(address);
                         dropdown.style.display = 'none';
-                        
-                        // Фокус на следующее поле
+                        // Перемещаем фокус на поле "Подъезд"
                         const entranceInput = document.getElementById('entrance');
-                        if (entranceInput) {
-                            entranceInput.focus();
-                        }
+                        if (entranceInput) entranceInput.focus();
                     });
-                    
                     dropdown.appendChild(item);
                 });
                 dropdown.style.display = 'block';
             }
         }
-        
-        // Обновляем полный адрес при ручном вводе
         updateFullAddress();
     });
-    
-    // Скрываем dropdown при клике вне его
+
+    // Закрытие списка при клике вне
     document.addEventListener('click', function(e) {
         if (!streetInput.contains(e.target) && !dropdown.contains(e.target)) {
             dropdown.style.display = 'none';
         }
     });
-    
-    // Закрываем dropdown по Escape
+
+    // Клавиатурная навигация
     streetInput.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             dropdown.style.display = 'none';
         }
-        
-        // Навигация по подсказкам стрелками
         if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
             e.preventDefault();
             const items = dropdown.querySelectorAll('.dropdown-item');
@@ -236,24 +247,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         currentIndex = index;
                     }
                 });
-                
                 if (e.key === 'ArrowDown') {
                     const nextIndex = (currentIndex + 1) % items.length;
                     items[nextIndex].style.background = '#f8f9fa';
-                    if (currentIndex >= 0) {
-                        items[currentIndex].style.background = 'white';
-                    }
-                } else if (e.key === 'ArrowUp') {
+                    if (currentIndex >= 0) items[currentIndex].style.background = 'white';
+                } else {
                     const prevIndex = currentIndex <= 0 ? items.length - 1 : currentIndex - 1;
                     items[prevIndex].style.background = '#f8f9fa';
-                    if (currentIndex >= 0) {
-                        items[currentIndex].style.background = 'white';
-                    }
+                    if (currentIndex >= 0) items[currentIndex].style.background = 'white';
                 }
             }
         }
-        
-        // Выбор подсказки по Enter
         if (e.key === 'Enter') {
             const selectedItem = dropdown.querySelector('.dropdown-item[style*="background: rgb(248, 249, 250)"]');
             if (selectedItem && dropdown.style.display === 'block') {
@@ -262,12 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-    
-    // Инициализируем полный адрес при загрузке
+
     updateFullAddress();
-    
-    // Экспортируем функцию для формы
     window.prepareAddress = prepareAddress;
-    
-    console.log('Автодополнение инициализировано');
 });

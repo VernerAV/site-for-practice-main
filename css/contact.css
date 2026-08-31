@@ -387,3 +387,13 @@ body {
 .info-notice a:hover {
     color: #0d3b4f;
 }
+
+/* Проверка улицы */
+#street.invalid {
+    border-color: #dc3545;
+    background-color: #fff0f0;
+}
+#street.invalid:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
