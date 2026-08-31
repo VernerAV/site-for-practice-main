@@ -8,7 +8,8 @@ session_start(); ?>
     <title>ГБУ Жилищник района Строгино</title>
 	 <!-- Подключение CSS -->
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/style_mobile.css">
+    <link rel="stylesheet" href="css/index-responsive.css">
+    
 	
 </head>
 <body>
@@ -44,7 +45,7 @@ session_start(); ?>
 </section>
 
         <!-- Таблица график приема -->
-        <div class="schedule">
+        <div class="schedule" id="schedule">
 			<h1>График приема населения</h1>
             <table class="iksweb">
 		<tr>

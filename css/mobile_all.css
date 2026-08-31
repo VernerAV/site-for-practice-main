@@ -1,0 +1,319 @@
+/* ============================================================
+   МОБИЛЬНЫЕ СТИЛИ ДЛЯ ВСЕХ СТРАНИЦ (ДОПОЛНЕНИЯ И ИСПРАВЛЕНИЯ)
+   ============================================================ */
+
+/* ===== СТРАНИЦА "О НАС" (about.css) ===== */
+@media (max-width: 768px) {
+    .container { padding: 15px; }
+    .page-header h1 { font-size: 24px; }
+    .content-section { padding: 20px; }
+    .info-item { padding: 8px 0; }
+    .details-grid { display: block; }
+    .official-links .links-list li { padding: 10px; }
+}
+@media (max-width: 480px) {
+    .container { padding: 10px; }
+    .page-header h1 { font-size: 20px; }
+    .page-subtitle { font-size: 16px; }
+    .content-section { padding: 15px; }
+    .content-text { font-size: 14px; }
+    .contact { padding: 15px; }
+    .info-label { font-size: 14px; }
+    .info-value { font-size: 14px; }
+}
+
+/* ===== СТРАНИЦА 404 (404.css) ===== */
+@media (max-width: 768px) {
+    .error-container { padding: 30px; }
+    .error-code { font-size: 80px; }
+    .error-title { font-size: 28px; }
+    .error-message { font-size: 16px; }
+    .search-box { flex-wrap: wrap; }
+    .search-input { border-radius: 50px; width: 100%; margin-bottom: 10px; }
+    .search-button { border-radius: 50px; width: 100%; }
+    .action-buttons { flex-direction: column; align-items: center; }
+    .btn { width: 100%; text-align: center; }
+}
+@media (max-width: 480px) {
+    .error-container { padding: 20px; }
+    .error-code { font-size: 60px; }
+    .error-title { font-size: 22px; }
+    .error-message { font-size: 14px; }
+    .suggestions { padding: 15px; }
+    .suggestions li { font-size: 14px; }
+}
+
+/* ===== РЕЖИМ ДЛЯ СЛАБОВИДЯЩИХ (accessibility-mode.css) ===== */
+@media (max-width: 768px) {
+    #accessibilityToggle {
+        font-size: 12px;
+        padding: 8px 12px;
+        border-radius: 30px;
+        bottom: 10px;
+        right: 10px;
+    }
+    .accessibility-mode {
+        font-size: 20px !important;
+        line-height: 1.6 !important;
+        letter-spacing: 0.1em !important;
+    }
+    .accessibility-mode button,
+    .accessibility-mode input[type="submit"],
+    .accessibility-mode input[type="button"] {
+        min-height: 40px !important;
+        min-width: 40px !important;
+    }
+    .accessibility-mode input,
+    .accessibility-mode textarea,
+    .accessibility-mode select {
+        font-size: 18px !important;
+    }
+}
+@media (max-width: 480px) {
+    #accessibilityToggle {
+        font-size: 11px;
+        padding: 6px 10px;
+        bottom: 8px;
+        right: 8px;
+    }
+    .accessibility-mode {
+        font-size: 18px !important;
+        line-height: 1.5 !important;
+        letter-spacing: 0.08em !important;
+    }
+    .accessibility-mode button,
+    .accessibility-mode input[type="submit"],
+    .accessibility-mode input[type="button"] {
+        min-height: 36px !important;
+        min-width: 36px !important;
+    }
+    .accessibility-mode input,
+    .accessibility-mode textarea,
+    .accessibility-mode select {
+        font-size: 16px !important;
+    }
+}
+
+/* ===== АДМИНКА (admin.css) – дополнения ===== */
+@media (max-width: 768px) {
+    .admin-nav { flex-direction: column; text-align: center; gap: 10px; }
+    .admin-sidebar ul { flex-direction: row; flex-wrap: wrap; }
+    .admin-sidebar li { flex: 1 1 45%; }
+    .admin-sidebar a { padding: 8px 10px; font-size: 13px; }
+    .admin-main { padding: 15px; }
+    .filter-bar { flex-direction: column; align-items: stretch; }
+    .filter-group { width: 100%; }
+    .table-container { overflow-x: auto; }
+    .table th, .table td { padding: 8px 6px; font-size: 12px; }
+    .news-grid, .prices-grid { grid-template-columns: 1fr; }
+    .form-card { padding: 15px; }
+    .modal { width: 95%; }
+}
+@media (max-width: 480px) {
+    .admin-nav h1 { font-size: 1.2rem; }
+    .admin-sidebar li { flex: 1 1 100%; }
+    .table th, .table td { font-size: 11px; padding: 6px 4px; }
+    .btn { font-size: 13px; padding: 6px 12px; }
+    .form-group input, .form-group select, .form-group textarea { font-size: 14px; }
+}
+
+/* ===== СТРАНИЦА ПРОВЕРКИ СТАТУСА (check_status.css) – мелкие правки ===== */
+@media (max-width: 600px) {
+    .check-status-container { padding: 0 15px 60px; }
+    .form-wrapper { padding: 20px; }
+    .result-header { flex-direction: column; text-align: center; }
+    .detail-row { flex-direction: column; }
+    .detail-row .label { width: 100%; margin-bottom: 4px; }
+    .result-footer { flex-direction: column; }
+    .btn { width: 100%; text-align: center; }
+}
+@media (max-width: 480px) {
+    .check-status-container h1 { font-size: 22px; }
+    .form-wrapper .form-group input { font-size: 16px; }
+    .request-number { font-size: 18px; }
+}
+
+/* ===== СТРАНИЦА КОНТАКТОВ (contact.css) – уже есть адаптация, но добавим правки ===== */
+@media (max-width: 768px) {
+    .form-container { max-width: 100%; padding: 0 15px 80px; }
+    .header_contact { padding: 20px; }
+    .header_contact h1 { font-size: 24px; }
+    .form-content { padding: 20px; }
+    .card-grid { gap: 20px; }
+    .card { width: 200px; min-height: 220px; padding: 25px 20px; }
+}
+@media (max-width: 480px) {
+    .header_contact h1 { font-size: 20px; }
+    .card { width: 160px; min-height: 180px; padding: 20px 15px; }
+    .card-grid-small { grid-template-columns: 1fr 1fr; }
+    .progress-dot { width: 26px; height: 26px; font-size: 11px; }
+}
+
+/* ===== СТРАНИЦЫ ВХОДА/РЕГИСТРАЦИИ (login.css, register.css) – уже адаптированы ===== */
+/* оставляем без изменений */
+
+/* ===== СТРАНИЦА ПОИСКА (search.css) – уже адаптирована ===== */
+/* оставляем без изменений */
+
+/* ===== ЛИЧНЫЙ КАБИНЕТ (user.css) – улучшаем вкладки ===== */
+@media (max-width: 768px) {
+    .tabs { overflow-x: auto; flex-wrap: nowrap; }
+    .tab-button { padding: 10px 16px; font-size: 0.85rem; white-space: nowrap; }
+}
+@media (max-width: 480px) {
+    .tab-button { padding: 8px 12px; font-size: 0.8rem; }
+    .stat-item { min-width: calc(50% - 5px); }
+}
+
+/* ===== ДОПОЛНИТЕЛЬНЫЕ ПРАВКИ ДЛЯ МОБИЛЬНОЙ ВЕРСИИ СТРАНИЦЫ "ОСТАВИТЬ ЗАЯВКУ" ===== */
+
+
+/* ===== ОЧЕНЬ МАЛЕНЬКИЕ ЭКРАНЫ (до 480px) ===== */
+@media (max-width: 768px) {
+    .form-container {
+        padding: 0 8px 60px;
+    }
+
+    .header_contact {
+        padding: 16px;
+    }
+    .header_contact h1 {
+        font-size: 20px;
+    }
+    .header_contact p {
+        font-size: 12px;
+    }
+
+    .form-content {
+        padding: 16px 12px;
+    }
+
+    .form-group {
+        margin-bottom: 12px;
+    }
+    .form-group label {
+        font-size: 13px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 8px 10px;
+        font-size: 14px;
+        border-width: 1.5px;
+    }
+    .form-group textarea {
+        min-height: 80px;
+    }
+
+    /* Карточки шага 1 */
+    .card-grid {
+        gap: 14px;
+        flex-direction: column;
+        align-items: center;
+    }
+    .card {
+        width: 100%;
+        max-width: 280px;
+        min-height: 160px;
+        padding: 20px 16px;
+    }
+    .card .icon {
+        font-size: 38px;
+    }
+    .card .title {
+        font-size: 18px;
+    }
+    .card .desc {
+        font-size: 12px;
+        max-width: 100%;
+    }
+
+    /* Карточки шага 2 */
+    .card-grid-small {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+    .card-grid-small .card {
+        padding: 12px 10px;
+        min-height: 70px;
+    }
+    .card-grid-small .card .icon {
+        font-size: 24px;
+    }
+    .card-grid-small .card .title {
+        font-size: 14px;
+    }
+    .card-grid-small .card .desc {
+        font-size: 11px;
+        display: none; /* скрываем описание для экономии места */
+    }
+
+    /* Прогресс-бар */
+    .progress-dot {
+        width: 24px;
+        height: 24px;
+        font-size: 10px;
+    }
+
+    /* Кнопки */
+    .btn {
+        font-size: 14px;
+        padding: 10px 16px;
+    }
+
+    /* Инфо-блок */
+    .info-notice {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+}
+
+/* ===== САМЫЕ МАЛЕНЬКИЕ (до 360px) ===== */
+@media (max-width: 360px) {
+    .form-container {
+        padding: 0 6px 50px;
+    }
+
+    .header_contact h1 {
+        font-size: 18px;
+    }
+    .form-content {
+        padding: 12px 8px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 13px;
+        padding: 6px 8px;
+    }
+
+    .card-grid-small {
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+    }
+    .card-grid-small .card {
+        padding: 10px 6px;
+        min-height: 60px;
+    }
+    .card-grid-small .card .icon {
+        font-size: 20px;
+    }
+    .card-grid-small .card .title {
+        font-size: 12px;
+    }
+    .card-grid-small .card .desc {
+        display: none;
+    }
+
+    .progress-dot {
+        width: 20px;
+        height: 20px;
+        font-size: 9px;
+    }
+
+    .btn {
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+}

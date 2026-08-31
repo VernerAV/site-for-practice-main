@@ -1,0 +1,567 @@
+/* ============================================
+   АДАПТИВНЫЕ СТИЛИ ДЛЯ ГЛАВНОЙ СТРАНИЦЫ (index.php)
+   Начало адаптации с 1400px
+   ============================================ */
+
+/* Общие правила */
+body {
+    overflow-x: hidden;
+}
+
+.container {
+    width: 100%;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin: 0 auto;
+}
+
+/* ===== 1400px ===== */
+@media (max-width: 1400px) {
+    .container {
+        padding-left: 40px;
+        padding-right: 40px;
+    }
+}
+
+/* ===== 1200px ===== */
+@media (max-width: 1200px) {
+    .container {
+        padding-left: 30px;
+        padding-right: 30px;
+    }
+
+    .service-block {
+        margin-left: 5%;
+        width: 90%;
+    }
+}
+
+/* ===== 1024px ===== */
+@media (max-width: 1024px) {
+    .container {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .banner {
+        padding: 50px 0;
+    }
+
+    .content h1 {
+        font-size: 2rem;
+    }
+
+    .phone a {
+        font-size: 2.2rem;
+    }
+
+    .news-slider-container {
+        padding: 0 60px;
+    }
+
+    .service-block,
+    .service-block.reverse {
+        flex-direction: column;
+        margin-left: 0;
+        width: 100%;
+        gap: 20px;
+    }
+
+    .service-image img {
+        height: 300px;
+    }
+}
+
+/* ===== 768px ===== */
+@media (max-width: 768px) {
+    .container {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    /* Баннер */
+    .banner {
+        padding: 40px 0;
+    }
+
+    .content h1 {
+        font-size: 1.6rem;
+    }
+
+    .phone a {
+        font-size: 1.8rem;
+    }
+
+    .tags span {
+        padding: 5px 12px;
+        font-size: 0.8rem;
+    }
+
+    /* Таблица */
+    .schedule {
+        overflow-x: auto;
+    }
+
+    .schedule h1 {
+        font-size: 1.6rem;
+        text-align: center;
+        margin-bottom: 25px;
+        color: #2c3e50;
+    }
+
+    table.iksweb {
+        min-width: 600px;
+        font-size: 0.85rem;
+    }
+
+    /* Слайдер новостей */
+    .news-slider-section {
+        padding: 40px 0;
+        background: #f8f9fa;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .news-slider-section .container {
+        padding: 0;
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+    }
+
+    .news-slider-section .section-title {
+        font-size: 1.6rem;
+        text-align: center;
+        margin-bottom: 25px;
+        padding: 0 15px;
+        color: #2c3e50;
+    }
+
+    .news-slider-container {
+        position: relative;
+        max-width: 100%;
+        padding: 0 35px;
+        margin: 0 auto;
+        overflow: hidden;
+    }
+
+    .news-slider-wrapper {
+        overflow: visible;
+        position: relative;
+    }
+
+    .news-slider-wrapper::before,
+    .news-slider-wrapper::after {
+        display: none;
+    }
+
+    .news-slider-track {
+        display: flex;
+        gap: 20px;
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform;
+    }
+
+    .news-slide {
+        flex: 0 0 260px;
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+    .news-slide-image {
+        width: 100%;
+        height: 160px;
+        overflow: hidden;
+        background: #e0e0e0;
+    }
+
+    .news-slide-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .news-slide-content {
+        padding: 15px;
+    }
+
+    .news-slide-date {
+        font-size: 0.7rem;
+        color: #888;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .news-slide-date::before {
+        content: "📅";
+        font-size: 0.7rem;
+    }
+
+    .news-slide-title {
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: #2c3e50;
+        line-height: 1.35;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .news-slide-text {
+        font-size: 0.8rem;
+        line-height: 1.4;
+        color: #555;
+        margin-bottom: 10px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .news-slide-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: #007bff;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.75rem;
+        padding: 4px 0;
+    }
+
+    .news-slide-link::after {
+        content: "→";
+        transition: transform 0.2s ease;
+    }
+
+    .slider-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 32px;
+        height: 32px;
+        background: white;
+        border: none;
+        border-radius: 50%;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        font-size: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #333;
+    }
+
+    .slider-nav.prev {
+        left: 5px;
+    }
+
+    .slider-nav.next {
+        right: 5px;
+    }
+
+    .slider-nav:hover {
+        background: #007bff;
+        color: white;
+    }
+
+    .news-slide:hover,
+    .news-slide:hover .news-slide-image img {
+        transform: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    /* Платные услуги */
+    .paid-services {
+        padding: 30px 15px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        background: #f8f9fa;
+    }
+
+    .paid-services .container {
+        padding: 0;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .paid-services .section-title {
+        font-size: 1.6rem;
+        text-align: center;
+        margin-bottom: 25px;
+        color: #2c3e50;
+    }
+
+    .service-block {
+        display: block;
+        width: 100%;
+        margin: 0 0 25px 0;
+        padding: 0;
+        background: #fff;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        box-sizing: border-box;
+    }
+
+    .service-image {
+        display: block;
+        width: 100%;
+        height: auto;
+        max-height: 220px;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+
+    .service-image img {
+        width: 100%;
+        height: auto;
+        max-height: 220px;
+        object-fit: contain;
+        display: block;
+        background: #f0f0f0;
+    }
+
+    .service-content {
+        display: block;
+        width: 100%;
+        padding: 20px;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    .service-content h3 {
+        font-size: 1.3rem;
+        margin: 0 0 12px 0;
+        color: #2c3e50;
+        font-weight: 700;
+    }
+
+    .service-content > p {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin: 0 0 15px 0;
+        color: #555;
+    }
+
+    .service-content ul {
+        margin: 0 0 20px 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .service-content li {
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-bottom: 10px;
+        padding-left: 0;
+        color: #444;
+        position: relative;
+    }
+
+    .service-content li::before,
+    .service-content li::after {
+        display: none;
+        content: none;
+    }
+
+    .service-content li strong {
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .service-content .btn-primary {
+        display: block;
+        width: 100%;
+        padding: 12px 20px;
+        background: #007bff;
+        color: #fff;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 40px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        box-sizing: border-box;
+        margin-top: 15px;
+        border: none;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .service-content .btn-primary:hover {
+        background: #0056b3;
+    }
+
+    .service-block.reverse {
+        flex-direction: unset;
+    }
+
+    /* Полезные ссылки */
+    .useful-links {
+        padding: 40px 0;
+    }
+
+    .useful-links .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .links-grid {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        gap: 15px;
+    }
+
+    .link-card {
+        width: 95%;
+        box-sizing: border-box;
+    }
+
+    .link-content h3 {
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+    }
+
+    .link-item {
+        padding: 12px 15px;
+        gap: 10px;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .link-item span:last-child {
+        font-size: 0.9rem;
+        word-break: break-word;
+    }
+}
+
+/* ===== 480px ===== */
+@media (max-width: 480px) {
+    .content h1 {
+        font-size: 1.3rem;
+    }
+
+    .phone a {
+        font-size: 1.4rem;
+    }
+
+    .btn, .btn-primary {
+        padding: 8px 16px;
+        font-size: 0.85rem;
+    }
+
+    .service-content h3 {
+        font-size: 1.2rem;
+    }
+
+    .news-slide {
+        flex: 0 0 240px;
+    }
+
+    .news-slide-image {
+        height: 140px;
+    }
+
+    .news-slide-content {
+        padding: 12px;
+    }
+
+    .news-slide-title {
+        font-size: 0.9rem;
+    }
+
+    .news-slide-text {
+        font-size: 0.75rem;
+    }
+
+    .slider-nav {
+        width: 28px;
+        height: 28px;
+        font-size: 18px;
+    }
+
+    .slider-nav.prev {
+        left: 2px;
+    }
+
+    .slider-nav.next {
+        right: 2px;
+    }
+
+    /* Платные услуги */
+    .paid-services {
+        padding: 20px 12px;
+    }
+
+    .service-image {
+        max-height: 180px;
+    }
+
+    .service-image img {
+        max-height: 180px;
+    }
+
+    .service-content {
+        padding: 15px;
+    }
+
+    .service-content h3 {
+        font-size: 1.2rem;
+    }
+
+    .service-content p,
+    .service-content li {
+        font-size: 0.85rem;
+    }
+
+    .service-content .btn-primary {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+
+    /* Полезные ссылки */
+    .useful-links .container {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .link-card {
+        padding: 12px;
+    }
+
+    .link-content h3 {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+
+    .link-item {
+        padding: 10px 12px;
+        gap: 8px;
+    }
+
+    .link-item span:last-child {
+        font-size: 0.85rem;
+    }
+
+    .link-icon-small {
+        font-size: 1rem;
+        width: 24px;
+        flex-shrink: 0;
+    }
+}

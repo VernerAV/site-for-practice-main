@@ -15,7 +15,7 @@
     --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
     --border-radius: 12px;
     --transition: all 0.25s ease;
-    --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --font-family: 'Roboto', Arial, sans-serif;
 }
 
 * {
@@ -190,7 +190,7 @@ nav a:last-child:hover {
     font-size: 0.95rem;
     transition: var(--transition);
     background: white;
-    font-family: inherit;
+    font-family: 'Roboto', Arial, sans-serif;
 }
 .form-group input:focus,
 .form-group select:focus,

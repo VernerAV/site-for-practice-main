@@ -16,6 +16,7 @@ if (isset($_SESSION['user_id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Регистрация - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="css/register.css">
+    <link rel="stylesheet" href="css/mobile_all.css">
 </head>
 <body>
     <div class="register-container">

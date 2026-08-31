@@ -99,6 +99,7 @@ unset($_SESSION['employee_success'], $_SESSION['employee_error']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Личный кабинет сотрудника</title>
     <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/mobile_all.css">
     <style>
         .filter-bar { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end; }
         .filter-group { display: inline-flex; flex-direction: column; gap: 5px; }

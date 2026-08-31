@@ -6,15 +6,18 @@
     <title>ГБУ "Жилищник Района Строгино"</title>
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/header_mobile.css">
+    <link rel="stylesheet" href="css/accessibility-mode.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/mobile_all.css">
     <script src="js/search.js" defer></script>
     <script src="js/isAccessibilityMode.js" defer></script>
 </head>
     <!-- ПК -->
     <div class="header">
-        <div class="icon">
-            <img src="img/icons/icon.png" alt="icon">
+        <a href="index.php" class="icon">
+            <img src="img/icons/icon.png" alt="icon" id="icon">
             <h1>ГБУ "Жилищник Района Строгино"</h1>
-        </div>
+        </a>
 
         <!-- Поиск -->
         <div id="search">
@@ -26,6 +29,11 @@
             </form>
             <div class="search-suggestions" id="searchSuggestions"></div>
         </div>
+        
+        <!-- Кнопка переключения стилей на версию для слабовидящих  -->
+    <button id="accessibilityToggle" aria-label="Версия для слабовидящих">
+        👁 Версия для слабовидящих
+    </button>
 
         <div class="enter">
             <?php if (isset($_SESSION['user_id'])): 
@@ -61,10 +69,6 @@
             </button>
         </div>
     </div>
-
-    <button id="accessibilityToggle" aria-label="Версия для слабовидящих">
-        👁 Версия для слабовидящих
-    </button>
 
     <nav class="main-menu">
         <ul>
@@ -133,7 +137,34 @@
         </div>
     </div>
     <div class="overlay" id="overlay"></div>
-
+        <?php
+        // ===== ХЛЕБНЫЕ КРОШКИ =====
+        // Определяем текущую страницу
+        $current_file = basename($_SERVER['SCRIPT_NAME']);
+        $page_titles = [
+            'index.php'        => 'Главная',
+            'news.php'         => 'Новости',
+            'about.php'        => 'О нас',
+            'contact.php'      => 'Оставить заявку',
+            'price.php'        => 'Платные услуги',
+            'admin.php'        => 'Панель администратора',
+            'employee.php'     => 'Личный кабинет сотрудника',
+            'user.php'         => 'Личный кабинет',
+            'login.php'        => 'Вход',
+            'check_status.php' => 'Статус заявки',
+            'search.php'       => 'Результаты поиска'
+        ];
+        $current_title = $page_titles[$current_file] ?? ucfirst(str_replace('.php', '', $current_file));
+        $is_home = ($current_file === 'index.php');
+        ?>
+        <div class="breadcrumbs">
+            <ul>
+                <li><a href="index.php">Главная</a></li>
+                <?php if (!$is_home): ?>
+                    <li><span><?php echo htmlspecialchars($current_title); ?></span></li>
+                <?php endif; ?>
+            </ul>
+        </div>
     <script>
         // AJAX подсказки для поиска в шапке (безопасная версия)
         document.addEventListener('DOMContentLoaded', function() {

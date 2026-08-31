@@ -19,6 +19,7 @@ if (isset($_GET['timeout'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вход в личный кабинет - ГБУ "Жилищник Района Строгино"</title>
     <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/mobile_all.css">
 </head>
 <body>
     

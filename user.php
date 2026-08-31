@@ -125,6 +125,7 @@ function extractApartmentFromAddress($address) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Личный кабинет - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="css/user.css">
+    <link rel="stylesheet" href="css/mobile_all.css">
     <style>
         /* Дополнительные стили для фильтров и вкладок */
         .filter-bar {

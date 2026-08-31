@@ -8,6 +8,7 @@ http_response_code(404); // Устанавливаем HTTP статус 404
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Страница не найдена - Ошибка 404</title>
     <link rel="stylesheet" href="css/404.css">
+    <link rel="stylesheet" href="css/mobile_all.css">
 </head>
 <body>
     <div class="error-container">

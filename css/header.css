@@ -1,104 +1,141 @@
 @font-face {
     font-family: 'Roboto';
     src: url('../fonts/Roboto-ExtraLight.ttf') format('truetype');
-    font-weight: 200;  /* ExtraLight обычно 200 */
+    font-weight: 200;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Roboto';
     src: url('../fonts/Roboto-Light.ttf') format('truetype');
-    font-weight: 300;  /* Light обычно 300 */
+    font-weight: 300;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Roboto';
     src: url('../fonts/Roboto-Regular.ttf') format('truetype');
-    font-weight: 400;  /* Regular обычно 400 */
+    font-weight: 400;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Roboto';
     src: url('../fonts/Roboto-Medium.ttf') format('truetype');
-    font-weight: 500;  /* Medium обычно 500 */
+    font-weight: 500;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Roboto';
     src: url('../fonts/Roboto-Bold.ttf') format('truetype');
-    font-weight: 700;  /* Bold обычно 700 */
+    font-weight: 700;
     font-style: normal;
 }
 
+/* Общие сбросы */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+a.icon {
+    text-decoration: none; /* убирает подчёркивание ссылки */
+    display: flex;         /* сохраняем флекс-поведение */
+    align-items: center;
+    gap: clamp(10px, 1.5vw, 30px);
+}
 img {
-    width: 60px;
     object-fit: contain;
     padding: 10px;
 }
 
+img#icon {
+    width: 60px !important;
+}
+
+/* ===== ВЕРХНЯЯ ШАПКА ===== */
+.header {
+    background-color: #1D3F5B;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: clamp(10px, 2vw, 30px);
+    padding: 10px clamp(10px, 2vw, 30px);
+    width: 100%;
+}
+
+/* Блок иконки и названия – резиновый, без фиксированной ширины */
 .icon {
     display: flex;
+    flex-wrap: nowrap;
     align-items: center;
-    gap: 30px;
-    width: 400px;
+    gap: clamp(10px, 1.5vw, 30px);
+    flex: 0 1 auto;
+    max-width: 100%;
 }
-h1{
+
+.icon h1 {
     font-size: 1.5rem;
     color: white;
     font-family: 'Roboto', Arial, sans-serif;
     font-weight: 200;
+    margin: 0;
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: break-word;
+    line-height: 1.3;
+    flex: 1 1 auto;
+    min-width: 0;
 }
 
-.header {
-    background-color: #1D3F5B;
+/* ===== ПОИСК ===== */
+#search {
+    flex: 1 1 30%;
+    min-width: 180px;
+    max-width: 500px;
+}
+
+#search form {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 0px;
-    flex-wrap: nowrap;
-}
-
-.name {
-    display: flex;
-}
-
-/* форма поиска */
-#search form {
-    margin-left: 140px;
     background-color: white;
     border-radius: 20px;
-    width: 500px;
-    display: flex;
     padding-left: 20px;
     gap: 10px;
+    width: 100%;
     height: fit-content;
 }
 
 #search form input {
+    flex: 1;
     border: none;
-    width: 430px;
+    padding: 8px 0;
     border-radius: 20px;
-      outline: none;
+    outline: none;
+    font-size: clamp(0.9rem, 1vw, 1rem);
+    min-width: 60px;
 }
 
-#search form input::after {
-    border: none;
-}
 #search form button {
     background-color: white;
     border: none;
-    width: min-content;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
+    cursor: pointer;
+    flex-shrink: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-#search form button:hover {
-    cursor: pointer;
-}
-#search form img {
+#search form button img {
     width: 20px;
+    height: 20px;
+    display: block;
+    padding: 0;
 }
 
 #search form:focus-within {
@@ -106,16 +143,14 @@ h1{
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
 }
 
-/* Вход и регистрация */
+/* ===== Блок входа / пользователя ===== */
 .enter {
     display: flex;
     flex-direction: row;
-    gap: 10px
-}
-/* Стили для блока пользователя в шапке */
-.enter {
-    position: relative;
-    margin-left: auto; /* Выравнивание справа */
+    align-items: center;
+    gap: clamp(8px, 1vw, 15px);
+    flex: 0 0 auto;
+    margin-left: 0;
 }
 
 .user-info {
@@ -126,12 +161,12 @@ h1{
     background: #f8f9fa;
     border-radius: 8px;
     border: 1px solid #e9ecef;
-    min-width: 200px;
+    min-width: 160px;
     box-sizing: border-box;
 }
 
 .user-avatar {
-    flex-shrink: 0; /* Не сжимается */
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -140,28 +175,28 @@ h1{
 }
 
 .user-avatar svg {
-    display: block; /* Убираем лишние отступы */
+    display: block;
     width: 100%;
     height: 100%;
 }
 
 .user-details {
-    flex-grow: 1; /* Занимает доступное пространство */
-    min-width: 0; /* Позволяет тексту обрезаться */
+    flex-grow: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    overflow: hidden; /* Скрывает выходящий за границы текст */
+    overflow: hidden;
 }
 
 .user-email {
     font-size: 12px;
     color: #495057;
     font-weight: 500;
-    white-space: nowrap; /* Не переносить на новую строку */
-    overflow: hidden; /* Скрываем выходящий за границы текст */
-    text-overflow: ellipsis; /* Добавляем ... если текст не помещается */
-    max-width: 100%; /* Ограничиваем ширину */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
     display: block;
     line-height: 1.3;
 }
@@ -177,8 +212,9 @@ h1{
     line-height: 1.3;
 }
 
-.logout-btn, .login-btn {
-    flex-shrink: 0; /* Кнопка не сжимается */
+.logout-btn,
+.login-btn {
+    flex-shrink: 0;
     padding: 6px 12px;
     background: #3498db;
     color: white;
@@ -189,15 +225,15 @@ h1{
     border: none;
     cursor: pointer;
     transition: background 0.3s;
-    white-space: nowrap; /* Текст кнопки не переносится */
+    white-space: nowrap;
 }
 
-.logout-btn:hover, .login-btn:hover {
+.logout-btn:hover,
+.login-btn:hover {
     background: #2980b9;
     text-decoration: none;
 }
 
-/* Если только одна кнопка (без пользователя) */
 .login-btn {
     display: inline-block;
     padding: 8px 16px;
@@ -208,30 +244,17 @@ h1{
     background: #218838;
 }
 
-
-/* Для предотвращения наслоения текста */
-.user-email, .user-name {
-    display: block; /* Каждый элемент на своей строке */
-    margin: 0;
-    padding: 0;
-}
-
-/* Для очень длинных email - обрезаем */
-.user-email.truncate {
-    max-width: 150px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
+/* Ссылки входа (старые) – для совместимости */
 .enter a {
     background: white;
     color: black;
     border-radius: 20px;
-    padding: 10px 30px 10px 30px;
-    margin-right: 10px;
+    padding: 10px 30px;
+    margin-right: 0;
     text-decoration: none;
     font-size: 1em;
     white-space: nowrap;
+    transition: background 0.3s, color 0.3s;
 }
 
 .enter a:hover {
@@ -239,51 +262,52 @@ h1{
     color: white;
 }
 
-/* Меню */
-
+/* ===== НИЖНЕЕ МЕНЮ – ЦЕНТРИРОВАННОЕ ===== */
 .main-menu {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: center;          /* центрируем содержимое */
     max-width: 1600px;
     margin: 0 auto;
-    padding: 20px 40px;
+    padding: 20px clamp(10px, 2vw, 40px);
     min-height: 60px;
-    position: relative;
+    width: 100%;
+    position: relative;              /* для абсолютного позиционирования контактов */
 }
 
 .main-menu ul {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: clamp(8px, 1.5vw, 30px);
     list-style: none;
     margin: 0;
     padding: 0;
-    gap: 30px;
+    flex: 0 0 auto;                  /* не растягивается, занимает только свою ширину */
 }
 
 .main-menu li {
     margin: 0;
 }
 
-/*ссылки меню */
 .main-menu a {
     font-family: 'Roboto', Arial, sans-serif;
     text-decoration: none;
     color: #2c3e50;
     font-weight: 600;
-    font-size: 16px;
-    padding: 12px 24px;
+    font-size: clamp(14px, 1vw, 16px);
+    padding: 10px clamp(12px, 1.5vw, 24px);
     border-radius: 8px;
     transition: all 0.3s ease;
-    overflow: hidden;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     border: 2px solid transparent;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    display: block; 
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: block;
     text-align: center;
     white-space: nowrap;
+    position: relative;
 }
 
-/* Эффект при наведении */
 .main-menu a:hover {
     background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
     color: white;
@@ -292,20 +316,17 @@ h1{
     border-color: #3498db;
 }
 
-/* Эффект при нажатии */
 .main-menu a:active {
     transform: translateY(0);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-/* Активная страница (опционально) */
 .main-menu a.active {
     background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
     color: white;
     border-color: #2c3e50;
 }
 
-/* Анимация подчеркивания при наведении */
 .main-menu a::after {
     content: '';
     position: absolute;
@@ -322,113 +343,98 @@ h1{
     width: 80%;
 }
 
+/* Контактная информация – абсолютно справа, не влияет на центрирование меню */
 .contact-info {
     position: absolute;
-    right: 40px;
+    right: clamp(10px, 2vw, 40px);
     top: 50%;
     transform: translateY(-50%);
+    text-align: right;
+    white-space: nowrap;
 }
 
 .contact-info p {
     margin: 0 0 3px 0;
-    font-size: 14px;
+    font-size: clamp(12px, 0.8vw, 14px);
     color: #2c3e50;
     font-weight: 500;
 }
 
-/* CSS стили для режима доступности (основные требования ГОСТ) */
-.accessibility-mode {
-    /* Типографика */
-    font-size: var(--font-size, 22px) !important;
-    line-height: var(--line-height, 1.8) !important;
-    letter-spacing: var(--letter-spacing, 0.12em) !important;
-    font-family: "Arial", "Helvetica", sans-serif !important;
-    font-weight: 500 !important;
-    
-    /* Цвета и контраст (минимальный контраст 7:1) */
-    background-color: #ffffff !important;
-    color: #000000 !important;
-    background-image: none !important;
-    
-    /* Отключение анимаций */
-    animation: none !important;
-    transition: none !important;
-    transform: none !important;
+/* ===== ПЕРЕНОС ШАПКИ ПРИ СУЖЕНИИ ЭКРАНА (≤ 1280px) ===== */
+@media (max-width: 1280px) {
+    .header {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    #search {
+        flex: 1 1 100%;
+        max-width: 100%;
+        order: 3;
+        margin-top: 5px;
+    }
+
+    .enter {
+        flex: 0 0 auto;
+        margin-left: auto;
+    }
+
+    /* На узких экранах контакты лучше убрать из абсолютного позиционирования,
+       чтобы они не наезжали на меню при сильном сужении */
+    .contact-info {
+        position: static;            /* возвращаем в поток */
+        transform: none;
+        margin-top: 10px;
+        text-align: center;
+        width: 100%;
+    }
+
+    /* Меню при этом остаётся центрированным, а контакты переносятся под него */
+    .main-menu {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
 }
 
-.accessibility-mode * {
-    /* Единые цвета ссылок */
-    color: #000000 !important;
-    background-color: #ffffff !important;
-    border-color: #000000 !important;
+/* ===== ХЛЕБНЫЕ КРОШКИ ===== */
+.breadcrumbs {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 12px clamp(10px, 2vw, 40px);
+    font-size: 0.95rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
 }
-
-.accessibility-mode a,
-.accessibility-mode button {
-    /* Выделение интерактивных элементов */
-    text-decoration: underline !important;
-    border: 3px solid #000000 !important;
-    padding: 8px 12px !important;
+.breadcrumbs ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
 }
-
-.accessibility-mode a:focus,
-.accessibility-mode button:focus,
-.accessibility-mode input:focus {
-    /* Усиленный фокус */
-    outline: 4px solid #FF6B00 !important;
-    outline-offset: 2px !important;
+.breadcrumbs li {
+    display: flex;
+    align-items: center;
 }
-
-.accessibility-mode img:not([alt]),
-.accessibility-mode img[alt=""] {
-    /* Индикация изображений без alt */
-    border: 3px dashed red !important;
+.breadcrumbs li:not(:last-child)::after {
+    content: '›';
+    margin-left: 10px;
+    color: #6c757d;
+    font-weight: 300;
 }
-
-/* Увеличение областей клика */
-.accessibility-mode button,
-.accessibility-mode input[type="submit"],
-.accessibility-mode input[type="button"] {
-    min-height: 44px !important;
-    min-width: 44px !important;
+.breadcrumbs a {
+    color: #3498db;
+    text-decoration: none;
+    transition: color 0.2s;
 }
-
-/* Упрощение форм */
-.accessibility-mode input,
-.accessibility-mode textarea,
-.accessibility-mode select {
-    border: 3px solid #000000 !important;
-    background: #ffffff !important;
-    color: #000000 !important;
-    font-size: 20px !important;
+.breadcrumbs a:hover {
+    color: #1a5276;
+    text-decoration: underline;
 }
-
-/* Скрытие декоративных элементов */
-.accessibility-mode .decorative-image,
-.accessibility-mode [role="presentation"],
-.accessibility-mode [aria-hidden="true"] {
-    display: none !important;
-}
-
-
-#accessibilityToggle {
-    position: fixed;
-    bottom: 0;
-    right: 220px;
-    z-index: 9999;
-    
-    padding: 10px 12px;
-    background: #000;
-    color: #FF0;
-    border: none;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    
-    font-size: 13px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-#accessibilityToggle:hover {
-    padding-top: 8px;
+.breadcrumbs li:last-child {
+    color: #495057;
+    font-weight: 500;
+    pointer-events: none; /* чтобы нельзя было кликнуть на текущую страницу */
 }

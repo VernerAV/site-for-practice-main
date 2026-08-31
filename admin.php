@@ -195,6 +195,7 @@ $employeesWithLoad = $pdo->query("
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Панель администратора</title>
     <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/mobile_all.css">
     <style>
         .filter-bar { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
         .filter-group { display: inline-flex; flex-direction: column; gap: 5px; }
