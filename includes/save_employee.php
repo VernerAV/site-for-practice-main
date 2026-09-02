@@ -4,7 +4,7 @@ require_once 'config.php';
 require_once 'check_auth.php';
 checkAuth();
 
-if (!isAdmin()) {
+if (!isAdminOrModerator()) {
     header('Location: ../admin.php');
     exit;
 }

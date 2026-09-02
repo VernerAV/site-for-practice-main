@@ -2,7 +2,8 @@
 session_start();
 require_once 'config.php';
 
-if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
+$allowed_roles = ['admin', 'moderator'];
+if (!isset($_SESSION['user_role']) || !in_array($_SESSION['user_role'], $allowed_roles)) {
     header('Location: ../login.php');
     exit();
 }
@@ -15,15 +16,27 @@ if (isset($_GET['id'])) {
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':id' => $news_id]);
         
-        header('Location: ../admin.php?message=delete_success');
+        if ($_SESSION['user_role'] === 'admin') {
+            header('Location: ../admin.php?message=delete_success');
+        } else {
+            header('Location: ../dispatcher.php?message=delete_success');
+        }
         exit();
         
     } catch (PDOException $e) {
-        header('Location: ../admin.php?error=delete_error');
+        if ($_SESSION['user_role'] === 'admin') {
+            header('Location: ../admin.php?error=delete_error');
+        } else {
+            header('Location: ../dispatcher.php?error=delete_error');
+        }
         exit();
     }
 } else {
-    header('Location: ../admin.php');
+    if ($_SESSION['user_role'] === 'admin') {
+        header('Location: ../admin.php');
+    } else {
+        header('Location: ../dispatcher.php');
+    }
     exit();
 }
 ?>

@@ -38,7 +38,7 @@
             </div>
             
             <!-- Реквизиты компании -->
-            <div class="company-details">
+            <div class="company-details" id="requisites">
                 <h3 style="color: #2c3e50; margin-bottom: 20px; font-size: 20px;">Реквизиты организации</h3>
                 <div class="details-grid">
                     <div class="detail-item">

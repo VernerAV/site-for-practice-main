@@ -1,0 +1,326 @@
+/* ====================================================
+   СТИЛИ ДЛЯ СТРАНИЦЫ КОНТАКТЫ (contacts.php)
+   ==================================================== */
+
+.contacts-page {
+    padding: 40px 0 80px;
+    background: #f8fafc;
+    min-height: 70vh;
+}
+
+.contacts-page .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Заголовок */
+.page-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    color: #1e293b;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.page-header .subtitle {
+    font-size: 1.2rem;
+    color: #64748b;
+}
+
+/* Сетка: две колонки */
+.contacts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 40px;
+    align-items: start;
+}
+
+/* Левая колонка – карточки контактов */
+.contact-info-block {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.info-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px 28px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-left: 4px solid #3498db;
+}
+
+.info-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.info-card .icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.info-card h3 {
+    font-size: 1.1rem;
+    color: #1e293b;
+    margin: 0 0 12px 0;
+    font-weight: 600;
+}
+
+.info-card p {
+    margin: 6px 0;
+    color: #334155;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.info-card a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.info-card a:hover {
+    text-decoration: underline;
+}
+
+.info-card .note {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #64748b;
+    font-style: italic;
+}
+
+/* Правая колонка – карта и доп. инфо */
+.map-block {
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.map-block h3 {
+    font-size: 1.2rem;
+    color: #1e293b;
+    margin: 0 0 16px 0;
+    font-weight: 600;
+}
+
+.map-wrapper {
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 16px;
+    background: #e9ecef;
+}
+
+.map-wrapper iframe {
+    display: block;
+    width: 100%;
+    height: 350px;
+    border: none;
+}
+
+.map-links {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.map-link {
+    display: inline-block;
+    padding: 8px 18px;
+    background: #f1f5f9;
+    color: #1e293b;
+    border-radius: 30px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.map-link:hover {
+    background: #3498db;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.additional-info h4,
+.requisites h4 {
+    font-size: 1.05rem;
+    color: #1e293b;
+    margin: 20px 0 10px 0;
+    font-weight: 600;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.additional-info p,
+.requisites p {
+    margin: 6px 0;
+    color: #334155;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.requisites .more-link {
+    margin-top: 12px;
+}
+
+.requisites .more-link a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.requisites .more-link a:hover {
+    text-decoration: underline;
+}
+
+/* ===== АДАПТАЦИЯ ===== */
+
+/* Планшеты (768–1024px) */
+@media (max-width: 1024px) {
+    .contacts-grid {
+        grid-template-columns: 1fr 1.2fr;
+        gap: 30px;
+    }
+
+    .page-header h1 {
+        font-size: 2.2rem;
+    }
+}
+
+/* Планшеты (до 768px) */
+@media (max-width: 768px) {
+    .contacts-page {
+        padding: 30px 0 100px;
+    }
+
+    .contacts-page .container {
+        padding: 0 15px;
+    }
+
+    .page-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .page-header .subtitle {
+        font-size: 1rem;
+    }
+
+    .contacts-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .info-card {
+        padding: 20px;
+    }
+
+    .map-block {
+        padding: 20px;
+    }
+
+    .map-wrapper iframe {
+        height: 250px;
+    }
+
+    .map-links {
+        justify-content: center;
+    }
+}
+
+/* Телефоны (до 480px) */
+@media (max-width: 480px) {
+    .contacts-page {
+        padding: 20px 0 100px;
+    }
+
+    .contacts-page .container {
+        padding: 0 12px;
+    }
+
+    .page-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .page-header .subtitle {
+        font-size: 0.9rem;
+    }
+
+    .info-card {
+        padding: 16px 18px;
+        border-left-width: 3px;
+    }
+
+    .info-card .icon {
+        font-size: 1.6rem;
+    }
+
+    .info-card h3 {
+        font-size: 1rem;
+    }
+
+    .info-card p {
+        font-size: 0.9rem;
+    }
+
+    .map-block {
+        padding: 16px;
+    }
+
+    .map-block h3 {
+        font-size: 1rem;
+    }
+
+    .map-wrapper iframe {
+        height: 200px;
+    }
+
+    .map-link {
+        padding: 6px 14px;
+        font-size: 0.8rem;
+    }
+
+    .additional-info p,
+    .requisites p {
+        font-size: 0.85rem;
+    }
+
+    .additional-info h4,
+    .requisites h4 {
+        font-size: 0.95rem;
+    }
+}
+
+/* Очень маленькие экраны (до 360px) */
+@media (max-width: 360px) {
+    .page-header h1 {
+        font-size: 1.3rem;
+    }
+
+    .map-wrapper iframe {
+        height: 160px;
+    }
+
+    .map-links {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .map-link {
+        text-align: center;
+    }
+
+    .info-card {
+        padding: 14px;
+    }
+}

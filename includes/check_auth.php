@@ -17,4 +17,12 @@ function getUserRole() {
 function getUserId() {
     return $_SESSION['user_id'] ?? null;
 }
+
+function isModerator() {
+    return isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'moderator';
+}
+
+function isAdminOrModerator() {
+    return isAdmin() || isModerator();
+}
 ?>

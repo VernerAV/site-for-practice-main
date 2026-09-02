@@ -1,0 +1,488 @@
+/* ====================================================
+   СТИЛИ ДЛЯ СТРАНИЦЫ ПРОТИВОДЕЙСТВИЕ КОРРУПЦИИ
+   ==================================================== */
+
+.anti-corruption-page {
+    padding: 40px 0 80px;
+    background: #f8fafc;
+    min-height: 70vh;
+}
+
+.anti-corruption-page .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Заголовок */
+.page-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    color: #1e293b;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.page-header .subtitle {
+    font-size: 1.2rem;
+    color: #64748b;
+}
+
+/* Вступление */
+.intro-section {
+    margin-bottom: 50px;
+}
+
+.intro-card {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    border-left: 4px solid #dc3545;
+}
+
+.intro-icon {
+    font-size: 3.5rem;
+    flex-shrink: 0;
+}
+
+.intro-text h2 {
+    font-size: 1.4rem;
+    color: #1e293b;
+    margin: 0 0 12px 0;
+    font-weight: 600;
+}
+
+.intro-text p {
+    color: #334155;
+    line-height: 1.7;
+    font-size: 1rem;
+    margin-bottom: 12px;
+}
+
+.intro-text p:last-child {
+    margin-bottom: 0;
+}
+
+/* Документы */
+.documents-section,
+.plan-section,
+.contacts-section,
+.feedback-section,
+.links-section {
+    margin-bottom: 50px;
+}
+
+section h2 {
+    font-size: 1.8rem;
+    color: #1e293b;
+    font-weight: 700;
+    margin-bottom: 25px;
+    padding-bottom: 12px;
+    border-bottom: 3px solid #e9ecef;
+}
+
+.documents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.doc-card {
+    background: white;
+    border-radius: 14px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-top: 4px solid #3498db;
+}
+
+.doc-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.doc-card:nth-child(2) {
+    border-top-color: #2ecc71;
+}
+
+.doc-card:nth-child(3) {
+    border-top-color: #f39c12;
+}
+
+.doc-icon {
+    font-size: 2.2rem;
+    margin-bottom: 12px;
+}
+
+.doc-card h3 {
+    font-size: 1.1rem;
+    color: #1e293b;
+    margin: 0 0 14px 0;
+    font-weight: 600;
+}
+
+.doc-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.doc-card li {
+    margin-bottom: 10px;
+    padding-left: 0;
+    position: relative;
+    line-height: 1.5;
+}
+
+.doc-card li::before {
+    content: "›";
+    color: #3498db;
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.doc-card a {
+    color: #3498db;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.2s ease;
+}
+
+.doc-card a:hover {
+    color: #1a5276;
+    text-decoration: underline;
+}
+
+/* План мероприятий */
+.plan-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.plan-item {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    background: white;
+    border-radius: 14px;
+    padding: 20px 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.2s ease;
+}
+
+.plan-item:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.plan-number {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    background: #3498db;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.plan-content h3 {
+    font-size: 1.1rem;
+    color: #1e293b;
+    margin: 0 0 6px 0;
+    font-weight: 600;
+}
+
+.plan-content p {
+    color: #475569;
+    margin: 0 0 8px 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.plan-period {
+    display: inline-block;
+    padding: 3px 12px;
+    background: #f1f5f9;
+    color: #475569;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* Контакты ответственных лиц */
+.contacts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.contact-person {
+    display: flex;
+    gap: 18px;
+    background: white;
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    align-items: flex-start;
+}
+
+.contact-person:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.person-avatar {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+}
+
+.person-info h3 {
+    font-size: 1.1rem;
+    color: #1e293b;
+    margin: 0 0 4px 0;
+    font-weight: 600;
+}
+
+.person-info .position {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin: 0 0 10px 0;
+}
+
+.person-info p {
+    margin: 4px 0;
+    font-size: 0.95rem;
+    color: #334155;
+}
+
+.person-info a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.person-info a:hover {
+    text-decoration: underline;
+}
+
+.person-info .note {
+    color: #dc3545;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-top: 6px;
+}
+
+
+/* Полезные ссылки */
+.external-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.ext-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: white;
+    border-radius: 40px;
+    color: #1e293b;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.ext-link:hover {
+    border-color: #3498db;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(52, 152, 219, 0.15);
+    color: #3498db;
+}
+
+.ext-icon {
+    font-size: 1.2rem;
+}
+
+/* ===== АДАПТАЦИЯ ===== */
+
+/* Планшеты (до 768px) */
+@media (max-width: 768px) {
+    .anti-corruption-page {
+        padding: 30px 0 100px;
+    }
+
+    .anti-corruption-page .container {
+        padding: 0 15px;
+    }
+
+    .page-header h1 {
+        font-size: 2rem;
+    }
+
+    .page-header .subtitle {
+        font-size: 1rem;
+    }
+
+    .intro-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 24px;
+    }
+
+    .intro-icon {
+        font-size: 3rem;
+    }
+
+    .documents-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .contacts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .plan-item {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+        padding: 16px 18px;
+    }
+
+    .plan-number {
+        align-self: center;
+    }
+
+
+    .ext-link {
+        justify-content: center;
+    }
+}
+
+/* Телефоны (до 480px) */
+@media (max-width: 480px) {
+    .anti-corruption-page {
+        padding: 20px 0 100px;
+    }
+
+    .anti-corruption-page .container {
+        padding: 0 12px;
+    }
+
+    .page-header h1 {
+        font-size: 1.6rem;
+    }
+
+    .page-header .subtitle {
+        font-size: 0.9rem;
+    }
+
+    .intro-card {
+        padding: 20px;
+    }
+
+    .intro-text h2 {
+        font-size: 1.2rem;
+    }
+
+    .intro-text p {
+        font-size: 0.9rem;
+    }
+
+    section h2 {
+        font-size: 1.4rem;
+    }
+
+    .doc-card {
+        padding: 20px;
+    }
+
+    .doc-card h3 {
+        font-size: 1rem;
+    }
+
+    .doc-card a {
+        font-size: 0.85rem;
+    }
+
+    .contact-person {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .person-avatar {
+        font-size: 2.2rem;
+    }
+
+    .person-info p {
+        font-size: 0.85rem;
+    }
+
+
+    .ext-link {
+        font-size: 0.85rem;
+        padding: 10px 16px;
+    }
+}
+
+/* Очень маленькие экраны (до 360px) */
+@media (max-width: 360px) {
+    .page-header h1 {
+        font-size: 1.3rem;
+    }
+
+    .intro-card {
+        padding: 16px;
+    }
+
+    .intro-icon {
+        font-size: 2.5rem;
+    }
+
+    .intro-text h2 {
+        font-size: 1.1rem;
+    }
+
+    section h2 {
+        font-size: 1.2rem;
+    }
+
+    .plan-item {
+        padding: 14px;
+    }
+
+    .plan-content h3 {
+        font-size: 0.95rem;
+    }
+
+    .plan-content p {
+        font-size: 0.85rem;
+    }
+
+    .contact-person {
+        padding: 16px;
+    }
+
+    .person-info h3 {
+        font-size: 1rem;
+    }
+
+}

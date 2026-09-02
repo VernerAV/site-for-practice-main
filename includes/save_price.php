@@ -2,7 +2,8 @@
 session_start();
 require_once 'config.php';
 
-if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
+$allowed_roles = ['admin', 'moderator'];
+if (!isset($_SESSION['user_role']) || !in_array($_SESSION['user_role'], $allowed_roles)) {
     header('Location: ../login.php');
     exit();
 }
@@ -16,7 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     try {
         if (empty($price_id)) {
-            // Добавление новой услуги
             $sql = "INSERT INTO services (service_name, description, price, unit) VALUES (:name, :desc, :price, :unit)";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
@@ -27,7 +27,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
             $message = 'price_add_success';
         } else {
-            // Обновление существующей услуги
             $sql = "UPDATE services SET service_name = :name, description = :desc, price = :price, unit = :unit WHERE id = :id";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
@@ -40,16 +39,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $message = 'price_edit_success';
         }
         
-        header('Location: ../admin.php?message=' . $message);
+        if ($_SESSION['user_role'] === 'admin') {
+            header('Location: ../admin.php?message=' . $message);
+        } else {
+            header('Location: ../dispatcher.php?message=' . $message);
+        }
         exit();
         
     } catch (PDOException $e) {
-        header('Location: ../admin.php?error=db_error');
+        if ($_SESSION['user_role'] === 'admin') {
+            header('Location: ../admin.php?error=db_error');
+        } else {
+            header('Location: ../dispatcher.php?error=db_error');
+        }
         exit();
     }
 } else {
     $section = $_GET['section'] ?? 'news';
-    header("Location: ../admin.php?section=$section");
+    if ($_SESSION['user_role'] === 'admin') {
+        header("Location: ../admin.php?section=$section");
+    } else {
+        header("Location: ../dispatcher.php?section=$section");
+    }
     exit();
 }
 ?>

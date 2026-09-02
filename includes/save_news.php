@@ -2,7 +2,9 @@
 session_start();
 require_once 'config.php';
 
-if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
+// Разрешаем доступ администратору и диспетчеру (moderator)
+$allowed_roles = ['admin', 'moderator'];
+if (!isset($_SESSION['user_role']) || !in_array($_SESSION['user_role'], $allowed_roles)) {
     header('Location: ../login.php');
     exit();
 }
@@ -16,20 +18,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Обработка загрузки изображения
         $image_name = '';
         if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-            // Проверка MIME-типа
             $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
             $file_type = $_FILES['image']['type'];
-            
-            // Проверка расширения файла
             $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif'];
             $file_extension = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
             
             if (in_array($file_type, $allowed_types) && in_array($file_extension, $allowed_extensions)) {
-                // Генерация безопасного имени файла
                 $image_name = uniqid('news_', true) . '.' . $file_extension;
                 $upload_path = '../uploads/news/' . $image_name;
-                
-                // Перемещаем файл
                 if (!move_uploaded_file($_FILES['image']['tmp_name'], $upload_path)) {
                     throw new Exception('Не удалось загрузить файл');
                 }
@@ -39,7 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         if (empty($news_id)) {
-            // Добавление новой новости
             $sql = "INSERT INTO news (title, description, image) VALUES (:title, :description, :image)";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
@@ -49,9 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
             $message = 'add_success';
         } else {
-            // Обновление существующей новости
             if ($image_name) {
-                // Если загружено новое изображение, обновляем и его
                 $sql = "UPDATE news SET title = :title, description = :description, image = :image WHERE id = :id";
                 $params = [
                     ':title' => $title,
@@ -60,7 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ':id' => $news_id
                 ];
             } else {
-                // Если изображение не загружено, оставляем старое
                 $sql = "UPDATE news SET title = :title, description = :description WHERE id = :id";
                 $params = [
                     ':title' => $title,
@@ -73,18 +65,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $message = 'edit_success';
         }
         
-        header('Location: ../admin.php?message=' . $message);
+        // РЕДИРЕКТ В ЗАВИСИМОСТИ ОТ РОЛИ
+        if ($_SESSION['user_role'] === 'admin') {
+            header('Location: ../admin.php?message=' . $message);
+        } else {
+            header('Location: ../dispatcher.php?message=' . $message);
+        }
         exit();
         
     } catch (Exception $e) {
-        // Логируем ошибку и возвращаем на админку с сообщением
         error_log('Ошибка сохранения новости: ' . $e->getMessage());
-        header('Location: ../admin.php?error=upload_error');
+        if ($_SESSION['user_role'] === 'admin') {
+            header('Location: ../admin.php?error=upload_error');
+        } else {
+            header('Location: ../dispatcher.php?error=upload_error');
+        }
         exit();
     }
 } else {
     $section = $_GET['section'] ?? 'news';
-    header("Location: ../admin.php?section=$section");
+    if ($_SESSION['user_role'] === 'admin') {
+        header("Location: ../admin.php?section=$section");
+    } else {
+        header("Location: ../dispatcher.php?section=$section");
+    }
     exit();
 }
 ?>

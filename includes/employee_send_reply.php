@@ -5,7 +5,7 @@ require_once 'check_auth.php';
 checkAuth();
 
 // Доступ для executor, dispatcher, admin
-$allowed = ['executor', 'dispatcher', 'admin'];
+$allowed = ['executor', 'moderator', 'admin'];
 if (!in_array($_SESSION['user_role'], $allowed)) {
     $_SESSION['employee_error'] = 'Доступ запрещён.';
     header('Location: ../employee.php');

@@ -18,6 +18,8 @@
                 <li><a href="price.php">Платные услуги</a></li>
                 <li><a href="about.php">О нас</a></li>
                 <li><a href="user.php">Личный кабинет</a></li>
+                <li><a href="contacts.php">Контакты</a></li>
+                <li><a href="faq.php">Часто задаваемые вопросы</a></li>
             </ul>
         </div>
     </div>

@@ -35,8 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             case 'executor':
                 header('Location: ../employee.php');
                 break;
-            case 'dispatcher':
-                header('Location: ../employee.php');
+            case 'moderator':
+                header('Location: ../dispatcher.php');
                 break;
             default:
                 header('Location: ../user.php');

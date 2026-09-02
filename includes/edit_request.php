@@ -4,7 +4,7 @@ require_once 'config.php';
 require_once 'check_auth.php';
 
 // Только для администратора
-if (!isAdmin()) {
+if (!isAdminOrModerator()) {
     http_response_code(403);
     echo json_encode(['success' => false, 'error' => 'Доступ запрещён']);
     exit;

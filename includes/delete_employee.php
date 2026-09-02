@@ -4,8 +4,8 @@ require_once 'config.php';
 require_once 'check_auth.php';
 checkAuth();
 
-if (!isAdmin()) {
-    header('Location: ../admin.php');
+if (!isAdmin()) { // только admin
+    header('Location: ../login.php');
     exit;
 }
 
@@ -33,3 +33,4 @@ try {
 }
 header("Location: ../admin.php?section=employees");
 exit;
+?>

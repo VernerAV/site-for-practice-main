@@ -1,254 +1,389 @@
-/* ===== МОБИЛЬНАЯ ВЕРСИЯ (до 768px) ===== */
+/* ============================================================
+   МОБИЛЬНАЯ АДАПТАЦИЯ — ОТ 768px ДО 320px
+   ============================================================ */
+
+/* ---- До 768px ---- */
 @media (max-width: 768px) {
-    /* Шапка */
+    /* Шапка — на всю ширину, минимальные отступы */
     .header {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: flex-start;
-        gap: 5px;
+        width: 100% !important;
+        padding: 0 !important;
+    }
+    .header-inner {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 8px 12px !important;
+        gap: 8px !important;
+        flex-wrap: wrap !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
     }
 
-    /* Логотип + название – первая строка, занимает всю ширину */
-    .icon {
-        order: 1;
-        flex: 0 0 100%;          /* растягиваем на всю ширину */
-        width: 100%;
-        max-width: 100%;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        /* flex-wrap: nowrap по умолчанию – оставляем, чтобы иконка и текст были в строке */
+    /* Гамбургер — справа, тонкий */
+    .hamburger {
+        display: flex !important;
+        margin-left: auto !important;
+        padding: 2px !important;
+        gap: 4px !important;
+        background: none !important;
+        border: none !important;
+        cursor: pointer !important;
+        flex-shrink: 0 !important;
+    }
+    .hamburger span {
+        display: block !important;
+        width: 26px !important;
+        height: 2px !important; /* тоньше */
+        background: #fff !important;
+        border-radius: 2px !important;
     }
 
-    /* Заголовок – теперь точно переносится */
-    .icon h1 {
-        font-size: 1.2rem;
-        color: white;
-        font-family: 'Roboto', Arial, sans-serif;
-        font-weight: 200;
-        margin: 0;
-        white-space: normal;        /* отменяем nowrap, который мог быть унаследован */
-        word-wrap: break-word;      /* перенос длинных слов */
-        word-break: break-word;
-        line-height: 1.3;
-        max-width: 100%;
-        flex: 1;                    /* занимает оставшееся место, чтобы текст переносился внутри */
+    /* Горизонтальное меню — скрыто */
+    .main-nav {
+        display: none !important;
     }
 
-    /* Блок входа – скрываем на мобилках */
-    .enter {
-        display: none;
+    /* Блок входа — скрыт */
+    .user-block {
+        display: none !important;
     }
 
-    /* Поиск – вторая строка, растягивается */
-    #search {
-        order: 2;
-        flex: 1 1 auto;
-        width: auto;
-        margin: 5px 0;
-        padding: 0;
+    /* Поиск — на всю ширину, перенос вниз */
+    .search-wrap {
+        flex: 1 1 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        order: 3 !important;
+        margin-top: 4px !important;
+        padding: 0 !important;
+    }
+    .search-wrap form {
+        background: rgba(255,255,255,0.15) !important;
+        padding-left: 14px !important;
+        border-radius: 30px !important;
+        width: 100% !important;
+    }
+    .search-wrap input {
+        font-size: 0.9rem !important;
+        padding: 6px 0 !important;
+        color: #fff !important;
+        min-width: 40px !important;
+    }
+    .search-wrap input::placeholder {
+        color: rgba(255,255,255,0.6) !important;
+    }
+    .search-wrap button svg {
+        stroke: #fff !important;
+        width: 20px !important;
+        height: 20px !important;
+    }
+    .search-wrap form:focus-within {
+        background: #fff !important;
+    }
+    .search-wrap form:focus-within input {
+        color: #1e293b !important;
+    }
+    .search-wrap form:focus-within input::placeholder {
+        color: #94a3b8 !important;
+    }
+    .search-wrap form:focus-within button svg {
+        stroke: #1e293b !important;
     }
 
-    #search form {
-        display: flex;
-        width: 100%;
-        max-width: 100%;
-        margin: 0;
-        background-color: white;
-        border-radius: 20px;
-        padding-left: 15px;
-        gap: 10px;
-        height: fit-content;
+    /* Логотип — компактный */
+    .logo img {
+        height: 44px !important;
+        width: auto !important;
+    }
+    .logo span {
+        font-size: 1rem !important;
+        white-space: normal !important;
+        line-height: 1.2 !important;
     }
 
-    #search input {
-        flex: 1;
-        padding: 8px 12px;
-        font-size: 0.9rem;
-        border: none;
-        border-radius: 20px;
-        outline: none;
-        background: transparent;
-    }
-
-    #search button {
-        background: transparent;
-        border: none;
-        padding: 8px 12px;
-        border-radius: 50%;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    #search button img {
-        width: 20px;
-        height: 20px;
-        display: block;
-    }
-
-    /* Гамбургер – справа от поиска */
-    .mobile-controls {
-        order: 3;
-        display: flex;
-        margin-left: auto;
-        flex: 0 0 auto;
-    }
-
-    .hamburger-btn {
-        background: none;
-        border: none;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        width: 28px;
-        height: 22px;
-        cursor: pointer;
-        padding: 0;
-    }
-
-    .hamburger-btn span {
-        display: block;
-        width: 100%;
-        height: 3px;
-        background: #ffffff;
-        border-radius: 2px;
-    }
-
-    /* Скрываем горизонтальное меню */
-    .main-menu {
-        display: none;
-    }
-
-    /* Боковое меню, оверлей, кнопка для слабовидящих – без изменений */
-    .side-menu {
-        position: fixed;
-        top: 0;
-        right: 0;
-        width: 70%;
-        max-width: 280px;
-        height: 100%;
-        background: white;
-        box-shadow: -2px 0 15px rgba(0,0,0,0.2);
-        z-index: 1001;
-        transform: translateX(100%);
-        transition: transform 0.3s ease;
-        padding: 20px;
-        overflow-y: auto;
-    }
-
-    .side-menu.open {
-        transform: translateX(0);
-    }
-
-    .side-menu-header {
-        text-align: right;
-    }
-
-    .close-menu {
-        background: none;
-        border: none;
-        font-size: 28px;
-        cursor: pointer;
-    }
-
-    .side-menu ul {
-        list-style: none;
-        padding: 0;
-        margin-top: 20px;
-    }
-
-    .side-menu li {
-        margin-bottom: 15px;
-    }
-
-    .side-menu a {
-        text-decoration: none;
-        font-size: 1.1rem;
-        color: #222;
-        display: block;
-        padding: 8px 0;
-        border-bottom: 1px solid #eee;
-    }
-
-    .side-contact {
-        margin-top: 30px;
-        padding-top: 15px;
-        border-top: 1px solid #ddd;
-        font-size: 0.85rem;
-        color: #555;
-    }
-
-    .overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.5);
-        z-index: 1000;
-        display: none;
-    }
-
-    .overlay.active {
-        display: block;
-    }
-
+    /* Кнопка слабовидящих — фиксирована внизу */
     #accessibilityToggle {
-        position: fixed;
-        bottom: 15px;
-        right: 15px;
-        left: auto;
-        top: auto;
-        width: auto;
-        border: none;
-        border-radius: 40px;
-        padding: 6px 12px;
-        font-size: 0.75rem;
-        z-index: 1002;
-        white-space: nowrap;
-        cursor: pointer;
+        position: fixed !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        z-index: 1002 !important;
+        background: #1e4f7a !important;
+        color: #fff !important;
+        border: none !important;
+        border-radius: 40px !important;
+        padding: 10px 18px !important;
+        font-size: 0.85rem !important;
+        font-weight: 600 !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+        cursor: pointer !important;
+        white-space: nowrap !important;
+    }
+
+    /* Боковое меню */
+    .side-menu {
+        width: 75% !important;
+        max-width: 320px !important;
+        padding: 20px !important;
+    }
+    .side-menu a {
+        font-size: 1rem !important;
+        padding: 12px 10px !important;
+    }
+
+    /* Хлебные крошки */
+    .breadcrumbs {
+        padding: 8px 12px !important;
+        font-size: 0.85rem !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
 }
 
-@media (max-width: 480px) {
+/* ---- До 600px ---- */
+@media (max-width: 600px) {
+    .header-inner {
+        padding: 6px 10px !important;
+        gap: 6px !important;
+    }
+    .logo img {
+        height: 38px !important;
+    }
+    .logo span {
+        font-size: 0.9rem !important;
+    }
+    .search-wrap input {
+        font-size: 0.85rem !important;
+    }
     .side-menu {
-        width: 80%;
+        width: 80% !important;
+        max-width: 300px !important;
+        padding: 16px !important;
+    }
+    .side-menu a {
+        font-size: 0.95rem !important;
+        padding: 10px 8px !important;
+    }
+    #accessibilityToggle {
+        padding: 8px 14px !important;
+        font-size: 0.8rem !important;
+        bottom: 16px !important;
+        right: 16px !important;
+    }
+}
+
+/* ---- До 480px ---- */
+@media (max-width: 480px) {
+    .header-inner {
+        padding: 4px 8px !important;
+        gap: 4px !important;
+    }
+    .logo img {
+        height: 32px !important;
+    }
+    .logo span {
+        font-size: 0.8rem !important;
+    }
+    .hamburger span {
+        width: 22px !important;
+        height: 2px !important; /* ещё тоньше */
+    }
+    .hamburger {
+        gap: 3px !important;
+        padding: 2px !important;
+    }
+    .search-wrap form {
+        padding-left: 10px !important;
+        border-radius: 25px !important;
+    }
+    .search-wrap input {
+        font-size: 0.8rem !important;
+        padding: 4px 0 !important;
+    }
+    .search-wrap button {
+        padding: 4px 8px !important;
+    }
+    .search-wrap button svg {
+        width: 18px !important;
+        height: 18px !important;
+    }
+    .side-menu {
+        width: 85% !important;
+        max-width: 280px !important;
+        padding: 14px !important;
+    }
+    .side-menu a {
+        font-size: 0.9rem !important;
+        padding: 8px 6px !important;
+    }
+    #accessibilityToggle {
+        padding: 6px 12px !important;
+        font-size: 0.7rem !important;
+        bottom: 12px !important;
+        right: 12px !important;
+        border-radius: 30px !important;
+    }
+    .breadcrumbs {
+        padding: 6px 8px !important;
+        font-size: 0.75rem !important;
+    }
+    .breadcrumbs ul {
+        gap: 4px 6px !important;
+    }
+    .breadcrumbs li:not(:last-child)::after {
+        margin-left: 6px !important;
+    }
+}
+
+/* ---- До 360px (включая 320px) ---- */
+@media (max-width: 360px) {
+    .header-inner {
+        padding: 4px 6px !important;
+        gap: 3px !important;
+    }
+    .logo img {
+        height: 28px !important;
+    }
+    .logo span {
+        font-size: 0.7rem !important;
+    }
+    .hamburger span {
+        width: 20px !important;
+        height: 2px !important; /* минимальная толщина */
+    }
+    .hamburger {
+        gap: 3px !important;
+        padding: 2px !important;
+    }
+    .search-wrap form {
+        padding-left: 6px !important;
+        border-radius: 20px !important;
+    }
+    .search-wrap input {
+        font-size: 0.7rem !important;
+        padding: 3px 0 !important;
+        min-width: 30px !important;
+    }
+    .search-wrap button {
+        padding: 2px 6px !important;
+    }
+    .search-wrap button svg {
+        width: 16px !important;
+        height: 16px !important;
+    }
+    .side-menu {
+        width: 90% !important;
+        max-width: 260px !important;
+        padding: 10px 8px !important;
+    }
+    .side-menu a {
+        font-size: 0.85rem !important;
+        padding: 6px 4px !important;
+    }
+    .side-menu-header .close-menu {
+        font-size: 1.4rem !important;
+        padding: 2px 4px !important;
+    }
+    .side-contact {
+        font-size: 0.75rem !important;
+        padding-top: 8px !important;
+    }
+    #accessibilityToggle {
+        padding: 4px 10px !important;
+        font-size: 0.65rem !important;
+        bottom: 6px !important;
+        right: 6px !important;
+        border-radius: 25px !important;
     }
     #accessibilityToggle span {
-        display: none;
+        font-size: 0.7rem !important;
     }
-    #accessibilityToggle {
-        padding: 6px 10px;
-        font-size: 1rem;
+    .breadcrumbs {
+        padding: 4px 6px !important;
+        font-size: 0.7rem !important;
     }
-}
-
-/* На десктопе скрываем мобильные элементы */
-@media (min-width: 769px) {
-    .mobile-controls,
-    .side-menu,
-    .overlay {
-        display: none;
+    .breadcrumbs ul {
+        gap: 2px 4px !important;
+    }
+    .breadcrumbs li:not(:last-child)::after {
+        margin-left: 4px !important;
     }
 }
 
-
-/* В header.css или mobile.css */
+/* ===== БОКОВОЕ МЕНЮ (ОБЩИЕ СТИЛИ) ===== */
 .side-menu {
-    transform: translateX(-100%);
-    transition: transform 0.3s ease, opacity 0.3s ease;
-    /* остальные стили */
+    position: fixed;
+    top: 0;
+    right: -100%;
+    height: 100%;
+    background: #ffffff;
+    box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+    z-index: 1001;
+    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 .side-menu.open {
-    transform: translateX(0);
+    right: 0;
 }
+.side-menu-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+}
+.close-menu {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: #1e293b;
+    padding: 4px 8px;
+}
+.side-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+    flex: 1;
+}
+.side-menu li {
+    border-bottom: 1px solid #f1f5f9;
+}
+.side-menu li:last-child {
+    border-bottom: none;
+}
+.side-menu a {
+    display: block;
+    color: #1e293b;
+    text-decoration: none;
+    font-weight: 500;
+    border-radius: 8px;
+}
+.side-contact {
+    border-top: 2px solid #e9edf2;
+    padding-top: 18px;
+    margin-top: auto;
+}
+.side-contact p {
+    margin: 6px 0;
+}
+.side-contact a {
+    color: #1e4f7a;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* ===== ОВЕРЛЕЙ ===== */
 .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    z-index: 1000;
     opacity: 0;
-    transition: opacity 0.3s ease;
     pointer-events: none;
+    transition: opacity 0.3s ease;
 }
 .overlay.active {
     opacity: 1;

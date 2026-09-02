@@ -3,7 +3,8 @@
 session_start();
 require_once 'config.php';
 
-if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
+$allowed_roles = ['admin', 'moderator'];
+if (!isset($_SESSION['user_id']) || !in_array($_SESSION['user_role'], $allowed_roles)) {
     header('HTTP/1.1 401 Unauthorized');
     echo json_encode(['success' => false, 'error' => 'Не авторизован']);
     exit();

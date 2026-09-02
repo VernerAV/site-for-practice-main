@@ -56,7 +56,7 @@ function getAvailableEmployees($category_id) {
 checkAuth();
 
 if (!isAdmin()) {
-    header('Location: user.php');
+    header('Location: login.php');
     exit();
 }
 

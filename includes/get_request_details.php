@@ -3,7 +3,7 @@ session_start();
 require_once 'check_auth.php';
 checkAuth();
 
-if (!isAdmin()) {
+if (!isAdminOrModerator()) {
     echo json_encode(['success' => false, 'error' => 'Доступ запрещен']);
     exit();
 }

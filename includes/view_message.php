@@ -3,7 +3,7 @@ session_start();
 require_once 'check_auth.php';
 checkAuth();
 
-if (!isAdmin()) {
+if (!isAdminOrModerator()) {
     header('Location: user.php');
     exit();
 }
