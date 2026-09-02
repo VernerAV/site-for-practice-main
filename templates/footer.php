@@ -8,8 +8,8 @@
             <p>г. Москва <br>
             ул. Маршала Катукова дом 9, корп. 3<br>
             <br>
-            <b>Телефон</b>: 8(495) 758-38-22<br>
-            <b>Эл. почта</b>: gbu-strogino@mail.ru</p>
+            <a href="tel:+74957583822"> <p><b>Телефон </b>8(495) 758-38-22</p></a>
+            <a href="mailto:gbu-strogino@mail.ru"><p><b>Эл. почта</b>gbu-strogino@mail.ru</p></a>
         </div>
         <div class="right">
             <ul>
@@ -23,7 +23,7 @@
     </div>
     <div class="footer-bottom">
         <div class="copy">
-            <p>© 2025 Все права защищены</p>
+            <p>© 2026 Воротникова АВ</p>
         </div>
         <div class="polite">
             <a href="http://gbu-strogino.ru/wp-content/uploads/2017/12/Политика-обработки-ПД-и-сведения.pdf">

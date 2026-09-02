@@ -50,7 +50,7 @@ try {
     </style>
 </head>
 <body>
-<?php include 'templates/header.php'; ?>
+<?php require 'templates/header.php'; ?>
 <div class="success-container">
     <?php if (isset($error)): ?>
         <div class="error"><?= htmlspecialchars($error) ?></div>

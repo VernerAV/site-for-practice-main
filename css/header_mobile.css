@@ -234,3 +234,23 @@
         display: none;
     }
 }
+
+
+/* В header.css или mobile.css */
+.side-menu {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    /* остальные стили */
+}
+.side-menu.open {
+    transform: translateX(0);
+}
+.overlay {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+.overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}

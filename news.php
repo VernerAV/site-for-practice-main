@@ -82,7 +82,7 @@ function getRussianMonth($month) {
 </head>
 <body>
     <!-- Хедер -->
-    <?php include 'templates/header.php'; ?>
+    <?php require 'templates/header.php'; ?>
     
     <main class="news-page">
         <!-- Основные новости (без закреплённой плашки) -->

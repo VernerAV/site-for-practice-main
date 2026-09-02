@@ -16,20 +16,85 @@ if (!$data) {
     exit;
 }
 
-// Валидация (минимальная, у вас может быть расширенная)
-$errors = [];
-if (empty($data['user_name']) || strlen($data['user_name']) < 2) $errors[] = 'Введите имя (минимум 2 символа)';
-if (empty($data['user_email']) || !filter_var($data['user_email'], FILTER_VALIDATE_EMAIL)) $errors[] = 'Введите корректный email';
-if (empty($data['category_id']) || !is_numeric($data['category_id'])) $errors[] = 'Выберите категорию';
-if (empty($data['message']) || strlen($data['message']) < 10) $errors[] = 'Опишите проблему подробнее (минимум 10 символов)';
-$type = $data['type'] ?? '';
-if (!in_array($type, ['request', 'appeal'])) $errors[] = 'Выберите тип обращения';
+// ===== КЛИЕНТСКАЯ ВАЛИДАЦИЯ =====
+function validateStep(stepIndex) {
+    let errors = [];
+    const block = document.getElementById('messageBlock');
 
-if ($type === 'request') {
-    if (empty($data['urgency']) || !in_array($data['urgency'], ['normal','high','emergency'])) $errors[] = 'Укажите срочность';
-    if (empty($data['volume']) || !in_array($data['volume'], ['small','medium','large'])) $errors[] = 'Укажите объём работ';
-    if (empty($data['address'])) $errors[] = 'Укажите адрес';
-    if (isset($data['floor']) && $data['floor'] !== '' && !is_numeric($data['floor'])) $errors[] = 'Этаж должен быть числом';
+    // Шаг 0: Тип
+    if (stepIndex === 0) {
+        if (!formData.type) {
+            errors.push('Выберите тип обращения (Заявка или Обращение)');
+        }
+    }
+
+    // Шаг 1: Категория
+    if (stepIndex === 1) {
+        if (!formData.category_id) {
+            errors.push('Выберите категорию');
+        }
+    }
+
+    // Шаг 2: Срочность (только для заявок, не для общих категорий)
+    if (stepIndex === 2 && formData.type === 'request' && !isCommonCategory()) {
+        if (!formData.urgency) {
+            errors.push('Выберите срочность');
+        }
+    }
+
+    // Шаг 3: Объём
+    if (stepIndex === 3 && formData.type === 'request' && !isCommonCategory()) {
+        if (!formData.volume) {
+            errors.push('Выберите объём работ');
+        }
+    }
+
+    // Шаг 4: Адрес (только для заявок)
+    if (stepIndex === 4 && formData.type === 'request') {
+        const street = document.getElementById('street').value.trim();
+        if (!street) {
+            errors.push('Введите адрес');
+        } else if (!isValidAddress(street)) {
+            errors.push('Адрес не найден в списке допустимых. Выберите из подсказок.');
+        }
+        const isCommon = isCommonCategory();
+        if (!isCommon) {
+            const apartment = document.getElementById('apartment').value.trim();
+            if (!apartment) {
+                errors.push('Укажите номер квартиры');
+            }
+        }
+    }
+
+    // Шаг 5: Материалы
+    if (stepIndex === 5 && formData.type === 'request' && !isCommonCategory()) {
+        if (formData.materials_needed === null || formData.materials_needed === undefined) {
+            errors.push('Выберите готовность к работе');
+        }
+    }
+
+    // Шаг 6: Контакты
+    if (stepIndex === 6) {
+        const ln = document.getElementById('lastName').value.trim();
+        const fn = document.getElementById('firstName').value.trim();
+        const em = document.getElementById('userEmail').value.trim();
+        const msg = document.getElementById('messageText').value.trim();
+        if (ln.length < 2) errors.push('Фамилия должна содержать минимум 2 символа');
+        if (fn.length < 2) errors.push('Имя должно содержать минимум 2 символа');
+        if (!em || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) errors.push('Введите корректный email');
+        if (msg.length < 10) errors.push('Опишите проблему подробнее (минимум 10 символов)');
+    }
+
+    // Шаг 7: Итог – здесь проверки не нужны, только финальная отправка
+
+    // Показываем ошибки
+    if (errors.length > 0) {
+        block.innerHTML = `<div class="error-msg">${errors.join('<br>')}</div>`;
+        return false;
+    } else {
+        block.innerHTML = '';
+        return true;
+    }
 }
 
 if (!empty($errors)) {

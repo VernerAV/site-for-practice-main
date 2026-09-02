@@ -1,5 +1,9 @@
 <?php
 http_response_code(404); // Устанавливаем HTTP статус 404
+$query = isset($_GET['q']) ? htmlspecialchars($_GET['q'], ENT_QUOTES, 'UTF-8') : '';
+// Логируем ошибку
+$log = date('Y-m-d H:i:s') . ' - 404 - ' . $_SERVER['REQUEST_URI'] . ' - ' . $_SERVER['HTTP_REFERER'] . "\n";
+file_put_contents('log/404.log', $log, FILE_APPEND);
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -7,7 +11,6 @@ http_response_code(404); // Устанавливаем HTTP статус 404
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Страница не найдена - Ошибка 404</title>
-    <link rel="icon" type="image/x-icon" href="img/icons/icon.ico">
     <link rel="stylesheet" href="css/404.css">
     <link rel="stylesheet" href="css/mobile_all.css">
 </head>
@@ -22,19 +25,13 @@ http_response_code(404); // Устанавливаем HTTP статус 404
             Возможно, вы ошиблись при вводе адреса или страница была удалена.
         </p>
         
-        <!-- Поиск по сайту -->
-        <div class="error-search">
-            <form class="search-box" onsubmit="return searchSite()">
-                <input type="text" class="search-input" placeholder="Поиск по сайту..." id="search404">
-                <button type="submit" class="search-button">Найти</button>
-            </form>
-        </div>
+    
         
         <!-- Кнопки действий -->
         <div class="action-buttons">
             <a href="index.php" class="btn btn-primary">На главную</a>
             <a href="javascript:history.back()" class="btn">Вернуться назад</a>
-            <a href="about.php" class="btn">Связаться с нами</a>
+            <a href="contact.php" class="btn">Связаться с нами</a>
         </div>
         
         <!-- Популярные страницы -->
@@ -55,43 +52,5 @@ http_response_code(404); // Устанавливаем HTTP статус 404
         </div>
     </div>
     
-    <script>
-        // Функция поиска по сайту
-        function searchSite() {
-            const query = document.getElementById('search404').value.trim();
-            if (query) {
-                // Перенаправляем на страницу поиска или ищем
-                window.location.href = '/search.php?q=' + encodeURIComponent(query);
-            } else {
-                alert('Введите поисковый запрос');
-            }
-            return false;
-        }
-        
-        // Автофокус на поле поиска
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('search404').focus();
-            
-            // Анимация появления
-            const elements = document.querySelectorAll('.error-container > *');
-            elements.forEach((el, index) => {
-                el.style.opacity = '0';
-                el.style.transform = 'translateY(20px)';
-                
-                setTimeout(() => {
-                    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                    el.style.opacity = '1';
-                    el.style.transform = 'translateY(0)';
-                }, index * 100);
-            });
-        });
-        
-        // Отслеживание 404 ошибок для аналитики (если нужно)
-        console.log('404 страница загружена:', {
-            url: window.location.href,
-            referrer: document.referrer,
-            timestamp: new Date().toISOString()
-        });
-    </script>
 </body>
 </html>

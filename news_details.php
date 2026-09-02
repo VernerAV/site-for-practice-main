@@ -79,7 +79,7 @@ function truncateText($text, $length = 100) {
 </head>
 <body>
     <!-- Хедер -->
-    <?php include 'templates/header.php'; ?>
+    <?php require 'templates/header.php'; ?>
     
     <main class="news-detail-page">
         <div class="container">

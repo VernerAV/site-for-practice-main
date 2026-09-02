@@ -296,7 +296,7 @@ if (!empty($query)) {
 <body>
     <?php 
     if (file_exists('templates/header.php')) {
-        include 'templates/header.php';
+        require 'templates/header.php';
     }
     ?>
     

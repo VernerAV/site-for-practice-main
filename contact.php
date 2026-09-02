@@ -59,7 +59,7 @@ if (isset($_SESSION['user_id'])) {
     </style>
 </head>
 <body>
-<?php include 'templates/header.php'; ?>
+<?php require 'templates/header.php'; ?>
 
 <div class="form-container">
     <div class="header_contact">

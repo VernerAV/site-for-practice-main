@@ -58,14 +58,18 @@ footer {
 }
 
 /* Контактная информация */
-.left p {
+a {
+     text-decoration: none;          /* убираем подчёркивание */
+    transition: color 0.2s, border-bottom 0.2s;
+}
+.left a p {
     margin: 0;
     line-height: 1.6;
     color: #ecf0f1;
     font-size: 14px;
 }
 
-.left b {
+.left a b {
     color: #3498db;
     font-weight: 600;
 }

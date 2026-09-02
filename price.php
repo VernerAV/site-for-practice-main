@@ -12,7 +12,7 @@ require_once 'includes/config.php';
     <link rel="stylesheet" href="css/price.css">
 </head>
 <body>
-    <?php include 'templates/header.php'; ?>
+    <?php require 'templates/header.php'; ?>
 
     <main class="price-container">
         <div class="price-header">

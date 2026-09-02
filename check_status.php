@@ -38,7 +38,7 @@ if ($request_id) {
     <link rel="stylesheet" href="css/check_status.css">
 </head>
 <body>
-<?php include 'templates/header.php'; ?>
+<?php require 'templates/header.php'; ?>
 
 <div class="check-status-container">
     <h1>🔍 Проверка статуса заявки</h1>

@@ -1,4 +1,4 @@
-<?php ob_start(); ?>
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -12,7 +12,7 @@
     <!-- Подключаем хедер -->
     <?php 
     if (file_exists('templates/header.php')) {
-        include 'templates/header.php';
+        require 'templates/header.php';
     }
     ?>
     
