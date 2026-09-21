@@ -127,6 +127,7 @@
             <?php elseif ($_SESSION['user_role'] === 'user'): ?>
                 <li><a href="contact.php">Оставить заявку</a></li>
                 <li><a href="user.php">Личный кабинет</a></li>
+                <li><a href="check_status.php">Статус заявки</a></li>
             <?php endif; ?>
         <?php else: ?>
             <li><a href="login.php">Вход / Регистрация</a></li>
