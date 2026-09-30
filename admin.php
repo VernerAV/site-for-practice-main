@@ -659,7 +659,7 @@ $employeesWithLoad = $pdo->query("
 <div id="editRequestModal" class="modal-overlay" style="display:none;">
     <div class="modal">
         <div class="modal-header">
-            <h3>Редактирование заявки #<span id="editRequestId"></span></h3>
+            <h3>Редактирование заявки #<span id="editRequestIdDisplay"></span></h3>
             <button class="modal-close" onclick="closeEditModal()">×</button>
         </div>
         <div class="modal-body">
@@ -932,6 +932,8 @@ function editRequest(id) {
             document.getElementById('editSubject').value = req.subject;
             document.getElementById('editStatus').value = req.status;
             document.getElementById('editAdminResponse').value = req.admin_response || '';
+            document.getElementById('editRequestId').value = req.id;
+            document.getElementById('editRequestIdDisplay').textContent = req.id;  // ← добавить
             
             // Загружаем список сотрудников
             loadAssignSelect(req.assigned_to);
