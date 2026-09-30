@@ -58,7 +58,6 @@ try {
         </div>
         <p>Мы свяжемся с вами в ближайшее время.</p>
 
-        <!-- ===== ссылки зависят от авторизации ===== -->
         <div class="links">
             <?php if (isset($_SESSION['user_id'])): ?>
                 <a href="user.php?tab=requests">👤 Мои заявки</a>

@@ -7,7 +7,6 @@ checkAuth();
 $user_id = $_SESSION['user_id'];
 
 try {
-    // Данные пользователя
     $user_sql = "SELECT u.email, u.role, up.first_name, up.last_name, up.middle_name, 
                         up.birth_date, up.address, up.phone 
                  FROM users u 
@@ -17,16 +16,13 @@ try {
     $user_stmt->execute([':user_id' => $user_id]);
     $user_data = $user_stmt->fetch();
 
-    // Определяем активную вкладку
     $active_tab = $_GET['tab'] ?? 'profile';
 
-    // Фильтры для заявок
     $status_filter = $_GET['status'] ?? 'all';
     $search = trim($_GET['search'] ?? '');
     $date_from = $_GET['date_from'] ?? '';
     $date_to = $_GET['date_to'] ?? '';
-    
-    // Быстрые фильтры
+
     $preset = $_GET['preset'] ?? '';
     if ($preset === 'today') {
         $date_from = date('Y-m-d');
@@ -75,7 +71,6 @@ try {
         $requests_stmt->execute($params);
         $requests = $requests_stmt->fetchAll();
 
-        // Статистика для вкладок
         $statsSql = "SELECT status, COUNT(*) as cnt FROM message WHERE user_email = ? GROUP BY status";
         $statsStmt = $pdo->prepare($statsSql);
         $statsStmt->execute([$user_data['email']]);
@@ -90,7 +85,6 @@ try {
     die("Ошибка базы данных: " . $e->getMessage());
 }
 
-// Функции разбора адреса (без изменений)
 function extractStreetFromAddress($address) {
     if (empty($address)) return '';
     $patterns = ['/,\s*подъезд\s+\S+.*$/iu', '/,\s*этаж\s+\S+.*$/iu', '/,\s*кв\.\s+\S+.*$/iu', '/,\s*квартира\s+\S+.*$/iu'];
@@ -127,215 +121,44 @@ function extractApartmentFromAddress($address) {
     <link rel="stylesheet" href="css/user.css">
     <link rel="stylesheet" href="css/mobile_all.css">
     <style>
-        /* Дополнительные стили для фильтров и вкладок */
-        .filter-bar {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: flex-end;
-        }
-        .filter-group {
-            display: inline-flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        .filter-group label {
-            font-size: 12px;
-            font-weight: 600;
-            color: #6c757d;
-        }
-        .filter-group input, .filter-group select {
-            padding: 6px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .tabs-status {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #ddd;
-        }
-        .tab-status {
-            background: none;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-size: 16px;
-            border-bottom: 2px solid transparent;
-            text-decoration: none;
-            color: #333;
-        }
-        .tab-status.active {
-            border-bottom-color: #3498db;
-            color: #3498db;
-            font-weight: bold;
-        }
-        .badge-count {
-            background: #e74c3c;
-            color: white;
-            border-radius: 20px;
-            padding: 2px 8px;
-            font-size: 12px;
-            margin-left: 5px;
-        }
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 13px;
-        }
-        .status-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
+        .filter-bar { background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end; }
+        .filter-group { display: inline-flex; flex-direction: column; gap: 5px; }
+        .filter-group label { font-size: 12px; font-weight: 600; color: #6c757d; }
+        .filter-group input, .filter-group select { padding: 6px 12px; border: 1px solid #ddd; border-radius: 4px; }
+        .tabs-status { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #ddd; flex-wrap: wrap; }
+        .tab-status { background: none; border: none; padding: 10px 20px; cursor: pointer; font-size: 16px; border-bottom: 2px solid transparent; text-decoration: none; color: #333; }
+        .tab-status.active { border-bottom-color: #3498db; color: #3498db; font-weight: bold; }
+        .badge-count { background: #e74c3c; color: white; border-radius: 20px; padding: 2px 8px; font-size: 12px; margin-left: 5px; }
+        .btn-sm { padding: 6px 12px; font-size: 13px; }
+        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
         .status-new { background: #ff4757; color: white; }
         .status-progress { background: #ffa502; color: white; }
         .status-completed { background: #2ed573; color: white; }
-        .quick-filters {
-            display: flex;
-            gap: 10px;
-            margin-left: auto;
-        }
-        .quick-filters a {
-            background: #e9ecef;
-            padding: 6px 12px;
-            border-radius: 4px;
-            text-decoration: none;
-            font-size: 13px;
-            color: #495057;
-        }
-        .quick-filters a:hover {
-            background: #dee2e6;
-        }
-        /* Стили для вкладок "Профиль" и "Заявки" */
-        .tabs {
-            display: flex;
-            gap: 20px;
-            border-bottom: 2px solid #e9ecef;
-            margin-bottom: 25px;
-        }
-        .tab-button {
-            background: none;
-            border: none;
-            padding: 10px 0;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            color: #6c757d;
-            transition: all 0.2s;
-            position: relative;
-        }
-        .tab-button.active {
-            color: #3498db;
-        }
-        .tab-button.active::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: #3498db;
-        }
-        .tab-button.unread::after {
-            background: #ff4757;
-        }
-        /* Стили для карточек заявок */
-        .request-card {
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            margin-bottom: 16px;
-            padding: 20px;
-            transition: box-shadow 0.2s;
-        }
-        .request-card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .request-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            flex-wrap: wrap;
-            margin-bottom: 12px;
-        }
-        .request-title h3 {
-            margin: 0 0 5px 0;
-            font-size: 18px;
-        }
-        .request-meta-badges {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .request-id {
-            background: #e9ecef;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            color: #495057;
-        }
-        .badge-new, .badge-answered {
-            font-size: 11px;
-            padding: 2px 6px;
-            border-radius: 12px;
-            font-weight: bold;
-        }
+        .quick-filters { display: flex; gap: 10px; flex-wrap: wrap; }
+        .quick-filters a { background: #e9ecef; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 13px; color: #495057; }
+        .quick-filters a:hover { background: #dee2e6; }
+        .tabs { display: flex; gap: 20px; border-bottom: 2px solid #e9ecef; margin-bottom: 25px; }
+        .tab-button { background: none; border: none; padding: 10px 0; font-size: 16px; font-weight: 500; cursor: pointer; color: #6c757d; transition: all 0.2s; position: relative; }
+        .tab-button.active { color: #3498db; }
+        .tab-button.active::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: #3498db; }
+        .tab-button.unread::after { background: #ff4757; }
+        .request-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 16px; padding: 20px; transition: box-shadow 0.2s; }
+        .request-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .request-card-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; margin-bottom: 12px; }
+        .request-title h3 { margin: 0 0 5px 0; font-size: 18px; }
+        .request-meta-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+        .request-id { background: #e9ecef; padding: 2px 8px; border-radius: 12px; font-size: 12px; color: #495057; }
+        .badge-new, .badge-answered { font-size: 11px; padding: 2px 6px; border-radius: 12px; font-weight: bold; }
         .badge-new { background: #ff4757; color: white; }
         .badge-answered { background: #2ed573; color: white; }
-        .request-date {
-            font-size: 13px;
-            color: #6c757d;
-        }
-        .message-preview {
-            background: #f8f9fa;
-            padding: 12px;
-            border-radius: 6px;
-            margin: 12px 0;
-            font-size: 14px;
-        }
-        .admin-response {
-            background: #e8f5e9;
-            padding: 12px;
-            border-radius: 6px;
-            margin-top: 12px;
-        }
-        .request-actions {
-            margin-top: 15px;
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .btn-view-details {
-            background: #3498db;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #6c757d;
-        }
-        .empty-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
-        }
+        .request-date { font-size: 13px; color: #6c757d; }
+        .message-preview { background: #f8f9fa; padding: 12px; border-radius: 6px; margin: 12px 0; font-size: 14px; }
+        .admin-response { background: #e8f5e9; padding: 12px; border-radius: 6px; margin-top: 12px; }
+        .request-actions { margin-top: 15px; display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+        .btn-secondary { background: #6c757d; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn-view-details { background: #3498db; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+        .empty-state { text-align: center; padding: 40px; color: #6c757d; }
+        .empty-icon { font-size: 48px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -364,19 +187,18 @@ function extractApartmentFromAddress($address) {
     <div class="user-content">
         <div class="tabs">
             <a href="?tab=profile" class="tab-button <?= $active_tab === 'profile' ? 'active' : '' ?>">Профиль</a>
-            <a href="?tab=requests&status=<?= urlencode($status_filter) ?>&search=<?= urlencode($search) ?>&date_from=<?= urlencode($date_from) ?>&date_to=<?= urlencode($date_to) ?>" class="tab-button <?= $active_tab === 'requests' ? 'active' : '' ?> <?= $has_unread_requests ? 'unread' : '' ?>">Мои заявки</a>
+            <a href="?tab=requests" class="tab-button <?= $active_tab === 'requests' ? 'active' : '' ?> <?= $has_unread_requests ? 'unread' : '' ?>">Мои заявки</a>
         </div>
 
-        <!-- Вкладка профиля -->
         <div id="profile" class="tab-content <?= $active_tab === 'profile' ? 'active' : '' ?>">
             <h2>Личная информация</h2>
             <form action="includes/update_profile.php" method="POST">
-                <div class="form-group"><label>Email:</label><input type="email" value="<?= $user_data['email'] ?>" disabled></div>
-                <div class="form-group"><label>Фамилия:</label><input type="text" name="last_name" value="<?= $user_data['last_name'] ?? '' ?>"></div>
-                <div class="form-group"><label>Имя:</label><input type="text" name="first_name" value="<?= $user_data['first_name'] ?? '' ?>"></div>
-                <div class="form-group"><label>Отчество:</label><input type="text" name="middle_name" value="<?= $user_data['middle_name'] ?? '' ?>"></div>
-                <div class="form-group"><label>Дата рождения:</label><input type="date" name="birth_date" value="<?= $user_data['birth_date'] ?? '' ?>"></div>
-                <div class="form-group"><label>Телефон:</label><input type="tel" name="phone" value="<?= $user_data['phone'] ?? '' ?>"></div>
+                <div class="form-group"><label>Email:</label><input type="email" value="<?= htmlspecialchars($user_data['email']) ?>" disabled></div>
+                <div class="form-group"><label>Фамилия:</label><input type="text" name="last_name" value="<?= htmlspecialchars($user_data['last_name'] ?? '') ?>"></div>
+                <div class="form-group"><label>Имя:</label><input type="text" name="first_name" value="<?= htmlspecialchars($user_data['first_name'] ?? '') ?>"></div>
+                <div class="form-group"><label>Отчество:</label><input type="text" name="middle_name" value="<?= htmlspecialchars($user_data['middle_name'] ?? '') ?>"></div>
+                <div class="form-group"><label>Дата рождения:</label><input type="date" name="birth_date" value="<?= htmlspecialchars($user_data['birth_date'] ?? '') ?>"></div>
+                <div class="form-group"><label>Телефон:</label><input type="tel" name="phone" value="<?= htmlspecialchars($user_data['phone'] ?? '') ?>"></div>
                 <div class="form-group">
                     <label>Улица и дом *:</label>
                     <input type="text" id="street" name="street" value="<?= htmlspecialchars(extractStreetFromAddress($user_data['address'] ?? '')) ?>" required>
@@ -391,42 +213,35 @@ function extractApartmentFromAddress($address) {
             </form>
         </div>
 
-        <!-- Вкладка заявок -->
         <div id="requests" class="tab-content <?= $active_tab === 'requests' ? 'active' : '' ?>">
             <h2>Мои заявки</h2>
 
-            <!-- Статусные вкладки -->
             <div class="tabs-status">
-                <?php
-                $base_params = ['tab' => 'requests', 'search' => $search, 'date_from' => $date_from, 'date_to' => $date_to];
-                $build_url = function($status) use ($base_params) {
-                    $params = array_merge($base_params, ['status' => $status]);
-                    return '?' . http_build_query($params);
-                };
-                ?>
-                <a href="<?= $build_url('all') ?>" class="tab-status <?= $status_filter=='all'?'active':'' ?>">Все</a>
-                <a href="<?= $build_url('new') ?>" class="tab-status <?= $status_filter=='new'?'active':'' ?>">
+                <a href="?tab=requests&status=all&search=<?= urlencode($search) ?>&date_from=<?= urlencode($date_from) ?>&date_to=<?= urlencode($date_to) ?>"
+                   class="tab-status <?= $status_filter=='all'?'active':'' ?>">Все</a>
+                <a href="?tab=requests&status=new&search=<?= urlencode($search) ?>&date_from=<?= urlencode($date_from) ?>&date_to=<?= urlencode($date_to) ?>"
+                   class="tab-status <?= $status_filter=='new'?'active':'' ?>">
                     Новые <?= isset($stats['новая']) ? "<span class='badge-count'>{$stats['новая']}</span>" : '' ?>
                 </a>
-                <a href="<?= $build_url('work') ?>" class="tab-status <?= $status_filter=='work'?'active':'' ?>">
+                <a href="?tab=requests&status=work&search=<?= urlencode($search) ?>&date_from=<?= urlencode($date_from) ?>&date_to=<?= urlencode($date_to) ?>"
+                   class="tab-status <?= $status_filter=='work'?'active':'' ?>">
                     В работе <?= isset($stats['в работе']) ? "<span class='badge-count'>{$stats['в работе']}</span>" : '' ?>
                 </a>
-                <a href="<?= $build_url('completed') ?>" class="tab-status <?= $status_filter=='completed'?'active':'' ?>">
+                <a href="?tab=requests&status=completed&search=<?= urlencode($search) ?>&date_from=<?= urlencode($date_from) ?>&date_to=<?= urlencode($date_to) ?>"
+                   class="tab-status <?= $status_filter=='completed'?'active':'' ?>">
                     Выполненные <?= isset($stats['выполнена']) ? "<span class='badge-count'>{$stats['выполнена']}</span>" : '' ?>
                 </a>
             </div>
 
-            <!-- Быстрые фильтры по дате -->
             <div class="filter-bar">
                 <div class="quick-filters">
                     <a href="?tab=requests&status=<?= urlencode($status_filter) ?>&search=<?= urlencode($search) ?>&preset=today">Сегодня</a>
-                    <a href="?tab=requests&status=<?= urlencode($status_filter) ?>&search=<?= urlencode($search) ?>&preset=tomorrow">Завтра</a>
                     <a href="?tab=requests&status=<?= urlencode($status_filter) ?>&search=<?= urlencode($search) ?>&preset=week">Эта неделя</a>
                     <a href="?tab=requests&status=<?= urlencode($status_filter) ?>&search=<?= urlencode($search) ?>&preset=month">Этот месяц</a>
+                    <a href="?tab=requests&status=<?= urlencode($status_filter) ?>&search=<?= urlencode($search) ?>">Сбросить даты</a>
                 </div>
             </div>
 
-            <!-- Форма поиска и произвольных дат -->
             <form method="GET" class="filter-bar">
                 <input type="hidden" name="tab" value="requests">
                 <input type="hidden" name="status" value="<?= htmlspecialchars($status_filter) ?>">
@@ -443,7 +258,7 @@ function extractApartmentFromAddress($address) {
                     <input type="date" name="date_to" value="<?= htmlspecialchars($date_to) ?>">
                 </div>
                 <button type="submit" class="btn-primary btn-sm">Применить</button>
-                <a href="?tab=requests&status=<?= urlencode($status_filter) ?>" class="btn-secondary btn-sm">Сбросить</a>
+                <a href="?tab=requests" class="btn-secondary btn-sm">Сбросить всё</a>
             </form>
 
             <?php if (empty($requests)): ?>
@@ -498,9 +313,10 @@ function extractApartmentFromAddress($address) {
                             <div class="request-card-footer">
                                 <div class="request-actions">
                                     <?php if (!$request['is_read']): ?>
-                                        <form action="includes/mark_as_read.php" method="POST" class="inline-form">
+                                        <form action="includes/mark_as_read.php" method="POST" style="display:inline;">
                                             <input type="hidden" name="request_id" value="<?= $request['id'] ?>">
-                                            <button type="submit" class="btn-secondary btn-small">Отметить как прочитанное</button>
+                                            <input type="hidden" name="return_tab" value="requests">
+                                            <button type="submit" class="btn-secondary btn-sm">Отметить как прочитанное</button>
                                         </form>
                                     <?php endif; ?>
                                     <button type="button" class="btn-view-details" onclick="showRequestDetails(<?= $request['id'] ?>)">Подробнее</button>
@@ -514,7 +330,6 @@ function extractApartmentFromAddress($address) {
     </div>
 </div>
 
-<!-- Модальное окно для просмотра деталей -->
 <div id="requestModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -532,19 +347,43 @@ function extractApartmentFromAddress($address) {
             .then(data => {
                 if (data.success) {
                     const req = data.request;
-                    document.getElementById('modalTitle').textContent = `Заявка #${req.id}: ${req.subject}`;
-                    let html = `<div><strong>Сообщение:</strong><br><pre style="white-space:pre-wrap">${escapeHtml(req.message)}</pre></div>`;
-                    if (req.admin_response) html += `<div><strong>Ответ администратора:</strong><br><pre style="white-space:pre-wrap">${escapeHtml(req.admin_response)}</pre><div>Ответ дан: ${req.responded_at}</div></div>`;
-                    html += `<div><strong>Статус:</strong> ${req.status}</div><div><strong>Создана:</strong> ${req.created_at}</div>`;
+                    document.getElementById('modalTitle').textContent = 'Заявка #' + req.id + ': ' + req.subject;
+                    let html = '<div><strong>Сообщение:</strong><br><pre style="white-space:pre-wrap">' + escapeHtml(req.message) + '</pre></div>';
+                    if (req.admin_response) {
+                        html += '<div><strong>Ответ администратора:</strong><br><pre style="white-space:pre-wrap">' + escapeHtml(req.admin_response) + '</pre><div>Ответ дан: ' + (req.responded_at || '') + '</div></div>';
+                    }
+                    html += '<div><strong>Статус:</strong> ' + req.status + '</div>';
+                    html += '<div><strong>Создана:</strong> ' + req.created_at + '</div>';
                     document.getElementById('modalContent').innerHTML = html;
-                    document.getElementById('requestModal').style.display = 'block';
-                } else alert('Ошибка загрузки');
-            }).catch(error => { console.error(error); alert('Не удалось загрузить детали'); });
+                    document.getElementById('requestModal').style.display = 'flex';
+                } else {
+                    alert('Ошибка загрузки: ' + (data.error || ''));
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                alert('Не удалось загрузить детали');
+            });
     }
 
-    function closeModal() { document.getElementById('requestModal').style.display = 'none'; }
-    window.onclick = function(event) { const modal = document.getElementById('requestModal'); if (event.target === modal) modal.style.display = 'none'; }
-    function escapeHtml(text) { return text.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+    function closeModal() {
+        document.getElementById('requestModal').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('requestModal');
+        if (event.target === modal) modal.style.display = 'none';
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        return text.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
 </script>
 <script src="js/address-autocomplete.js"></script>
 </body>

@@ -2,25 +2,28 @@
 session_start();
 require_once 'config.php';
 
-if (!isset($_SESSION['user_id']) || !isset($_POST['request_id'])) {
-    header('Location: ../user.php');
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_email'])) {
+    header('Location: ../login.php');
     exit();
 }
 
-$user_id = $_SESSION['user_id'];
-$request_id = intval($_POST['request_id']);
+$request_id = (int)($_POST['request_id'] ?? 0);
+$return_tab = $_POST['return_tab'] ?? 'requests';
+$user_email = $_SESSION['user_email'];
 
-try {
-    // Обновляем статус заявки только если она принадлежит текущему пользователю
-    $sql = "UPDATE message SET is_read = 1 
-            WHERE id = :id AND user_id = :user_id AND is_read = 0";
-    
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([':id' => $request_id, ':user_id' => $user_id]);
-    
-} catch (PDOException $e) {
-    error_log("Ошибка при обновлении статуса заявки: " . $e->getMessage());
+if ($request_id > 0) {
+    try {
+        $sql = "UPDATE message SET is_read = 1 
+                WHERE id = :id AND user_email = :user_email";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':id' => $request_id,
+            ':user_email' => $user_email
+        ]);
+    } catch (PDOException $e) {
+        error_log("mark_as_read error: " . $e->getMessage());
+    }
 }
 
-header('Location: ../user.php');
+header("Location: ../user.php?tab=" . urlencode($return_tab));
 exit();
