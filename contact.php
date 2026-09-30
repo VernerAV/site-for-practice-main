@@ -2,7 +2,51 @@
 session_start();
 require_once 'includes/config.php';
 
+// ===== функции разбора адреса =====
+function extractStreetFromAddress($address) {
+    if (empty($address)) return '';
+    $patterns = [
+        '/,\s*подъезд\s+\S+.*$/iu',
+        '/,\s*этаж\s+\S+.*$/iu',
+        '/,\s*кв\.\s+\S+.*$/iu',
+        '/,\s*квартира\s+\S+.*$/iu',
+        '/,\s*домофон\s+\S+.*$/iu'
+    ];
+    $street = trim($address);
+    foreach ($patterns as $pattern) {
+        $test = preg_replace($pattern, '', $street);
+        if ($test !== $street) { $street = trim($test, ', '); break; }
+    }
+    return $street;
+}
+function extractEntranceFromAddress($address) {
+    if (empty($address)) return '';
+    if (preg_match('/подъезд\s+(\S+)/iu', $address, $m)) return trim($m[1], ', ');
+    return '';
+}
+function extractFloorFromAddress($address) {
+    if (empty($address)) return '';
+    if (preg_match('/этаж\s+(\S+)/iu', $address, $m)) return trim($m[1], ', ');
+    return '';
+}
+function extractApartmentFromAddress($address) {
+    if (empty($address)) return '';
+    if (preg_match('/(?:кв\.|квартира)\s+(\S+)/iu', $address, $m)) return trim($m[1], ', ');
+    return '';
+}
+function extractIntercomFromAddress($address) {
+    if (empty($address)) return '';
+    if (preg_match('/домофон\s+(\S+)/iu', $address, $m)) return trim($m[1], ', ');
+    return '';
+}
+
 $user_data = null;
+$street_value = '';
+$entrance_value = '';
+$floor_value = '';
+$apartment_value = '';
+$intercom_value = '';
+
 if (isset($_SESSION['user_id'])) {
     $user_id = (int)$_SESSION['user_id'];
     try {
@@ -16,6 +60,15 @@ if (isset($_SESSION['user_id'])) {
         ");
         $stmt->execute([$user_id]);
         $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // ===== ИСПРАВЛЕНО: разбираем адрес из профиля на части =====
+        if (!empty($user_data['address'])) {
+            $street_value    = extractStreetFromAddress($user_data['address']);
+            $entrance_value  = extractEntranceFromAddress($user_data['address']);
+            $floor_value     = extractFloorFromAddress($user_data['address']);
+            $apartment_value = extractApartmentFromAddress($user_data['address']);
+            $intercom_value  = extractIntercomFromAddress($user_data['address']);
+        }
     } catch (PDOException $e) {
         // ignore
     }
@@ -30,32 +83,10 @@ if (isset($_SESSION['user_id'])) {
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/contact.css">
     <style>
-        #street.invalid {
-            border-color: #dc3545;
-            background-color: #fff0f0;
-        }
-        #street.invalid:focus {
-            border-color: #dc3545;
-            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
-        }
-        .error-msg {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 12px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            border: 1px solid #f5c6cb;
-        }
-        #addressError {
-            font-size: 0.9rem;
-            padding: 6px 12px;
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeeba;
-            border-radius: 4px;
-            margin-top: 8px;
-            display: none;
-        }
+        #street.invalid { border-color: #dc3545; background-color: #fff0f0; }
+        #street.invalid:focus { border-color: #dc3545; box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25); }
+        .error-msg { background: #f8d7da; color: #721c24; padding: 12px; border-radius: 5px; margin-bottom: 15px; border: 1px solid #f5c6cb; }
+        #addressError { font-size: 0.9rem; padding: 6px 12px; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 4px; margin-top: 8px; display: none; }
     </style>
 </head>
 <body>
@@ -105,18 +136,9 @@ if (isset($_SESSION['user_id'])) {
             <div class="step" data-step="2" id="stepUrgency">
                 <h2>Насколько срочно?</h2>
                 <div class="card-grid" id="urgencyGrid">
-                    <div class="card" data-value="normal">
-                        <div class="title">🟢 Планово</div>
-                        <div class="desc">3–5 дней</div>
-                    </div>
-                    <div class="card" data-value="high">
-                        <div class="title">🟡 Оперативно</div>
-                        <div class="desc">1–2 дня</div>
-                    </div>
-                    <div class="card" data-value="emergency">
-                        <div class="title">🔴 Срочно</div>
-                        <div class="desc">Сегодня</div>
-                    </div>
+                    <div class="card" data-value="normal"><div class="title">🟢 Планово</div><div class="desc">3–5 дней</div></div>
+                    <div class="card" data-value="high"><div class="title">🟡 Оперативно</div><div class="desc">1–2 дня</div></div>
+                    <div class="card" data-value="emergency"><div class="title">🔴 Срочно</div><div class="desc">Сегодня</div></div>
                 </div>
                 <div class="btn-group">
                     <button type="button" class="btn btn-secondary" onclick="goStep(-1)">← Назад</button>
@@ -127,18 +149,9 @@ if (isset($_SESSION['user_id'])) {
             <div class="step" data-step="3" id="stepVolume">
                 <h2>Объём работ</h2>
                 <div class="card-grid" id="volumeGrid">
-                    <div class="card" data-value="small">
-                        <div class="title">📏 Мелкий</div>
-                        <div class="desc">До 1 часа</div>
-                    </div>
-                    <div class="card" data-value="medium">
-                        <div class="title">📐 Средний</div>
-                        <div class="desc">1–3 часа</div>
-                    </div>
-                    <div class="card" data-value="large">
-                        <div class="title">📦 Крупный</div>
-                        <div class="desc">От 3 часов</div>
-                    </div>
+                    <div class="card" data-value="small"><div class="title">📏 Мелкий</div><div class="desc">До 1 часа</div></div>
+                    <div class="card" data-value="medium"><div class="title">📐 Средний</div><div class="desc">1–3 часа</div></div>
+                    <div class="card" data-value="large"><div class="title">📦 Крупный</div><div class="desc">От 3 часов</div></div>
                 </div>
                 <div class="btn-group">
                     <button type="button" class="btn btn-secondary" onclick="goStep(-1)">← Назад</button>
@@ -150,8 +163,9 @@ if (isset($_SESSION['user_id'])) {
                 <h2>Адрес и доступ</h2>
                 <div class="form-group">
                     <label>Улица и дом <span style="color:red">*</span></label>
+                    <!-- ===== ИСПРАВЛЕНО: подставляем только улицу ===== -->
                     <input type="text" id="street" required placeholder="ул. Исаковского, д.8 к.1"
-                           value="<?= htmlspecialchars($user_data['address'] ?? '') ?>">
+                           value="<?= htmlspecialchars($street_value) ?>">
                     <div class="hint">Начните вводить адрес, появится список подсказок</div>
                     <div id="addressError" class="error-msg">⚠️ Введите адрес из списка (Строгино)</div>
                     <input type="hidden" id="full_address" name="address"
@@ -160,20 +174,28 @@ if (isset($_SESSION['user_id'])) {
                 <div class="form-row">
                     <div class="form-group">
                         <label>Подъезд</label>
-                        <input type="text" id="entrance" placeholder="№ подъезда">
+                        <!-- ===== ИСПРАВЛЕНО: подставляем подъезд ===== -->
+                        <input type="text" id="entrance" placeholder="№ подъезда"
+                               value="<?= htmlspecialchars($entrance_value) ?>">
                     </div>
                     <div class="form-group field-floor">
                         <label>Этаж</label>
-                        <input type="text" id="floor" placeholder="№ этажа">
+                        <!-- ===== ИСПРАВЛЕНО: подставляем этаж ===== -->
+                        <input type="text" id="floor" placeholder="№ этажа"
+                               value="<?= htmlspecialchars($floor_value) ?>">
                     </div>
                     <div class="form-group field-apartment">
                         <label>Квартира <span id="apartmentRequired" style="color:red">*</span></label>
-                        <input type="text" id="apartment" placeholder="№ квартиры" required>
+                        <!-- ===== ИСПРАВЛЕНО: подставляем квартиру ===== -->
+                        <input type="text" id="apartment" placeholder="№ квартиры" required
+                               value="<?= htmlspecialchars($apartment_value) ?>">
                     </div>
                 </div>
                 <div class="form-group field-intercom">
                     <label>Код домофона</label>
-                    <input type="text" id="intercom" placeholder="1234 или #5678">
+                    <!-- ===== ИСПРАВЛЕНО: подставляем домофон ===== -->
+                    <input type="text" id="intercom" placeholder="1234 или #5678"
+                           value="<?= htmlspecialchars($intercom_value) ?>">
                 </div>
                 <div class="form-group">
                     <label>Есть ли лифт?</label>
@@ -192,18 +214,9 @@ if (isset($_SESSION['user_id'])) {
             <div class="step" data-step="5" id="stepMaterials">
                 <h2>Готовность к работе</h2>
                 <div class="card-grid" id="materialsGrid">
-                    <div class="card" data-value="0">
-                        <div class="title">✅ Всё есть</div>
-                        <div class="desc">Купили заранее</div>
-                    </div>
-                    <div class="card" data-value="2">
-                        <div class="title">❓ Не знаю</div>
-                        <div class="desc">Мастер скажет</div>
-                    </div>
-                    <div class="card" data-value="1">
-                        <div class="title">🛒 Ничего нет</div>
-                        <div class="desc">Нужно закупать</div>
-                    </div>
+                    <div class="card" data-value="0"><div class="title">✅ Всё есть</div><div class="desc">Купили заранее</div></div>
+                    <div class="card" data-value="2"><div class="title">❓ Не знаю</div><div class="desc">Мастер скажет</div></div>
+                    <div class="card" data-value="1"><div class="title">🛒 Ничего нет</div><div class="desc">Нужно закупать</div></div>
                 </div>
                 <div class="btn-group">
                     <button type="button" class="btn btn-secondary" onclick="goStep(-1)">← Назад</button>
@@ -216,29 +229,24 @@ if (isset($_SESSION['user_id'])) {
                 <div class="form-row">
                     <div class="form-group">
                         <label>Фамилия <span style="color:red">*</span></label>
-                        <input type="text" id="lastName" required
-                               value="<?= htmlspecialchars($user_data['last_name'] ?? '') ?>">
+                        <input type="text" id="lastName" required value="<?= htmlspecialchars($user_data['last_name'] ?? '') ?>">
                     </div>
                     <div class="form-group">
                         <label>Имя <span style="color:red">*</span></label>
-                        <input type="text" id="firstName" required
-                               value="<?= htmlspecialchars($user_data['first_name'] ?? '') ?>">
+                        <input type="text" id="firstName" required value="<?= htmlspecialchars($user_data['first_name'] ?? '') ?>">
                     </div>
                     <div class="form-group">
                         <label>Отчество</label>
-                        <input type="text" id="middleName"
-                               value="<?= htmlspecialchars($user_data['middle_name'] ?? '') ?>">
+                        <input type="text" id="middleName" value="<?= htmlspecialchars($user_data['middle_name'] ?? '') ?>">
                     </div>
                 </div>
                 <div class="form-group">
                     <label>Email <span style="color:red">*</span></label>
-                    <input type="email" id="userEmail" required
-                           value="<?= htmlspecialchars($user_data['email'] ?? '') ?>">
+                    <input type="email" id="userEmail" required value="<?= htmlspecialchars($user_data['email'] ?? '') ?>">
                 </div>
                 <div class="form-group">
                     <label>Телефон</label>
-                    <input type="tel" id="phone" placeholder="+7 (999) 999-99-99"
-                           value="<?= htmlspecialchars($user_data['phone'] ?? '') ?>">
+                    <input type="tel" id="phone" placeholder="+7 (999) 999-99-99" value="<?= htmlspecialchars($user_data['phone'] ?? '') ?>">
                 </div>
                 <div class="form-group">
                     <label>Подробное описание <span style="color:red">*</span></label>
@@ -277,25 +285,12 @@ const categories = <?php
 
 let currentStep = 0;
 const formData = {
-    type: null,
-    category_id: null,
-    urgency: 'normal',
-    volume: 'medium',
-    address: '',
-    floor: '',
-    has_elevator: 1,
-    materials_needed: 0,
-    user_email: '',
-    user_phone: '',
-    message: '',
-    intercom: '',
-    first_name: '',
-    last_name: '',
-    middle_name: '',
-    is_common: false
+    type: null, category_id: null, urgency: 'normal', volume: 'medium',
+    address: '', floor: '', has_elevator: 1, materials_needed: 0,
+    user_email: '', user_phone: '', message: '', intercom: '',
+    first_name: '', last_name: '', middle_name: '', is_common: false
 };
 
-// ===== ФУНКЦИЯ ПРОВЕРКИ АДРЕСА =====
 function isValidAddress(address) {
     if (!address) return false;
     const normalized = address.trim().toLowerCase();
@@ -320,11 +315,7 @@ function rebuildProgress() {
     const bar = document.getElementById('progressBar');
     const total = getTotalSteps();
     let html = '';
-    const mapping = {
-        4: [0, 1, 6, 7],
-        5: [0, 1, 4, 6, 7],
-        8: [0, 1, 2, 3, 4, 5, 6, 7]
-    };
+    const mapping = { 4: [0, 1, 6, 7], 5: [0, 1, 4, 6, 7], 8: [0, 1, 2, 3, 4, 5, 6, 7] };
     const steps = mapping[total] || [0, 1, 2, 3, 4, 5, 6, 7];
     for (let i = 0; i < steps.length; i++) {
         const stepIndex = steps[i];
@@ -419,7 +410,6 @@ function updateButtons() {
     }
     updateAddressFields();
     rebuildProgress();
-    // Активируем кнопку "Далее" на контактах
     const step7Next = document.getElementById('step7Next');
     if (step7Next) {
         const ln = document.getElementById('lastName').value.trim();
@@ -461,10 +451,7 @@ function setupCardSelection(containerId, inputName, nextStepDelay = 300) {
             this.classList.add('selected');
             const val = this.dataset.value;
             formData[inputName] = val;
-            if (inputName === 'type') {
-                const cat = this.dataset.value;
-                loadCategories(cat);
-            }
+            if (inputName === 'type') { loadCategories(this.dataset.value); }
             setTimeout(() => {
                 if (inputName === 'type' && formData.type === 'appeal') {
                     const steps = document.querySelectorAll('.step');
@@ -482,12 +469,8 @@ function setupCardSelection(containerId, inputName, nextStepDelay = 300) {
                         steps[currentStep].classList.add('active');
                         updateProgress();
                         updateButtons();
-                    } else {
-                        goStep(1);
-                    }
-                } else {
-                    goStep(1);
-                }
+                    } else { goStep(1); }
+                } else { goStep(1); }
             }, nextStepDelay);
         });
     });
@@ -531,9 +514,7 @@ function loadCategories(type) {
                     steps[currentStep].classList.add('active');
                     updateProgress();
                     updateButtons();
-                } else {
-                    goStep(1);
-                }
+                } else { goStep(1); }
             }, 300);
         });
     });
@@ -555,7 +536,7 @@ function generateSummary() {
     const volumeMap = { small: 'Мелкий', medium: 'Средний', large: 'Крупный' };
     const materialsMap = { 0: '✅ Всё есть', 1: '🛒 Ничего нет', 2: '❓ Не знаю' };
     const fullName = formData.last_name + ' ' + formData.first_name + (formData.middle_name ? ' ' + formData.middle_name : '');
-    
+
     let html = `<div class="summary-item"><strong>Тип:</strong> ${formData.type === 'request' ? 'Заявка' : 'Обращение'}</div>`;
     html += `<div class="summary-item"><strong>Категория:</strong> ${catName}</div>`;
     if (formData.type === 'request' && !isCommonCategory()) {
@@ -574,7 +555,6 @@ function generateSummary() {
     block.innerHTML = html;
 }
 
-// ===== ОСНОВНАЯ ФУНКЦИЯ ПРОВЕРКИ (ВЫЗЫВАЕТСЯ ТОЛЬКО ПРИ BLUR И ВЫБОРЕ ИЗ СПИСКА) =====
 function checkAddress() {
     const streetInput = document.getElementById('street');
     const apartmentInput = document.getElementById('apartment');
@@ -582,10 +562,8 @@ function checkAddress() {
     const isCommon = isCommonCategory();
     const street = streetInput.value.trim();
     const apartment = apartmentInput.value.trim();
-
     const addressValid = street.length > 0 && isValidAddress(street);
     const addressError = document.getElementById('addressError');
-
     if (street.length > 0 && !addressValid) {
         streetInput.classList.add('invalid');
         addressError.style.display = 'block';
@@ -593,18 +571,13 @@ function checkAddress() {
     } else {
         streetInput.classList.remove('invalid');
         addressError.style.display = 'none';
-        // Если адрес пустой или валидный, но квартира не заполнена – кнопка всё равно disabled
         if (addressValid && (isCommon || apartment.length > 0)) {
             step5Next.disabled = false;
-        } else {
-            step5Next.disabled = true;
-        }
+        } else { step5Next.disabled = true; }
     }
-
     if (typeof updateFullAddress === 'function') updateFullAddress();
 }
 
-// ===== ФУНКЦИЯ ДЛЯ ОБНОВЛЕНИЯ КНОПКИ БЕЗ ПРОВЕРКИ (ВО ВРЕМЯ ВВОДА) =====
 function updateAddressButton() {
     const streetInput = document.getElementById('street');
     const apartmentInput = document.getElementById('apartment');
@@ -612,21 +585,13 @@ function updateAddressButton() {
     const isCommon = isCommonCategory();
     const street = streetInput.value.trim();
     const apartment = apartmentInput.value.trim();
-
-    // При вводе мы не показываем ошибку, но кнопка должна быть доступна только если адрес валидный
-    // Однако мы не хотим показывать ошибку, поэтому просто проверяем валидность без подсветки
     const addressValid = street.length > 0 && isValidAddress(street);
-
     if (addressValid && (isCommon || apartment.length > 0)) {
         step5Next.disabled = false;
-    } else {
-        step5Next.disabled = true;
-    }
+    } else { step5Next.disabled = true; }
 }
 
-// Инициализация
 document.addEventListener('DOMContentLoaded', function() {
-    // Выбор типа
     const typeCards = document.querySelectorAll('#typeGrid .card');
     typeCards.forEach(card => {
         card.addEventListener('click', function() {
@@ -650,14 +615,12 @@ document.addEventListener('DOMContentLoaded', function() {
     setupCardSelection('volumeGrid', 'volume', 300);
     setupCardSelection('materialsGrid', 'materials_needed', 300);
 
-    // Адрес
     const streetInput = document.getElementById('street');
     const apartmentInput = document.getElementById('apartment');
     const step5Next = document.getElementById('step5Next');
     const fullAddressInput = document.getElementById('full_address');
     const addressError = document.getElementById('addressError');
 
-    // При вводе в поле улицы: убираем подсветку, скрываем сообщение, обновляем кнопку (без проверки)
     streetInput.addEventListener('input', function() {
         this.classList.remove('invalid');
         addressError.style.display = 'none';
@@ -665,7 +628,6 @@ document.addEventListener('DOMContentLoaded', function() {
         updateAddressButton();
     });
 
-    // При вводе в другие поля адреса – только обновляем кнопку
     apartmentInput.addEventListener('input', function() {
         if (typeof updateFullAddress === 'function') updateFullAddress();
         updateAddressButton();
@@ -680,28 +642,22 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     document.getElementById('intercom')?.addEventListener('input', function() {
         if (typeof updateFullAddress === 'function') updateFullAddress();
-        // intercom не влияет на кнопку
     });
     document.getElementById('hasElevator')?.addEventListener('change', function() {
         if (typeof updateFullAddress === 'function') updateFullAddress();
     });
 
-    // Обработчик blur удалён из contact.php – теперь он в address-autocomplete.js
-
-    // Обработчик кнопки "Далее" на шаге адреса
     step5Next.addEventListener('click', function() {
         const street = streetInput.value.trim();
         if (!isValidAddress(street)) {
-            // Если адрес невалидный, показываем ошибку и блокируем переход
             streetInput.classList.add('invalid');
             addressError.style.display = 'block';
-            document.getElementById('messageBlock').innerHTML = 
+            document.getElementById('messageBlock').innerHTML =
                 '<div class="error-msg">⚠️ Пожалуйста, выберите адрес из предложенного списка (Строгино).</div>';
             setTimeout(() => document.getElementById('messageBlock').innerHTML = '', 5000);
             step5Next.disabled = true;
             return;
         }
-        // Если всё ок, сохраняем данные и переходим
         formData.address = fullAddressInput.value;
         formData.has_elevator = document.getElementById('hasElevator').value;
         formData.intercom = document.getElementById('intercom').value.trim();
@@ -712,12 +668,9 @@ document.addEventListener('DOMContentLoaded', function() {
             steps[currentStep].classList.add('active');
             updateProgress();
             updateButtons();
-        } else {
-            goStep(1);
-        }
+        } else { goStep(1); }
     });
 
-    // Контакты
     const lastNameInput = document.getElementById('lastName');
     const firstNameInput = document.getElementById('firstName');
     const userEmailInput = document.getElementById('userEmail');
@@ -760,7 +713,6 @@ document.addEventListener('DOMContentLoaded', function() {
         submitForm();
     });
 
-    // Маска телефона
     const phoneInput = document.getElementById('phone');
     if (phoneInput) {
         phoneInput.addEventListener('input', function(e) {
@@ -783,7 +735,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Восстановление из localStorage
     try {
         const saved = localStorage.getItem('contactFormState');
         if (saved) {
@@ -808,11 +759,9 @@ document.addEventListener('DOMContentLoaded', function() {
     rebuildProgress();
     updateButtons();
 
-    // При загрузке, если адрес уже заполнен (из профиля), выполняем проверку (как при blur)
     if (streetInput.value.trim() !== '') {
         checkAddress();
     } else {
-        // Если адрес пустой, просто обновим кнопку (без подсветки)
         updateAddressButton();
     }
     checkContacts();
@@ -863,9 +812,7 @@ function submitForm() {
 
     const street = document.getElementById('street').value.trim();
     if (formData.type === 'request') {
-        if (!isValidAddress(street)) {
-            errors.push('Укажите корректный адрес из предложенного списка (Строгино)');
-        }
+        if (!isValidAddress(street)) errors.push('Укажите корректный адрес из предложенного списка (Строгино)');
         if (!formData.address) errors.push('Укажите адрес');
         if (!isCommon) {
             if (!formData.urgency) errors.push('Выберите срочность');

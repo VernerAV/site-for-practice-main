@@ -27,15 +27,7 @@ try {
     <title>Заявка создана</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
-        .success-container {
-            max-width: 700px;
-            margin: 50px auto;
-            background: #fff;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
-            text-align: center;
-        }
+        .success-container { max-width: 700px; margin: 50px auto; background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); text-align: center; }
         .success-icon { font-size: 72px; margin-bottom: 20px; }
         .success-title { font-size: 28px; color: #1a5f7a; margin-bottom: 10px; }
         .request-number { font-size: 20px; background: #f0f7fa; padding: 12px 24px; border-radius: 8px; display: inline-block; margin: 20px 0; }
@@ -65,9 +57,16 @@ try {
             <p><strong>Дата:</strong> <?= date('d.m.Y H:i', strtotime($request['created_at'])) ?></p>
         </div>
         <p>Мы свяжемся с вами в ближайшее время.</p>
+
+        <!-- ===== ссылки зависят от авторизации ===== -->
         <div class="links">
-            <a href="user.php">🔐 Войти / Зарегистрироваться</a>
-            <a href="check_status.php" class="secondary">🔍 Проверить статус</a>
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <a href="user.php?tab=requests">👤 Мои заявки</a>
+                <a href="check_status.php" class="secondary">🔍 Проверить статус</a>
+            <?php else: ?>
+                <a href="user.php">🔐 Войти / Зарегистрироваться</a>
+                <a href="check_status.php" class="secondary">🔍 Проверить статус</a>
+            <?php endif; ?>
         </div>
     <?php endif; ?>
 </div>
