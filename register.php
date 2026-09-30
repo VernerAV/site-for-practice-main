@@ -113,7 +113,7 @@ if (isset($_SESSION['user_id'])) {
     </div>
 
 <script>
-    // ===== МАСКА ТЕЛЕФОНА (НАДЁЖНАЯ) =====
+    // ===== МАСКА ТЕЛЕФОНА  =====
     (function() {
         const phoneInput = document.getElementById('phone');
 
